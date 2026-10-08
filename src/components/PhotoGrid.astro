@@ -1,0 +1,32 @@
+---
+import { src, srcset, type Photo } from '../lib/photos';
+
+interface Props {
+  gallery: string;
+  photos: Photo[];
+  /** Base du texte alternatif, complété par le numéro de la photo. */
+  altPrefix: string;
+}
+
+const { gallery, photos, altPrefix } = Astro.props;
+---
+
+<div class="photo-grid">
+  {photos.map((photo, i) => {
+    const alt = `${altPrefix} — photo ${i + 1} sur ${photos.length}`;
+    return (
+      <button class="photo-btn" type="button" data-full={src(gallery, photo.id, 1600)} data-alt={alt}>
+        <img
+          src={src(gallery, photo.id, 800)}
+          srcset={srcset(gallery, photo.id)}
+          sizes="(min-width: 64rem) 32vw, (min-width: 40rem) 46vw, 92vw"
+          width={photo.w}
+          height={photo.h}
+          loading="lazy"
+          decoding="async"
+          alt={alt}
+        />
+      </button>
+    );
+  })}
+</div>

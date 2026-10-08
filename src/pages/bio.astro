@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout title="Bio" description={site.summary}>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Le groupe</p>
+      <div class="section-head"><h2>{site.name}</h2></div>
+
+      <div class="prose" style="font-size: var(--step-1); line-height: 1.6;">
+        {site.bio.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+
+      <div style="margin-top: var(--block);">
+        <div class="section-head"><h2>Qui joue</h2></div>
+        <ul class="members">
+          {site.members.map((member) => (
+            <li>
+              <p class="name">{member.name}</p>
+              <p class="role">{member.role}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div style="margin-top: var(--block);">
+        <div class="section-head"><h2>Dossier de presse</h2></div>
+        <p class="prose">
+          Journalistes, programmateurs : photos haute définition, biographie et fiche technique sur demande à
+          <a href={`mailto:${site.contacts.press}`}>{site.contacts.press}</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

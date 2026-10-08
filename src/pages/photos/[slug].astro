@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { site } from '../../data/site';
+import { galleries } from '../../lib/photos';
+import { showBySlug } from '../../lib/shows';
+import { longDate } from '../../lib/format';
+
+export function getStaticPaths() {
+  return galleries.map((gallery) => ({ params: { slug: gallery.slug }, props: { gallery } }));
+}
+
+const { gallery } = Astro.props;
+const show = showBySlug(gallery.slug);
+const title = show ? `${show.venue}${show.city ? ` · ${show.city}` : ''}` : gallery.slug;
+const altPrefix = show ? `${site.name} au ${show.venue}, ${show.city}` : `${site.name} en concert`;
+---
+
+<BaseLayout title={title} description={`Photos de ${site.name} — ${title}.`}>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow"><a href="/photos" style="text-decoration: none;">← Toutes les galeries</a></p>
+      <div class="section-head">
+        <h2>{title}</h2>
+        {show && <span class="more" style="text-transform: none; letter-spacing: 0.08em;">{longDate(show.startsAt)}</span>}
+      </div>
+
+      <PhotoGrid gallery={gallery.slug} photos={gallery.photos} altPrefix={altPrefix} />
+
+      <p style="margin-top: 2rem; color: var(--bone-faint); font-size: var(--step--1);">
+        {gallery.photos.length} photo{gallery.photos.length > 1 ? 's' : ''}. Cliquez pour agrandir, flèches du clavier pour défiler.
+      </p>
+    </div>
+  </section>
+
+  <Lightbox />
+</BaseLayout>

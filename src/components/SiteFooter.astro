@@ -1,0 +1,47 @@
+---
+import { site, nav, activeLinks } from '../data/site';
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <div class="rows">
+      <div>
+        <p class="brand" style="font-family: var(--font-display); letter-spacing: 0.14em; text-transform: uppercase;">
+          {site.name}
+        </p>
+        <p>{site.tagline} · {site.city}</p>
+      </div>
+
+      <div>
+        <p style="color: var(--ember); letter-spacing: 0.18em; text-transform: uppercase;">Le site</p>
+        <ul>
+          {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </div>
+
+      {activeLinks.length > 0 && (
+        <div>
+          <p style="color: var(--ember); letter-spacing: 0.18em; text-transform: uppercase;">Écouter &amp; suivre</p>
+          <ul>
+            {activeLinks.map((l) => (
+              <li><a href={l.url} target="_blank" rel="noopener">{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div>
+        <p style="color: var(--ember); letter-spacing: 0.18em; text-transform: uppercase;">Contact</p>
+        <ul>
+          <li><a href={`mailto:${site.contacts.booking}`}>Booking</a></li>
+          <li><a href={`mailto:${site.contacts.press}`}>Presse</a></li>
+          <li><a href={`mailto:${site.contacts.general}`}>Général</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="legal">
+      © {new Date().getFullYear()} {site.name}. Photos de concert : merci aux photographes créditées sur chaque cliché.
+    </p>
+  </div>
+</footer>

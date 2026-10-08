@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, activeLinks } from '../data/site';
+---
+
+<BaseLayout title="Écouter" description={`Les sorties de ${site.name} et où les écouter.`}>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Discographie</p>
+      <div class="section-head"><h2>Écouter</h2></div>
+
+      {site.releases.length === 0 && <p class="empty">Les premières sorties arrivent bientôt.</p>}
+
+      {site.releases.map((release) => (
+        <article class="release">
+          <div class="release-cover">{release.title}</div>
+          <div>
+            <p class="kind">{release.kind} · {release.year}</p>
+            <h3>{release.title}</h3>
+            {release.note && <p class="prose" style="margin-top: 0.75rem;">{release.note}</p>}
+
+            {release.tracks.length > 0 && (
+              <ol class="tracklist">
+                {release.tracks.map((track) => <li>{track}</li>)}
+              </ol>
+            )}
+
+            {release.links.filter((l) => l.url).length > 0 && (
+              <div class="links-row">
+                {release.links.filter((l) => l.url).map((l) => (
+                  <a href={l.url} target="_blank" rel="noopener">{l.label}</a>
+                ))}
+              </div>
+            )}
+          </div>
+        </article>
+      ))}
+
+      {activeLinks.length > 0 && (
+        <div style="margin-top: var(--block);">
+          <div class="section-head"><h2>Toutes les plateformes</h2></div>
+          <div class="links-row">
+            {activeLinks.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

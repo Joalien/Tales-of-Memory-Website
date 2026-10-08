@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShowList from '../components/ShowList.astro';
+import { site } from '../data/site';
+import { upcoming, past, generatedAt } from '../lib/shows';
+import { shortDate, time } from '../lib/format';
+
+/** Données structurées par concert : Google peut afficher les dates directement. */
+const jsonLd = upcoming.length
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': upcoming.map((show) => ({
+        '@type': 'MusicEvent',
+        name: `${site.name} — ${show.venue}`,
+        startDate: show.startsAt,
+        endDate: show.overAt,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        url: `${site.domain}/concerts`,
+        location: {
+          '@type': 'Place',
+          name: show.venue,
+          address: show.address || show.city || undefined,
+        },
+        performer: { '@type': 'MusicGroup', name: site.name },
+        ...(show.ticketsUrl
+          ? { offers: { '@type': 'Offer', url: show.ticketsUrl, availability: 'https://schema.org/InStock' } }
+          : {}),
+      })),
+    }
+  : undefined;
+---
+
+<BaseLayout
+  title="Concerts"
+  description={`Les prochaines dates de ${site.name}, et les salles déjà traversées.`}
+  jsonLd={jsonLd}
+>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Agenda</p>
+      <div class="section-head">
+        <h2>Prochaines dates</h2>
+        {site.publicCalendarUrl && (
+          <a class="more" href={site.publicCalendarUrl}>Ajouter nos dates à votre agenda</a>
+        )}
+      </div>
+      <ShowList
+        shows={upcoming}
+        empty="Pas de date annoncée pour l’instant. Pour nous programmer, écrivez-nous."
+      />
+
+      {upcoming.length === 0 && (
+        <p style="margin-top: 1.75rem;">
+          <a class="btn" href={`mailto:${site.contacts.booking}`}>Nous programmer</a>
+        </p>
+      )}
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="block">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Déjà joué</h2>
+          <a class="more" href="/photos">Les photos</a>
+        </div>
+        <ShowList shows={past} past={true} />
+      </div>
+    </section>
+  )}
+
+  <section class="block">
+    <div class="shell">
+      <p style="color: var(--bone-faint); font-size: var(--step--1);">
+        Agenda mis à jour le {shortDate(generatedAt)} à {time(generatedAt)}.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

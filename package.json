@@ -1,0 +1,20 @@
+{
+  "name": "talesofmemory-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data": "node scripts/fetch-shows.mjs && node scripts/demo-photos.mjs && node scripts/fetch-photos.mjs",
+    "dev": "npm run data && astro dev",
+    "build": "npm run data && astro build",
+    "preview": "astro preview",
+    "demo:images": "node scripts/make-demo-images.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.3.7"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
+  }
+}

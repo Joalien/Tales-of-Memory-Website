@@ -1,0 +1,63 @@
+---
+/** Visionneuse plein écran. Se branche sur tous les .photo-btn de la page. */
+---
+
+<dialog class="lightbox" id="lightbox" aria-label="Photo en grand">
+  <div class="lightbox-inner">
+    <img id="lightbox-img" alt="" />
+    <div class="lightbox-bar">
+      <button type="button" data-lb="prev" aria-label="Photo précédente">&#8592;</button>
+      <span id="lightbox-count" aria-live="polite"></span>
+      <button type="button" data-lb="next" aria-label="Photo suivante">&#8594;</button>
+    </div>
+    <button type="button" class="lightbox-close" data-lb="close" aria-label="Fermer">&#10005;</button>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const image = document.getElementById('lightbox-img') as HTMLImageElement | null;
+  const counter = document.getElementById('lightbox-count');
+  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('.photo-btn'));
+
+  if (dialog && image && counter && triggers.length) {
+    let index = 0;
+
+    const render = (next: number) => {
+      index = (next + triggers.length) % triggers.length;
+      const trigger = triggers[index];
+      image.src = trigger.dataset.full ?? '';
+      image.alt = trigger.dataset.alt ?? '';
+      counter.textContent = `${index + 1} / ${triggers.length}`;
+    };
+
+    triggers.forEach((trigger, i) => {
+      trigger.addEventListener('click', () => {
+        render(i);
+        dialog.showModal();
+      });
+    });
+
+    dialog.addEventListener('click', (event) => {
+      // Un clic à côté de la photo ferme la visionneuse.
+      if (!(event.target as HTMLElement).closest('img, button')) dialog.close();
+    });
+
+    dialog.querySelectorAll<HTMLButtonElement>('[data-lb]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const action = button.dataset.lb;
+        if (action === 'close') dialog.close();
+        if (action === 'prev') render(index - 1);
+        if (action === 'next') render(index + 1);
+      });
+    });
+
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); render(index - 1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); render(index + 1); }
+    });
+
+    // Libère la mémoire quand on referme.
+    dialog.addEventListener('close', () => { image.src = ''; });
+  }
+</script>

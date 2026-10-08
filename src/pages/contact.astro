@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, activeLinks } from '../data/site';
+---
+
+<BaseLayout title="Contact" description={`Contacter ${site.name} : booking, presse, général.`}>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Nous écrire</p>
+      <div class="section-head"><h2>Contact</h2></div>
+
+      <div class="contact-grid">
+        <div>
+          <p class="what">Booking</p>
+          <a href={`mailto:${site.contacts.booking}`}>{site.contacts.booking}</a>
+          <p class="prose" style="margin-top: 0.6rem; font-size: var(--step--1);">
+            Programmation, fiche technique, conditions.
+          </p>
+        </div>
+        <div>
+          <p class="what">Presse</p>
+          <a href={`mailto:${site.contacts.press}`}>{site.contacts.press}</a>
+          <p class="prose" style="margin-top: 0.6rem; font-size: var(--step--1);">
+            Interviews, accréditations, photos haute définition.
+          </p>
+        </div>
+        <div>
+          <p class="what">Général</p>
+          <a href={`mailto:${site.contacts.general}`}>{site.contacts.general}</a>
+          <p class="prose" style="margin-top: 0.6rem; font-size: var(--step--1);">
+            Tout le reste, y compris les propositions de première partie.
+          </p>
+        </div>
+      </div>
+
+      {activeLinks.length > 0 && (
+        <div style="margin-top: var(--block);">
+          <div class="section-head"><h2>Réseaux</h2></div>
+          <div class="links-row">
+            {activeLinks.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

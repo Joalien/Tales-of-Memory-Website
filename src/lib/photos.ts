@@ -1,0 +1,28 @@
+import data from '../data/photos.json';
+
+export type Photo = { id: string; w: number; h: number; credit?: string };
+export type Gallery = { slug: string; cover: string; photos: Photo[] };
+
+export const baseUrl: string = data.baseUrl;
+export const widths: number[] = data.widths ?? [400, 800, 1600];
+export const galleries: Gallery[] = (data.galleries as Gallery[]) ?? [];
+
+export const src = (gallerySlug: string, id: string, w: number) =>
+  `${baseUrl}/${gallerySlug}/${w}/${id}.webp`;
+
+export const srcset = (gallerySlug: string, id: string) =>
+  widths.map((w) => `${src(gallerySlug, id, w)} ${w}w`).join(', ');
+
+export const galleryFor = (showSlug: string) => galleries.find((g) => g.slug === showSlug);
+
+/** Les N photos les plus récentes, toutes galeries confondues. */
+export function latestPhotos(limit: number) {
+  const out: { gallery: string; photo: Photo }[] = [];
+  for (const g of galleries) {
+    for (const photo of g.photos) {
+      out.push({ gallery: g.slug, photo });
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
+}

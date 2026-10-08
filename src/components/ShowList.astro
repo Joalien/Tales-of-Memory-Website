@@ -1,0 +1,75 @@
+---
+import type { Show } from '../lib/shows';
+import { galleryFor } from '../lib/photos';
+import { dayNumber, monthShort, year, longDate, time } from '../lib/format';
+
+interface Props {
+  shows: Show[];
+  past?: boolean;
+  empty?: string;
+}
+
+const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.props;
+---
+
+<div class="shows">
+  {shows.length === 0 && <p class="empty">{empty}</p>}
+
+  {shows.map((show) => {
+    const gallery = past ? galleryFor(show.slug) : undefined;
+    return (
+      <article class:list={['show', { 'is-past': past }]}>
+        <div class="show-date" aria-hidden="true">
+          <span class="d">{dayNumber(show.startsAt)}</span>
+          <span class="m">{monthShort(show.startsAt)}</span>
+          <span class="y">{year(show.startsAt)}</span>
+        </div>
+
+        <div class="show-main">
+          <h3 class="show-venue">
+            {show.venue}
+            {show.city && <span class="show-city"> · {show.city}</span>}
+          </h3>
+          <div class="show-meta">
+            <span>
+              <span class="sr-only">Date : </span>{longDate(show.startsAt)}
+              {!show.allDay && ` · ${time(show.startsAt)}`}
+            </span>
+            {show.price && <span>{show.price}</span>}
+            {show.lineup && <span>avec {show.lineup}</span>}
+          </div>
+        </div>
+
+        <div class="show-actions">
+          {!past && show.ticketsUrl && (
+            <a class="btn" href={show.ticketsUrl} target="_blank" rel="noopener">Billetterie</a>
+          )}
+          {!past && show.address && (
+            <a
+              class="btn btn-ghost"
+              href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(show.address)}`}
+              target="_blank"
+              rel="noopener"
+            >Y aller</a>
+          )}
+          {past && gallery && (
+            <a class="btn btn-ghost" href={`/photos/${show.slug}`}>
+              {gallery.photos.length} photo{gallery.photos.length > 1 ? 's' : ''}
+            </a>
+          )}
+        </div>
+      </article>
+    );
+  })}
+</div>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

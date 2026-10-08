@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShowList from '../components/ShowList.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { site, activeLinks } from '../data/site';
+import { upcoming, nextShow } from '../lib/shows';
+import { galleries, latestPhotos } from '../lib/photos';
+import { longDate, time } from '../lib/format';
+
+const nextThree = upcoming.slice(0, 3);
+const recent = latestPhotos(6);
+const recentGallery = galleries[0];
+const release = site.releases[0];
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="shell">
+      <h1 class="hero-name">{site.name}</h1>
+      <p class="hero-tagline">{site.tagline} · {site.city}</p>
+      <div class="hero-actions">
+        <a class="btn" href="/concerts">Les concerts</a>
+        <a class="btn btn-ghost" href="/ecouter">Écouter</a>
+      </div>
+
+      {nextShow && (
+        <div class="next-show">
+          <span class="label">Prochaine date</span>
+          <span class="what">{nextShow.venue}{nextShow.city && ` · ${nextShow.city}`}</span>
+          <span class="spacer"></span>
+          <span class="when">
+            {longDate(nextShow.startsAt)}{!nextShow.allDay && ` · ${time(nextShow.startsAt)}`}
+          </span>
+          {nextShow.ticketsUrl && (
+            <a class="btn" href={nextShow.ticketsUrl} target="_blank" rel="noopener">Billets</a>
+          )}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="shell">
+      <div class="section-head">
+        <h2>Prochains concerts</h2>
+        <a class="more" href="/concerts">Toutes les dates</a>
+      </div>
+      <ShowList shows={nextThree} empty="Pas de date annoncée pour l’instant. La prochaine tournée s’écrit en répétition." />
+    </div>
+  </section>
+
+  {release && (
+    <section class="block">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Dernière sortie</h2>
+          <a class="more" href="/ecouter">Toute la discographie</a>
+        </div>
+        <div class="release" style="border: 0; padding-top: 0;">
+          <div class="release-cover">{release.title}</div>
+          <div>
+            <p class="kind">{release.kind} · {release.year}</p>
+            <h3>{release.title}</h3>
+            {release.note && <p class="prose" style="margin-top: 0.75rem;">{release.note}</p>}
+            {release.links.filter((l) => l.url).length > 0 && (
+              <div class="links-row" style="margin-top: 1.5rem;">
+                {release.links.filter((l) => l.url).map((l) => (
+                  <a href={l.url} target="_blank" rel="noopener">{l.label}</a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {recent.length > 0 && recentGallery && (
+    <section class="block">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Sur scène</h2>
+          <a class="more" href="/photos">Toutes les photos</a>
+        </div>
+        <PhotoGrid
+          gallery={recentGallery.slug}
+          photos={recent.filter((p) => p.gallery === recentGallery.slug).map((p) => p.photo)}
+          altPrefix={`${site.name} en concert`}
+        />
+      </div>
+    </section>
+  )}
+
+  {activeLinks.length > 0 && (
+    <section class="block">
+      <div class="shell">
+        <div class="section-head"><h2>Nous suivre</h2></div>
+        <div class="links-row">
+          {activeLinks.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Lightbox />
+</BaseLayout>

@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.local
+.DS_Store
+
+# Données reconstruites à chaque build depuis l'agenda et le bucket photos.
+src/data/shows.json
+src/data/photos.json
+
+# Images de démonstration générées localement.
+public/demo/
+
+# Photos originales : elles ne doivent JAMAIS entrer dans Git.
+# L'historique Git est éternel et ne se purge pas : quelques centaines de
+# fichiers à 8 Mo rendraient le dépôt inutilisable pour toujours.
+# Les originaux restent ici en local, seuls les dérivés web partent sur R2.
+photos/*
+!photos/README.md
