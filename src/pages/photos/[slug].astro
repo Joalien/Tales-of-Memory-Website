@@ -3,12 +3,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { site } from '../../data/site';
-import { galleries } from '../../lib/photos';
+import { concertGalleries } from '../../lib/photos';
 import { showBySlug } from '../../lib/shows';
 import { longDate } from '../../lib/format';
 
 export function getStaticPaths() {
-  return galleries.map((gallery) => ({ params: { slug: gallery.slug }, props: { gallery } }));
+  return concertGalleries.map((gallery) => ({ params: { slug: gallery.slug }, props: { gallery } }));
 }
 
 const { gallery } = Astro.props;

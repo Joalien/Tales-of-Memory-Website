@@ -5,12 +5,12 @@ import PhotoGrid from '../components/PhotoGrid.astro';
 import Lightbox from '../components/Lightbox.astro';
 import { site, activeLinks } from '../data/site';
 import { upcoming, nextShow } from '../lib/shows';
-import { galleries, latestPhotos } from '../lib/photos';
+import { concertGalleries, latestPhotos } from '../lib/photos';
 import { longDate, time } from '../lib/format';
 
 const nextThree = upcoming.slice(0, 3);
 const recent = latestPhotos(6);
-const recentGallery = galleries[0];
+const recentGallery = concertGalleries[0];
 const release = site.releases[0];
 ---
 

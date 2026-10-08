@@ -18,3 +18,6 @@ public/demo/
 # Les originaux restent ici en local, seuls les dérivés web partent sur R2.
 photos/*
 !photos/README.md
+
+# Dérivés web fabriqués en local par `npm run photos`.
+public/media/

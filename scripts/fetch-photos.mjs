@@ -12,6 +12,7 @@ import path from 'node:path';
 
 const OUT = path.join('src', 'data', 'photos.json');
 const DEMO_ROOT = path.join('public', 'demo');
+const MEDIA_MANIFEST = path.join('public', 'media', 'manifest.json');
 const base = (process.env.PHOTOS_BASE_URL || '').trim().replace(/\/+$/, '');
 
 function write(payload, source) {
@@ -39,6 +40,17 @@ function fromDemo() {
 
 async function main() {
   if (!base) {
+    // Priorité aux photos réelles ingérées en local, sinon démonstration.
+    if (fs.existsSync(MEDIA_MANIFEST)) {
+      const local = JSON.parse(fs.readFileSync(MEDIA_MANIFEST, 'utf8'));
+      write({
+        generatedAt: new Date().toISOString(),
+        baseUrl: '/media',
+        widths: local.widths ?? [400, 800, 1600],
+        galleries: local.galleries ?? [],
+      }, 'photos locales ingérées');
+      return;
+    }
     write(fromDemo(), 'images de démonstration');
     return;
   }

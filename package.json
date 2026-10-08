@@ -9,7 +9,8 @@
     "build": "npm run data && astro build",
     "preview": "astro preview",
     "demo:images": "node scripts/make-demo-images.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs"
   },
   "dependencies": {
     "astro": "^7.3.7"

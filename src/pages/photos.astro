@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
-import { galleries, src } from '../lib/photos';
+import { concertGalleries, src } from '../lib/photos';
 import { showBySlug } from '../lib/shows';
 import { shortDate } from '../lib/format';
 
-const cards = galleries.map((gallery) => ({
+const cards = concertGalleries.map((gallery) => ({
   gallery,
   show: showBySlug(gallery.slug),
 }));
