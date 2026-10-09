@@ -18,11 +18,28 @@ export const booklet = (data.booklet ?? null) as Booklet;
 export const fullAlbum = (data.full ?? null) as { file: string; bytes: number } | null;
 export const tracks: Track[] = (data.tracks as Track[]) ?? [];
 
+/**
+ * Base publique des fichiers lourds.
+ *
+ * Vide, ils sont servis depuis le déploiement — pratique en local. Renseignée,
+ * ils viennent de R2, seul moyen de proposer l'album complet : Workers refuse
+ * tout fichier de plus de 25 Mio, et celui-ci en pèse 69.
+ *
+ * La pochette, elle, reste toujours dans le déploiement : elle est légère et
+ * c'est la première image affichée.
+ */
+const mediaBase = (import.meta.env.MEDIA_BASE_URL ?? '').trim().replace(/\/+$/, '');
+
+const mediaUrl = (relative: string) => {
+  const encoded = relative.split('/').map(encodeURIComponent).join('/');
+  return mediaBase ? `${mediaBase}/album/${encoded}` : `/album/${encoded}`;
+};
+
 export const coverSrc = (w: number) => `/album/cover/${w}.webp`;
 export const coverSrcset = () => (cover?.widths ?? []).map((w) => `${coverSrc(w)} ${w}w`).join(', ');
-export const trackSrc = (file: string) => `/album/audio/${encodeURIComponent(file)}`;
-export const bookletHref = booklet ? `/album/${booklet.file}` : null;
-export const fullAlbumHref = fullAlbum ? `/album/${encodeURIComponent(fullAlbum.file)}` : null;
+export const trackSrc = (file: string) => mediaUrl(`audio/${file}`);
+export const bookletHref = booklet ? mediaUrl(booklet.file) : null;
+export const fullAlbumHref = fullAlbum ? mediaUrl(fullAlbum.file) : null;
 
 /** Poids lisible, pour prévenir avant un téléchargement. */
 export function humanSize(bytes: number): string {

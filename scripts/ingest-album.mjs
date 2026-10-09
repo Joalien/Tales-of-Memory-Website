@@ -11,6 +11,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
+// Les scripts Node ne lisent pas .env tout seuls, contrairement à Astro.
+try { process.loadEnvFile(); } catch { /* pas de .env, rien à charger */ }
+
 const SRC = 'album';
 const OUT = path.join('public', 'album');
 const MANIFEST = path.join(OUT, 'manifest.json');
@@ -20,6 +23,12 @@ const COVER_WIDTHS = [400, 800, 1600];
 const COVER_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff', '.avif']);
 const AUDIO_EXT = new Set(['.mp3', '.m4a', '.ogg', '.opus']);
 const AUDIO_REFUSED = new Set(['.wav', '.flac', '.aiff', '.aif']);
+
+/**
+ * Quand MEDIA_BASE_URL est défini, les fichiers lourds vivent sur R2 : on les
+ * référence sans les recopier dans public/, qui part dans le déploiement.
+ */
+const remote = Boolean((process.env.MEDIA_BASE_URL || '').trim());
 
 const warnings = [];
 
@@ -62,11 +71,12 @@ async function buildCover() {
 }
 
 function copyIfNeeded(from, to) {
+  const size = fs.statSync(from).size;
+  if (remote) return size; // servi depuis R2, inutile de l'embarquer
   fs.mkdirSync(path.dirname(to), { recursive: true });
-  const src = fs.statSync(from);
-  if (fs.existsSync(to) && fs.statSync(to).size === src.size) return src.size;
+  if (fs.existsSync(to) && fs.statSync(to).size === size) return size;
   fs.copyFileSync(from, to);
-  return src.size;
+  return size;
 }
 
 function buildBooklet() {
@@ -122,9 +132,11 @@ function onlyPresent(manifest) {
   return {
     generatedAt: new Date().toISOString(),
     cover: coverOk ? manifest.cover : null,
-    booklet: manifest.booklet && fs.existsSync(path.join(OUT, manifest.booklet.file)) ? manifest.booklet : null,
-    full: manifest.full && fs.existsSync(path.join(OUT, manifest.full.file)) ? manifest.full : null,
-    tracks: (manifest.tracks ?? []).filter((t) => fs.existsSync(path.join(OUT, 'audio', t.file))),
+    // Sur R2 on fait confiance au manifeste ; en local on vérifie le disque,
+    // pour ne jamais publier de lien vers un fichier absent.
+    booklet: manifest.booklet && (remote || fs.existsSync(path.join(OUT, manifest.booklet.file))) ? manifest.booklet : null,
+    full: manifest.full && (remote || fs.existsSync(path.join(OUT, manifest.full.file))) ? manifest.full : null,
+    tracks: (manifest.tracks ?? []).filter((t) => remote || fs.existsSync(path.join(OUT, 'audio', t.file))),
   };
 }
 
@@ -153,7 +165,7 @@ const published = onlyPresent(manifest);
 // complet voyagent par le même tuyau.
 const audioBytes =
   (published.full?.bytes ?? 0) + published.tracks.reduce((n, t) => n + t.bytes, 0);
-if (audioBytes > 40 * 1024 * 1024) {
+if (!remote && audioBytes > 40 * 1024 * 1024) {
   warnings.push(
     `${(audioBytes / 1024 / 1024).toFixed(0)} Mo d'audio au total : à ce volume, mieux vaut le servir depuis R2 que depuis le déploiement`,
   );

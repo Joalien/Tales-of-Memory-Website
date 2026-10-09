@@ -13,7 +13,8 @@
     "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs",
     "test": "node scripts/test-ics.mjs",
     "photos:dirs": "node scripts/make-photo-dirs.mjs",
-    "album": "node scripts/ingest-album.mjs"
+    "album": "node scripts/ingest-album.mjs",
+    "album:push": "node scripts/push-album.mjs"
   },
   "dependencies": {
     "astro": "^7.3.7"
