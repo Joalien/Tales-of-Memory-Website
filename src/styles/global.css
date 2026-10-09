@@ -560,7 +560,26 @@ ul { margin: 0; padding: 0; list-style: none; }
   gap: 0.35rem 0.9rem;
   align-items: center;
   padding-block: 0.8rem;
+  /* Marge compensée : le fond de la piste en cours peut déborder sur les côtés
+     sans décaler l'alignement des numéros. */
+  padding-inline: 0.75rem;
+  margin-inline: -0.75rem;
+  transition: background 0.3s ease;
 }
+
+/* La lecture s'enchaîne toute seule : il faut pouvoir repérer d'un coup d'œil
+   quelle piste est en cours. */
+.tracklist-audio li.is-playing {
+  background: linear-gradient(90deg, var(--ember-glow), transparent 60%);
+  box-shadow: inset 3px 0 0 var(--ember);
+}
+.tracklist-audio li.is-playing .t-num { color: var(--ember); }
+.tracklist-audio li.is-playing .t-title { color: var(--ember-lift); }
+
+/* Repli : le navigateur a refusé l'enchaînement automatique, on désigne au
+   moins la piste à lancer plutôt que de laisser l'auditeur sans indice. */
+.tracklist-audio li.is-next .t-num { color: var(--ember); }
+.tracklist-audio li.is-next .t-num::after { content: ' ▸'; }
 .tracklist-audio .t-title {
   font-family: var(--font-display);
   font-size: var(--step-1);

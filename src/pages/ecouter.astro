@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AlbumChain from '../components/AlbumChain.astro';
 import { site, activeLinks } from '../data/site';
 import {
   cover, coverSrc, coverSrcset,
@@ -65,7 +66,7 @@ const hasAlbumFiles = Boolean(cover || tracks.length || booklet || fullAlbum);
                       <span class="t-num">{row.label}</span>
                       <span class="t-title">{row.title}</span>
                       {row.src && (
-                        <audio controls preload="none" src={row.src}>
+                        <audio controls preload="none" src={row.src} aria-label={`Écouter ${row.title}`}>
                           <a href={row.src}>Écouter {row.title}</a>
                         </audio>
                       )}
@@ -104,4 +105,5 @@ const hasAlbumFiles = Boolean(cover || tracks.length || booklet || fullAlbum);
       )}
     </div>
   </section>
+  <AlbumChain />
 </BaseLayout>

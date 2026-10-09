@@ -1,0 +1,57 @@
+---
+/**
+ * Enchaîne la lecture de l'album : à la fin d'une piste, la suivante démarre.
+ *
+ * Se greffe sur la liste rendue par la page Écouter, sans rien attendre du
+ * balisage au-delà de la structure existante.
+ */
+---
+
+<script>
+  const list = document.querySelector('.tracklist-audio');
+
+  if (list) {
+    // On apparie chaque ligne à son lecteur : une ligne sans audio (liste de
+    // secours) ne doit pas décaler les index.
+    const rows = Array.from(list.querySelectorAll('li'))
+      .map((li) => ({ li, audio: li.querySelector('audio') }))
+      .filter((row): row is { li: HTMLLIElement; audio: HTMLAudioElement } => row.audio !== null);
+
+    const clearMarks = () => {
+      for (const row of rows) row.li.classList.remove('is-playing', 'is-next');
+    };
+
+    rows.forEach((row, index) => {
+      row.audio.addEventListener('play', () => {
+        // Une seule piste à la fois : cliquer sur une autre arrête la courante.
+        for (const [other, candidate] of rows.entries()) {
+          if (other !== index && !candidate.audio.paused) candidate.audio.pause();
+        }
+        clearMarks();
+        row.li.classList.add('is-playing');
+
+        // La suivante est en preload="none" : on l'amorce dès maintenant pour
+        // que l'enchaînement ne laisse pas de blanc.
+        const next = rows[index + 1];
+        if (next && next.audio.preload !== 'auto') next.audio.preload = 'auto';
+      });
+
+      row.audio.addEventListener('pause', () => {
+        if (!row.audio.ended) row.li.classList.remove('is-playing');
+      });
+
+      row.audio.addEventListener('ended', () => {
+        clearMarks();
+        const next = rows[index + 1];
+        if (!next) return; // fin de l'album, on s'arrête
+
+        next.audio.currentTime = 0;
+        next.audio.play().catch(() => {
+          // Le navigateur peut refuser un démarrage automatique. Plutôt que
+          // d'échouer sans rien dire, on désigne la piste à lancer.
+          next.li.classList.add('is-next');
+        });
+      });
+    });
+  }
+</script>
