@@ -1,6 +1,89 @@
 {
-  "generatedAt": "2026-10-09T10:39:06.249Z",
-  "cover": null,
-  "booklet": null,
-  "tracks": []
+  "generatedAt": "2026-10-09T10:46:16.357Z",
+  "cover": {
+    "widths": [
+      400,
+      800,
+      1600
+    ],
+    "w": 1500,
+    "h": 1488,
+    "source": "pochette.jpg"
+  },
+  "booklet": {
+    "file": "jaquette.pdf",
+    "bytes": 4469175
+  },
+  "tracks": [
+    {
+      "n": 1,
+      "file": "01-Arx Memoriae.mp3",
+      "title": "Arx Memoriae",
+      "bytes": 3415091,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 2,
+      "file": "02-Arrow of Justice.mp3",
+      "title": "Arrow of Justice",
+      "bytes": 7422488,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 3,
+      "file": "03-Legend of the Seven Seas.mp3",
+      "title": "Legend of the Seven Seas",
+      "bytes": 8520266,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 4,
+      "file": "04-My Demons.mp3",
+      "title": "My Demons",
+      "bytes": 8113994,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 5,
+      "file": "05-One Thousand and One Nights.mp3",
+      "title": "One Thousand and One Nights",
+      "bytes": 6865777,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 6,
+      "file": "06-Candlelight.mp3",
+      "title": "Candlelight",
+      "bytes": 7616834,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 7,
+      "file": "07-Letter.mp3",
+      "title": "Letter",
+      "bytes": 6998667,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 8,
+      "file": "08-Burgundy's Fight.mp3",
+      "title": "Burgundy's Fight",
+      "bytes": 9387314,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 9,
+      "file": "09-Orléans.mp3",
+      "title": "Orléans",
+      "bytes": 7441915,
+      "type": "audio/mpeg"
+    },
+    {
+      "n": 10,
+      "file": "10-Last Hope.mp3",
+      "title": "Last Hope",
+      "bytes": 6627523,
+      "type": "audio/mpeg"
+    }
+  ]
 }

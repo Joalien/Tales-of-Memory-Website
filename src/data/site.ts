@@ -68,15 +68,28 @@ export const site = {
   /** Sorties, de la plus récente à la plus ancienne. */
   releases: [
     {
-      title: 'Titre de l’EP',                          // À REMPLACER
-      year: 2022,
-      kind: 'EP',
-      note: 'Cinq titres enregistrés en deux semaines.',
+      title: 'Forgotten Chapters',
+      year: 2026,
+      kind: 'Album',
+      note: 'Dix titres, cinquante minutes. Produit et édité indépendamment.',
       links: [
         { label: 'Bandcamp', url: '' },
         { label: 'Spotify', url: '' },
       ],
-      tracks: ['Premier titre', 'Deuxième titre', 'Troisième titre', 'Quatrième titre', 'Cinquième titre'],
+      // Repris du verso de la jaquette. Sert de secours : quand des fichiers
+      // audio sont déposés, la liste affichée vient de leurs noms de fichiers.
+      tracks: [
+        'Arx Memoriae',
+        'Arrow of Justice',
+        'Legend of the Seven Seas',
+        'My Demons',
+        'One Thousand and One Nights',
+        'Candlelight',
+        'Letter',
+        'Burgundy’s Fight',
+        'Orléans',
+        'Last Hope',
+      ],
     },
   ],
 } as const;
