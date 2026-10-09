@@ -50,3 +50,6 @@ src/data/album.json
 # jamais partir dans Git : l'historique ne se purge pas, et un secret poussé
 # une fois est un secret à révoquer.
 .secrets/
+
+# Environnement Python pour l'API Google (recréable, ~40 Mo).
+.venv-google/
