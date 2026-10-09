@@ -85,8 +85,98 @@ export const site = {
     { label: 'TikTok', icon: 'tiktok', url: 'https://www.tiktok.com/@tales_of_memory' },
   ],
 
-  /** Boutique externe : Bandcamp, BigCartel… Vide = onglet masqué. */
-  shop: { label: 'Boutique', url: '' },
+  /**
+   * La boutique qui encaisse réellement.
+   *
+   * Le site est statique : il ne peut pas prendre un paiement. C'est donc une
+   * plateforme tierce qui tient la caisse, le port et la TVA, et la page
+   * /merch n'en est que la vitrine.
+   *
+   * `label` nomme l'onglet dans le bandeau comme dans le pied de page : il n'y
+   * a qu'ici à le changer pour écrire « Boutique » ou « Merchandising ».
+   *
+   * `url` vide ne casse rien : la page reste en ligne et annonce la vente aux
+   * concerts. Le jour où la boutique ouvre, cette seule ligne fait apparaître
+   * les boutons de commande sur tous les articles qui n'ont pas de lien propre.
+   */
+  shop: {
+    label: 'Merch',
+    url: '',
+    /** Nom de la plateforme, dit sur le bouton pour qu'on sache où l'on va. */
+    platform: '',
+  },
+
+  /**
+   * Les articles, dans l'ordre d'affichage.
+   *
+   * `photo` est le nom du fichier déposé dans `photos/merch/`, sans son
+   * extension : `photos/merch/tshirt-logo.jpg` s'écrit `photo: 'tshirt-logo'`.
+   * Comme pour les portraits de la page bio, c'est le nom du fichier qui fait
+   * le rattachement et non l'ordre de la liste ; un visuel absent affiche un
+   * cadre d'attente sans décaler les autres articles.
+   *
+   * `album: true` reprend la pochette déjà dérivée dans `public/album/cover/`,
+   * au lieu de redemander une image pour un visuel que le site possède déjà.
+   *
+   * `url` est le lien d'achat propre à l'article, utile quand la plateforme
+   * donne une adresse par produit. Laissé vide, l'article renvoie vers
+   * `shop.url` ; si celle-ci est vide aussi, il s'affiche sans bouton et la
+   * page explique comment l'acheter.
+   */
+  merch: [
+    {
+      name: 'Forgotten Chapters',
+      kind: 'CD',
+      price: '12 €',
+      text:
+        'L’album en disque, dix titres et son livret illustré. ' +
+        'La version physique contient les textes complets.',   // À REMPLACER
+      photo: '',
+      album: true,
+      sizes: [],
+      url: '',
+    },
+    {
+      name: 'T-shirt logo',
+      kind: 'T-shirt',
+      price: '20 €',                                           // À REMPLACER
+      text: 'Coton épais, impression sur l’avant. Coupe droite.', // À REMPLACER
+      photo: 'tshirt-logo',
+      album: false,
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],                     // À REMPLACER
+      url: '',
+    },
+    {
+      name: 'T-shirt Forgotten Chapters',
+      kind: 'T-shirt',
+      price: '22 €',                                           // À REMPLACER
+      text: 'La pochette de l’album à l’avant, les dates de tournée au dos.', // À REMPLACER
+      photo: 'tshirt-album',
+      album: false,
+      sizes: ['S', 'M', 'L', 'XL'],                            // À REMPLACER
+      url: '',
+    },
+    {
+      name: 'Tote bag',
+      kind: 'Accessoire',
+      price: '12 €',                                           // À REMPLACER
+      text: 'Toile écrue, logo sérigraphié.',                  // À REMPLACER
+      photo: 'tote-bag',
+      album: false,
+      sizes: [],
+      url: '',
+    },
+    {
+      name: 'Poster',
+      kind: 'Affiche',
+      price: '8 €',                                            // À REMPLACER
+      text: 'Visuel de l’album, 40 × 60 cm, papier mat.',       // À REMPLACER
+      photo: 'poster',
+      album: false,
+      sizes: [],
+      url: '',
+    },
+  ],
 
   /**
    * Calendrier « Concerts » du groupe, rendu public.
@@ -133,9 +223,18 @@ export type SiteLink = { label: string; url: string; icon: string };
 /** Ne garde que les liens réellement renseignés. */
 export const activeLinks: SiteLink[] = site.links.filter((l) => l.url.trim().length > 0);
 
+/**
+ * Le bandeau de navigation.
+ *
+ * L'onglet de la boutique reprend `site.shop.label` : le mot se change à un
+ * seul endroit, et il reste le même dans le bandeau et dans le pied de page.
+ * Il est placé après « Écouter », là où le visiteur arrive quand la musique lui
+ * a plu.
+ */
 export const nav = [
   { label: 'Concerts', href: '/concerts' },
   { label: 'Écouter', href: '/ecouter' },
+  { label: site.shop.label, href: '/merch' },
   { label: 'Bio', href: '/bio' },
   { label: 'Contact', href: '/contact' },
 ];

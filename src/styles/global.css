@@ -212,7 +212,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .nav a:hover { color: var(--bone); }
 .nav a[aria-current='page'] { color: var(--bone); border-bottom-color: var(--ember); }
-.nav a.external { color: var(--ember); }
 
 /* --- Hero ----------------------------------------------------------------- */
 
@@ -1036,6 +1035,128 @@ ul { margin: 0; padding: 0; list-style: none; }
   .links-row a.btn-gold::after { display: none; }
   .links-row a.btn-gold:hover { transform: none; }
 }
+
+/* --- Boutique -------------------------------------------------------------
+   Une grille de fiches carrées. La hauteur est portée par la fiche la plus
+   bavarde, et chaque prix est poussé en bas de la sienne : d'une colonne à
+   l'autre les prix s'alignent, sans quoi la grille paraîtrait désordonnée.
+   -------------------------------------------------------------------------- */
+
+.merch-grid {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.merch-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  background: var(--ink-raise);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.merch-card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .merch-card:hover { transform: none; }
+}
+
+/* Carré pour tout le monde : un tee-shirt photographié en portrait et un CD
+   carré doivent occuper la même place, sinon la grille ondule. */
+.merch-art {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: var(--ink-sink);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Même encombrement que le visuel, pour qu'un article sans photo ne décale
+   pas les autres. Reprend le fond des pochettes absentes de la page Écouter. */
+.merch-waiting {
+  aspect-ratio: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(120% 120% at 30% 10%, var(--ember-glow), transparent 60%),
+    linear-gradient(160deg, var(--ink-raise), var(--ink-sink));
+  font-family: var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  font-size: var(--step--1);
+}
+
+.merch-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.1rem 1.2rem 1.3rem;
+}
+.merch-body .kind {
+  font-size: var(--step--1);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin: 0 0 0.4rem;
+}
+.merch-body h3 {
+  font-size: var(--step-1);
+  margin: 0;
+}
+.merch-text {
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+  margin: 0.6rem 0 0;
+}
+
+.merch-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0;
+}
+.merch-sizes-label {
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-right: 0.2rem;
+}
+.merch-size {
+  font-size: var(--step--1);
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--line);
+  color: var(--bone-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* `margin-top: auto` colle le prix au bas de la fiche : c'est ce qui aligne
+   les prix d'une colonne à l'autre malgré des descriptions inégales. */
+.merch-buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.1rem;
+}
+.merch-price {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--bone);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.merch-buy .links-row { margin: 0; }
 
 .contact-main {
   margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);

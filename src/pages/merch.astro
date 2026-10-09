@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { items, shopOpen, shopUrl, shopPlatform } from '../lib/merch';
+
+/**
+ * La vitrine. Le site est statique et n'encaisse rien : l'achat se fait sur la
+ * plateforme externe, ou de la main à la main sur un concert.
+ *
+ * Tant qu'aucune boutique n'est ouverte, la page ne promet pas un bouton qui
+ * n'existe pas : elle dit où trouver les articles.
+ */
+---
+
+<BaseLayout
+  title={site.shop.label}
+  description={`Les disques et le merchandising de ${site.name}.`}
+>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">{shopOpen ? 'Boutique' : 'En vente aux concerts'}</p>
+      <div class="section-head"><h2>{site.shop.label}</h2></div>
+
+      <p class="prose">
+        {shopOpen ? (
+          <>
+            Les commandes passent par {shopPlatform}, qui s’occupe du paiement et de
+            l’expédition. Tout est aussi en vente au stand les soirs de concert.
+          </>
+        ) : (
+          <>
+            Les articles sont en vente au stand les soirs de concert. Pour une
+            commande à distance, écrivez-nous à
+            {' '}<a href={`mailto:${site.email}`}>{site.email}</a> : on vous dit ce
+            qui reste en stock et comment on vous l’envoie.
+          </>
+        )}
+      </p>
+
+      {items.length === 0 && <p class="empty">Les premiers articles arrivent bientôt.</p>}
+
+      <ul class="merch-grid">
+        {items.map((item) => (
+          <li class="merch-card">
+            {item.image ? (
+              <img
+                class="merch-art"
+                src={item.image.src}
+                srcset={item.image.srcset}
+                sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 94vw"
+                width={item.image.w}
+                height={item.image.h}
+                loading="lazy"
+                decoding="async"
+                alt={item.name}
+              />
+            ) : (
+              <div class="merch-waiting" aria-hidden="true"><span>Visuel à venir</span></div>
+            )}
+
+            <div class="merch-body">
+              <p class="kind">{item.kind}</p>
+              <h3>{item.name}</h3>
+              {item.text && <p class="merch-text">{item.text}</p>}
+
+              {item.sizes.length > 0 && (
+                <p class="merch-sizes">
+                  <span class="merch-sizes-label">Tailles</span>
+                  {item.sizes.map((size) => <span class="merch-size">{size}</span>)}
+                </p>
+              )}
+
+              {/* Le prix et le bouton restent collés en bas de la fiche :
+                  d'une carte à l'autre ils se lisent sur la même ligne, même
+                  quand les descriptions n'ont pas la même longueur. */}
+              <div class="merch-buy">
+                {item.price && <p class="merch-price">{item.price}</p>}
+                {item.href && (
+                  <div class="links-row">
+                    <a href={item.href} target="_blank" rel="noopener">Commander</a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {shopOpen && (
+        <div class="links-row" style="margin-top: var(--block);">
+          <a href={shopUrl} target="_blank" rel="noopener">Voir toute la boutique sur {shopPlatform}</a>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

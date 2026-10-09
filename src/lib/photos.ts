@@ -1,7 +1,7 @@
 import data from '../data/photos.json';
 
 export type Photo = { id: string; w: number; h: number; credit?: string; source?: string };
-export type GalleryKind = 'concert' | 'press' | 'band' | 'member' | 'unsorted';
+export type GalleryKind = 'concert' | 'press' | 'band' | 'member' | 'merch' | 'unsorted';
 export type Gallery = { slug: string; cover: string; photos: Photo[]; kind?: GalleryKind };
 
 export const baseUrl: string = data.baseUrl;
@@ -26,18 +26,28 @@ export const pressPhotos: Gallery | undefined = galleries.find((g) => g.kind ===
 /** Portraits des membres, un fichier par personne. */
 export const memberPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'member');
 
-/**
- * Le portrait d'un membre, retrouvé par le nom de son fichier source.
- *
- * Le rattachement passe par le nom du fichier déposé dans `photos/membres/` et
- * non par l'ordre de la liste : un portrait absent rend `undefined` et la page
- * bio affiche un cadre d'attente, sans décaler les autres membres.
- */
-export function memberPhoto(name: string): { gallery: string; photo: Photo } | undefined {
-  const wanted = name.trim().toLowerCase();
-  if (!wanted || !memberPhotos) return undefined;
+/** Visuels des articles de la boutique, un fichier par article. */
+export const merchPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'merch');
 
-  const found = memberPhotos.photos.filter(
+/**
+ * Une photo d'une galerie, retrouvée par le nom de son fichier source.
+ *
+ * Le rattachement passe par le nom du fichier déposé et non par l'ordre de la
+ * liste : renommer un fichier suffit à corriger une erreur, et une photo
+ * absente rend `undefined` plutôt que de décaler les suivantes.
+ *
+ * `quoi` ne sert qu'à nommer la source dans l'avertissement, pour que le
+ * message dise quel dossier ranger.
+ */
+function photoNamed(
+  gallery: Gallery | undefined,
+  name: string,
+  quoi: { sujet: string; dossier: string },
+): { gallery: string; photo: Photo } | undefined {
+  const wanted = name.trim().toLowerCase();
+  if (!wanted || !gallery) return undefined;
+
+  const found = gallery.photos.filter(
     (p) => (p.source ?? '').toLowerCase().replace(/\.[^.]+$/, '') === wanted,
   );
   // Deux fichiers de même nom et d'extensions différentes se disputeraient la
@@ -45,10 +55,28 @@ export function memberPhoto(name: string): { gallery: string; photo: Photo } | u
   // le dire à la construction que de laisser une photo changer toute seule.
   if (found.length > 1) {
     const noms = found.map((p) => p.source).join(', ');
-    console.warn(`[membres] « ${name} » a ${found.length} portraits (${noms}) ; ${found[0].source} est retenu. Supprime les autres de photos/membres/.`);
+    console.warn(`[${quoi.sujet}] « ${name} » a ${found.length} images (${noms}) ; ${found[0].source} est retenu. Supprime les autres de ${quoi.dossier}.`);
   }
-  return found[0] ? { gallery: memberPhotos.slug, photo: found[0] } : undefined;
+  return found[0] ? { gallery: gallery.slug, photo: found[0] } : undefined;
 }
+
+/**
+ * Le portrait d'un membre, retrouvé par le nom de son fichier source.
+ *
+ * Un portrait absent rend `undefined` et la page bio affiche un cadre
+ * d'attente, sans décaler les autres membres.
+ */
+export const memberPhoto = (name: string) =>
+  photoNamed(memberPhotos, name, { sujet: 'membres', dossier: 'photos/membres/' });
+
+/**
+ * Le visuel d'un article, retrouvé par le nom de son fichier source.
+ *
+ * Même règle que pour les portraits : un visuel absent rend `undefined` et la
+ * page boutique affiche un cadre d'attente à sa place.
+ */
+export const merchPhoto = (name: string) =>
+  photoNamed(merchPhotos, name, { sujet: 'merch', dossier: 'photos/merch/' });
 
 export const galleryFor = (showSlug: string) => concertGalleries.find((g) => g.slug === showSlug);
 

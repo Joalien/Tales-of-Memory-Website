@@ -9,12 +9,12 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   <div class="shell">
     <a class="brand" href="/">{site.name}</a>
     <nav class="nav" aria-label="Navigation principale">
+      {/* La boutique est un onglet de `nav` comme les autres, et non un lien
+          sortant : le visiteur voit d'abord les articles sur le site, et ne
+          quitte celui-ci qu'au moment de commander. */}
       {nav.map((item) => (
         <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
       ))}
-      {site.shop.url && (
-        <a class="external" href={site.shop.url} target="_blank" rel="noopener">{site.shop.label}</a>
-      )}
     </nav>
   </div>
 </header>

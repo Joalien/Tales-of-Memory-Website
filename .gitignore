@@ -18,12 +18,18 @@ public/demo/
 # Les originaux restent ici en local, seuls les dérivés web partent sur R2.
 photos/*
 !photos/README.md
+# Le mode d'emploi des visuels de boutique, lui, est suivi.
+!photos/merch/
+photos/merch/*
+!photos/merch/README.md
 
 # Dérivés web fabriqués en local par `npm run photos`.
 #
-# Exception assumée : les photos de PRESSE et les PORTRAITS des membres sont
-# versionnés. Ils sont peu nombreux, changent une fois par an, et le bandeau
-# d'accueil comme la page bio doivent fonctionner même sans bucket R2.
+# Exception assumée : les photos de PRESSE, les PORTRAITS des membres et les
+# VISUELS DE LA BOUTIQUE sont versionnés. Ils sont peu nombreux, changent une
+# fois par an, et le bandeau d'accueil, la page bio comme la page merch doivent
+# fonctionner même sans bucket R2 — une boutique dont les articles n'ont pas
+# d'image ne vend rien.
 #
 # Les dérivés de CONCERT restent exclus : c'est le volume qui grossit sans
 # cesse, et l'historique Git ne se purge pas. Ils passeront par R2.
@@ -33,6 +39,7 @@ public/media/*
 !public/media/manifest.json
 !public/media/presse/
 !public/media/membres/
+!public/media/merch/
 
 # Sources de l'album : pochette pleine résolution, livret, pistes audio.
 album/*

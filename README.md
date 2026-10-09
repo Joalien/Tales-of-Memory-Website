@@ -11,6 +11,7 @@ Node ne sert qu'à la construction, jamais à l'exécution.
 | Dates de concert | tout le groupe | Google Agenda « Concerts » |
 | Photos de concert | tout le groupe | page `/envoyer` du site *(phase 2)* |
 | Textes, bio, membres, liens | administrateur | `src/data/site.ts` |
+| Articles de la boutique | administrateur | `src/data/site.ts` + `photos/merch/` |
 | Identité visuelle | administrateur | `src/styles/global.css` |
 
 Le groupe ne peut rien casser : il ajoute du contenu, il ne touche ni au gabarit
@@ -78,6 +79,29 @@ Conséquence : **aucune clé R2 n'intervient dans la chaîne de déploiement.**
 Une photo supprimée depuis le site part dans une corbeille du bucket et reste
 restaurable 30 jours avant purge automatique.
 
+## La boutique
+
+Le site est statique : **il ne peut pas encaisser un paiement.** La page
+`/merch` est une vitrine, l'argent passe par une plateforme tierce qui tient la
+caisse, le port et la TVA.
+
+Les articles se décrivent dans `merch` (`src/data/site.ts`), un objet par
+article. Leurs visuels se déposent dans `photos/merch/`, nommés d'après la
+valeur `photo` de l'article : c'est le nom du fichier qui fait le rattachement,
+comme pour les portraits des membres. Le CD fait exception, il porte
+`album: true` et reprend la pochette déjà dérivée.
+
+Trois états, sans aucune bascule à actionner :
+
+| `shop.url` | `url` de l'article | Ce que voit le visiteur |
+| --- | --- | --- |
+| vide | vide | La fiche, sans bouton, et l'adresse mail pour commander |
+| renseignée | vide | Un bouton « Commander » vers l'accueil de la boutique |
+| renseignée | renseignée | Un bouton « Commander » vers la fiche produit |
+
+Tant que `shop.url` est vide, la page annonce la vente au stand les soirs de
+concert : elle ne promet jamais un bouton qui n'existe pas.
+
 ## Configuration
 
 Copier `.env.example` vers `.env` et renseigner :
@@ -96,7 +120,7 @@ dates.
 
 ```
 src/
-├── data/site.ts        contenu éditorial (textes, membres, liens, sorties)
+├── data/site.ts        contenu éditorial (textes, membres, liens, sorties, merch)
 ├── lib/                accès aux données et mise en forme des dates
 ├── layouts/            gabarit commun, métadonnées, données structurées
 ├── components/         en-tête, pied de page, liste de concerts, galerie

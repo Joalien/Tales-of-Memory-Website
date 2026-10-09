@@ -57,6 +57,11 @@ function collectSources() {
   if (fs.existsSync(path.join(SRC_ROOT, 'membres'))) {
     groups.push({ slug: 'membres', kind: 'member', files: listImages(path.join(SRC_ROOT, 'membres')) });
   }
+  // Un visuel par article, nommé d'après la valeur `photo` de l'article dans
+  // src/data/site.ts. Même règle de rattachement que les portraits.
+  if (fs.existsSync(path.join(SRC_ROOT, 'merch'))) {
+    groups.push({ slug: 'merch', kind: 'merch', files: listImages(path.join(SRC_ROOT, 'merch')) });
+  }
   const loose = listImages(SRC_ROOT).filter((f) => path.basename(f).toLowerCase() !== 'readme.md');
   if (loose.length) groups.push({ slug: 'non-classees', kind: 'unsorted', files: loose });
   return groups;
