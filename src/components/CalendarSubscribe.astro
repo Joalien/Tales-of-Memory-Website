@@ -1,0 +1,37 @@
+---
+/**
+ * Bouton d'abonnement à l'agenda des concerts.
+ *
+ * Trois voies plutôt qu'une : un lien unique vers Google n'ouvrirait rien chez
+ * les utilisateurs d'Apple Calendar ou d'Outlook, ce qui serait pire que pas
+ * de bouton du tout. Le dépliant est en HTML natif, sans JavaScript.
+ */
+import { site } from '../data/site';
+
+const id = site.publicCalendarId;
+const chemin = `calendar.google.com/calendar/ical/${encodeURIComponent(id)}/public/basic.ics`;
+
+const liens = {
+  google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(id)}`,
+  // webcal:// est le protocole reconnu par Apple Calendar, Outlook et
+  // Thunderbird pour un abonnement, là où https déclencherait un téléchargement.
+  webcal: `webcal://${chemin}`,
+  flux: `https://${chemin}`,
+};
+---
+
+{id && (
+  <details class="subscribe">
+    <summary>S’abonner à l’agenda</summary>
+    <div class="subscribe-body">
+      <p class="prose">
+        Les nouvelles dates apparaîtront toutes seules dans votre agenda, dès qu’elles sont annoncées.
+      </p>
+      <div class="links-row">
+        <a href={liens.google} target="_blank" rel="noopener">Google Agenda</a>
+        <a href={liens.webcal}>Apple Calendar, Outlook…</a>
+        <a href={liens.flux} target="_blank" rel="noopener">Adresse du flux</a>
+      </div>
+    </div>
+  </details>
+)}

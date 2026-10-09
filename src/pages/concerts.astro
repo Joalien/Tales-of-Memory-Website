@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShowList from '../components/ShowList.astro';
+import CalendarSubscribe from '../components/CalendarSubscribe.astro';
 import { site } from '../data/site';
 import { upcoming, past, generatedAt } from '../lib/shows';
 import { shortDate, time } from '../lib/format';
@@ -41,14 +42,13 @@ const jsonLd = upcoming.length
       <p class="eyebrow">Agenda</p>
       <div class="section-head">
         <h2>Prochaines dates</h2>
-        {site.publicCalendarUrl && (
-          <a class="more" href={site.publicCalendarUrl}>Ajouter nos dates à votre agenda</a>
-        )}
       </div>
       <ShowList
         shows={upcoming}
         empty="Pas de date annoncée pour l’instant. Pour nous programmer, écrivez-nous."
       />
+
+      <CalendarSubscribe />
 
       {upcoming.length === 0 && (
         <p style="margin-top: 1.75rem;">

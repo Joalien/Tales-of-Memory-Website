@@ -67,10 +67,13 @@ export const site = {
   shop: { label: 'Boutique', url: '' },
 
   /**
-   * Flux public du calendrier « Concerts », pour le bouton d’abonnement des
-   * fans. À ne pas confondre avec CALENDAR_ICS_URL qui est l’adresse secrète.
+   * Calendrier « Concerts » du groupe, rendu public.
+   *
+   * Sert au bouton d’abonnement : un abonné reçoit les nouvelles dates
+   * immédiatement, sans attendre une reconstruction du site. Vide = bouton
+   * masqué.
    */
-  publicCalendarUrl: '/concerts.ics',
+  publicCalendarId: '24756feb85859e5108698cc64191491fc19929d63ce90334a4d9487f78a9ce9b@group.calendar.google.com',
 
   /** Sorties, de la plus récente à la plus ancienne. */
   releases: [
