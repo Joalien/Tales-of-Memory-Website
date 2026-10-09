@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { shortDate } from '../lib/format';
+
+/**
+ * ATTENTION — TEXTE JURIDIQUE RELU PAR AUCUN JURISTE. C'est une base de
+ * travail, à faire valider avant l'ouverture de la boutique. Ne le présente
+ * nulle part comme validé.
+ *
+ * Le gabarit ne porte aucune donnée : noms, adresses et numéros vivent dans
+ * `legal` (src/data/site.ts), comme tout le reste du contenu éditorial.
+ */
+
+const { editor, publisher, host, updated } = site.legal;
+
+/**
+ * L'identité de l'éditeur, dans l'ordre d'affichage.
+ *
+ * Les lignes vides sont retirées plutôt qu'affichées à blanc : une rubrique
+ * « Téléphone : » sans numéro ne renseigne personne et donne l'air d'un texte
+ * inachevé, alors que son absence ne manque à personne.
+ */
+const identite = [
+  { label: 'Dénomination', value: editor.name },
+  { label: 'Forme juridique', value: editor.form },
+  { label: 'Siège social', value: editor.address },
+  { label: 'Numéro RNA', value: editor.rna },
+  { label: 'Numéro SIRET', value: editor.siret },
+  { label: 'Représentant légal', value: editor.representative },
+  { label: 'Téléphone', value: editor.phone },
+].filter((ligne) => ligne.value.trim().length > 0);
+---
+
+<BaseLayout
+  title="Mentions légales"
+  description={`Éditeur, hébergeur, propriété intellectuelle et données personnelles du site de ${site.name}.`}
+>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Informations légales</p>
+      <div class="section-head"><h2>Mentions légales</h2></div>
+
+      <div class="legal-doc prose">
+        <section>
+          <h3>Éditeur du site</h3>
+          {identite.map((ligne) => (
+            <p class="legal-line"><strong>{ligne.label}</strong>{ligne.value}</p>
+          ))}
+          <p class="legal-line">
+            <strong>Courrier électronique</strong>
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+          </p>
+        </section>
+
+        <section>
+          <h3>Directeur de la publication</h3>
+          <p>{publisher}</p>
+        </section>
+
+        <section>
+          <h3>Hébergeur</h3>
+          <p>
+            Le site est hébergé par <strong>{host.name}</strong>, {host.address}.
+            {host.phone && <> Téléphone : {host.phone}.</>}
+            {host.url && <> Site : <a href={host.url} target="_blank" rel="noopener">{host.url}</a>.</>}
+          </p>
+        </section>
+
+        <section>
+          <h3>Propriété intellectuelle</h3>
+          <p>
+            Les textes, les photographies, les visuels, le nom {site.name}, son emblème, les
+            compositions et les enregistrements présentés sur ce site sont protégés par le droit
+            d’auteur et le droit des producteurs (articles L111-1 et suivants du code de la
+            propriété intellectuelle). Les membres du groupe et, le cas échéant, les
+            photographes en conservent la titularité.
+          </p>
+          <p>
+            Toute reproduction, représentation ou réutilisation, totale ou partielle, suppose une
+            autorisation écrite préalable — à l’exception des courtes citations et des usages que
+            la loi permet sans accord.
+          </p>
+          <p>
+            Les photographies sont créditées lorsque l’auteur en est connu. Un crédit absent ne
+            rend pas une image libre de droits. Pour illustrer un article consacré au groupe,
+            écrivez-nous : nous indiquons les fichiers utilisables et le crédit à porter.
+          </p>
+        </section>
+
+        <section>
+          <h3>Données personnelles</h3>
+          <p>
+            Ce site ne comporte aucun formulaire, aucun compte et aucune inscription : il ne
+            collecte donc directement aucune donnée vous concernant.
+          </p>
+          <p>
+            Si vous nous écrivez à <a href={`mailto:${site.email}`}>{site.email}</a>, votre adresse
+            et le contenu de votre message sont traités dans le seul but de vous répondre, sur la
+            base de votre démarche. Ils sont conservés le temps nécessaire à l’échange, puis à des
+            fins de preuve en cas de commande, et ne sont ni vendus ni transmis à des fins
+            publicitaires. Le responsable du traitement est l’éditeur désigné ci-dessus.
+          </p>
+          <p>
+            L’hébergeur est une société américaine. Consulter le site suppose donc l’acheminement
+            de données techniques — adresse IP, page demandée, type de navigateur — par un réseau
+            qui comporte des serveurs situés hors de l’Union européenne. Ces données servent à
+            servir les pages et à protéger le site contre les attaques.
+          </p>
+          <p>
+            Conformément au règlement (UE) 2016/679 et à la loi n° 78-17 du 6 janvier 1978, vous
+            disposez des droits suivants sur vos données :
+          </p>
+          <ul>
+            <li>y accéder et en obtenir une copie ;</li>
+            <li>les faire rectifier si elles sont inexactes ;</li>
+            <li>les faire effacer ;</li>
+            <li>en limiter le traitement ;</li>
+            <li>vous opposer à leur traitement ;</li>
+            <li>en recevoir la portabilité.</li>
+          </ul>
+          <p>
+            Ces droits s’exercent par courrier électronique à
+            {' '}<a href={`mailto:${site.email}`}>{site.email}</a>. Si la réponse ne vous satisfait
+            pas, vous pouvez saisir la Commission nationale de l’informatique et des libertés —
+            3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07,
+            {' '}<a href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a>.
+          </p>
+        </section>
+
+        <section>
+          <h3>Cookies et traceurs</h3>
+          <p>
+            <strong>Ce site ne dépose aucun cookie et n’utilise aucun traceur.</strong> Il n’y a ni
+            mesure d’audience, ni bouton de partage embarqué, ni police de caractères chargée
+            depuis un service tiers : les pages sont du HTML, des feuilles de style et des images,
+            servies sans script de suivi. C’est la raison pour laquelle aucune bannière de
+            consentement ne vous est présentée — il n’y a rien à accepter ni à refuser.
+          </p>
+          <p>
+            Les logos des plateformes sont intégrés aux pages à la construction du site : les
+            afficher ne déclenche aucune requête vers ces plateformes. Les liens vers Instagram,
+            YouTube, Spotify et les autres ne sont que des liens ; rien n’est chargé chez elles
+            tant que vous ne cliquez pas. Une fois sur leur site, leurs propres règles
+            s’appliquent, et nous n’avons la maîtrise ni de leur contenu ni de leurs traceurs.
+          </p>
+        </section>
+
+        <p class="legal-updated">Dernière mise à jour : {shortDate(updated)}.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

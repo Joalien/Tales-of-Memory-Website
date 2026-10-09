@@ -1,5 +1,5 @@
 ---
-import { site, nav, activeLinks } from '../data/site';
+import { site, nav, legalNav, activeLinks } from '../data/site';
 import SocialLinks from './SocialLinks.astro';
 ---
 
@@ -36,8 +36,14 @@ import SocialLinks from './SocialLinks.astro';
       </div>
     </div>
 
+    {/* Les pages légales tiennent sur la ligne de copyright, et nulle part
+        ailleurs : c'est là qu'un visiteur les cherche, et les mettre dans la
+        colonne « Le site » les ferait passer pour du contenu à lire. */}
     <p class="legal">
       © {new Date().getFullYear()} {site.name}
+      {legalNav.map((item) => (
+        <>{' · '}<a href={item.href}>{item.label}</a></>
+      ))}
     </p>
   </div>
 </footer>

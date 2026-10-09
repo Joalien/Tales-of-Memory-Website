@@ -1325,3 +1325,49 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .site-footer a[href^='mailto:']:hover { border-bottom-color: var(--ember); }
 .site-footer .legal { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+
+/* Même raison que pour l'adresse e-mail juste au-dessus : les liens des
+   colonnes se devinent parce qu'ils sont rangés sous un intitulé, alors que
+   ceux-ci sont noyés dans la ligne de copyright. */
+.site-footer .legal a { border-bottom: 1px solid var(--line-strong); padding-bottom: 1px; }
+.site-footer .legal a:hover { border-bottom-color: var(--ember); }
+
+/* --- Pages légales (mentions légales, conditions de vente) ---------------- */
+
+/* Un texte juridique est une longue suite de sections courtes. Ses titres ont
+   besoin d'air au-dessus d'eux, que les h3 des autres pages tirent de la carte
+   ou de la grille qui les porte. */
+.legal-doc section + section { margin-top: clamp(2.25rem, 5vw, 3.25rem); }
+.legal-doc h3 { font-size: var(--step-1); color: var(--bone); margin-bottom: 0.9rem; }
+.legal-doc h4 { font-size: var(--step-0); color: var(--bone); margin: 1.75rem 0 0.75rem; }
+
+/* Les puces sont retirées de toutes les listes du site, qui sont des listes de
+   navigation ou de cartes. Un texte juridique, lui, énumère des droits et des
+   exceptions : sans marqueur, l'énumération se lit comme un paragraphe haché
+   et on ne voit plus où s'arrête un cas. */
+.legal-doc ul { list-style: disc; padding-left: 1.3em; margin: 0 0 1.1em; }
+.legal-doc li { margin-bottom: 0.45em; }
+
+/* L'identité du vendeur et les conditions de livraison se lisent comme un
+   tableau : l'intitulé tient sa colonne pour qu'on retrouve le SIRET d'un coup
+   d'œil au milieu de six lignes. Il repasse au-dessus de sa valeur quand la
+   largeur ne suffit plus, plutôt que de l'écraser. */
+.legal-line { display: flex; flex-wrap: wrap; gap: 0.1rem 1rem; margin-bottom: 0.5em; }
+.legal-line > strong { flex: 0 0 11rem; }
+
+/* Le formulaire de rétractation se recopie mot pour mot : il est encadré pour
+   qu'on voie où il commence et où il s'arrête. */
+.legal-form {
+  margin: 1.5rem 0;
+  padding: 1.35rem 1.4rem;
+  background: var(--ink-raise);
+  border: 1px solid var(--line);
+}
+
+.legal-updated {
+  margin-top: clamp(2.25rem, 5vw, 3.25rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1);
+  color: var(--bone-faint);
+}

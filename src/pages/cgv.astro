@@ -1,0 +1,382 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { shopOpen, shopPlatform } from '../lib/merch';
+import { shortDate } from '../lib/format';
+
+/**
+ * ATTENTION — TEXTE JURIDIQUE RELU PAR AUCUN JURISTE. C'est une base de
+ * travail, à faire valider AVANT que la boutique encaisse un premier
+ * paiement. Ne le présente nulle part comme validé.
+ *
+ * Le gabarit ne porte aucune donnée : identité, délais, frais de port et
+ * médiateur vivent dans `legal` (src/data/site.ts).
+ *
+ * La page reste en ligne boutique fermée, et elle le dit en tête. C'est
+ * volontaire : /merch invite déjà à commander par courrier électronique, ce
+ * qui est une vente à distance à un particulier. Le droit de rétractation et
+ * l'information précontractuelle s'appliquent donc dès maintenant, sans
+ * attendre qu'une plateforme de paiement soit branchée.
+ */
+
+const { editor, vatExempt, paymentProvider, shipping, mediator, updated } = site.legal;
+
+/**
+ * Nommé si on le connaît, désigné par son rôle sinon : jamais inventé.
+ *
+ * Les phrases qui s'en servent sont tournées avec « par » et non « de » :
+ * selon le cas la valeur commence par « un » ou par « Stripe », et « de » y
+ * demanderait une élision tantôt juste, tantôt fausse.
+ */
+const prestataire = paymentProvider.trim() || 'un prestataire de paiement spécialisé';
+
+/**
+ * L'identité du vendeur. Mêmes lignes que les mentions légales, et pour la
+ * même raison : une ligne vide est retirée plutôt qu'affichée à blanc.
+ */
+const vendeur = [
+  { label: 'Dénomination', value: editor.name },
+  { label: 'Forme juridique', value: editor.form },
+  { label: 'Siège social', value: editor.address },
+  { label: 'Numéro RNA', value: editor.rna },
+  { label: 'Numéro SIRET', value: editor.siret },
+  { label: 'Représentant légal', value: editor.representative },
+  { label: 'Téléphone', value: editor.phone },
+].filter((ligne) => ligne.value.trim().length > 0);
+
+/** Idem pour la livraison : un délai inconnu se tait, il ne s'improvise pas. */
+const livraison = [
+  { label: 'Zones livrées', value: shipping.zones },
+  { label: 'Délai d’expédition', value: shipping.delay },
+  { label: 'Frais de port', value: shipping.fees },
+  { label: 'Transporteur', value: shipping.carrier },
+].filter((ligne) => ligne.value.trim().length > 0);
+---
+
+<BaseLayout
+  title="Conditions générales de vente"
+  description={`Conditions de vente des disques et du merchandising de ${site.name} : commande, paiement, livraison, rétractation.`}
+>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Informations légales</p>
+      <div class="section-head"><h2>Conditions générales de vente</h2></div>
+
+      <div class="legal-doc prose">
+        <section>
+          <h3>1. Objet et champ d’application</h3>
+          <p>
+            Les présentes conditions régissent la vente à distance des disques et des articles de
+            merchandising de {site.name} à des particuliers. Elles sont acceptées par l’acheteur
+            avant toute commande, et la version en ligne au jour de la commande est celle qui
+            s’applique.
+          </p>
+          {shopOpen ? (
+            <p>
+              Les commandes passent par {shopPlatform}, qui tient la caisse et l’expédition pour
+              le compte du vendeur.
+            </p>
+          ) : (
+            <p>
+              <strong>Aucune boutique en ligne n’est ouverte à ce jour.</strong> Les articles
+              présentés sur la page {site.shop.label} se vendent au stand les soirs de concert, et
+              à distance sur demande adressée à
+              {' '}<a href={`mailto:${site.email}`}>{site.email}</a>. Une commande arrangée par
+              courrier électronique est une vente à distance : les présentes conditions s’y
+              appliquent, droit de rétractation compris. Les paragraphes qui décrivent un
+              paiement en ligne prendront effet le jour où la boutique ouvrira.
+            </p>
+          )}
+          {/* Renvoi par le nom des rubriques et non par leur numéro : ajouter
+              une section au milieu du texte décalerait toute la numérotation,
+              et un renvoi faux dans des conditions de vente est opposable. */}
+          <p>
+            Une vente au stand, de la main à la main, n’est pas une vente à distance : le droit de
+            rétractation ne s’y applique pas, les garanties légales si.
+          </p>
+        </section>
+
+        <section>
+          <h3>2. Vendeur</h3>
+          {vendeur.map((ligne) => (
+            <p class="legal-line"><strong>{ligne.label}</strong>{ligne.value}</p>
+          ))}
+          <p class="legal-line">
+            <strong>Courrier électronique</strong>
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+          </p>
+        </section>
+
+        <section>
+          <h3>3. Articles</h3>
+          <p>
+            Les articles proposés sont ceux présentés sur la page
+            {' '}<a href="/merch">{site.shop.label}</a> au moment de la commande, dans la limite
+            des stocks disponibles. Chaque fiche en indique la nature, la description et, le cas
+            échéant, les tailles offertes.
+          </p>
+          <p>
+            Les photographies illustrent les articles et n’ont pas de valeur contractuelle : un
+            rendu de couleur peut varier d’un écran à l’autre, et une impression textile comporte
+            de légères différences d’un exemplaire au suivant. Ces écarts ne constituent pas un
+            défaut de conformité.
+          </p>
+        </section>
+
+        <section>
+          <h3>4. Prix</h3>
+          <p>
+            Les prix sont indiqués en euros, toutes taxes comprises, et hors frais de livraison.
+            Ceux-ci sont annoncés avant la validation de la commande et s’ajoutent au total.
+          </p>
+          {vatExempt && (
+            <p>
+              Le vendeur n’est pas assujetti à la taxe sur la valeur ajoutée :
+              {' '}<strong>TVA non applicable, article 293 B du code général des impôts.</strong>
+              {' '}Les prix affichés sont donc des prix nets, sans TVA à ajouter — ni à récupérer
+              pour un acheteur professionnel.
+            </p>
+          )}
+          <p>
+            Les prix peuvent être modifiés à tout moment. Le prix applicable est celui affiché au
+            moment où la commande est passée.
+          </p>
+        </section>
+
+        <section>
+          <h3>5. Commande</h3>
+          {shopOpen ? (
+            <p>
+              La commande se passe sur {shopPlatform}, qui en présente le détail — articles,
+              quantités, frais de livraison et total — avant la validation. La validation vaut
+              acceptation du prix et des présentes conditions. Un accusé de réception est envoyé
+              par courrier électronique ; il récapitule la commande et en constitue la preuve.
+            </p>
+          ) : (
+            <p>
+              La commande à distance se forme par échange de courriers électroniques : vous
+              indiquez les articles souhaités, le vendeur confirme leur disponibilité, le prix,
+              les frais de livraison et le total. La vente n’est conclue qu’une fois ce
+              récapitulatif accepté par vous et le paiement reçu. L’échange de courriers tient
+              lieu de preuve de la commande, et le présent texte vous est communiqué avec le
+              récapitulatif.
+            </p>
+          )}
+          <p>
+            Le vendeur peut refuser une commande en cas d’indisponibilité de l’article, d’erreur
+            manifeste sur le prix ou de litige antérieur impayé. La somme déjà versée est alors
+            remboursée sans délai.
+          </p>
+        </section>
+
+        <section>
+          <h3>6. Paiement</h3>
+          <p>
+            <strong>Ce site n’encaisse aucun paiement.</strong> Il est composé de pages statiques,
+            sans serveur applicatif : il n’a techniquement pas les moyens de recevoir un numéro de
+            carte, et aucune coordonnée bancaire ne transite par lui, quel que soit le moyen de
+            paiement retenu.
+          </p>
+          {/* Décrire un paiement par carte alors que la seule voie ouverte est
+              le virement serait une information précontractuelle fausse, et
+              c'est précisément celle que l'acheteur est censé lire avant de
+              commander. Les deux états se disent donc séparément. */}
+          {shopOpen ? (
+            <>
+              <p>
+                Le paiement est encaissé par {prestataire}, sur ses propres pages et sous sa
+                propre responsabilité. Ni ce site ni le vendeur ne voient, ne traitent ni ne
+                conservent la moindre donnée bancaire : le vendeur reçoit la confirmation du
+                paiement et les informations nécessaires à l’expédition, rien de plus.
+              </p>
+              <p>
+                La commande est expédiée après encaissement effectif. En cas de refus
+                d’autorisation, la commande est annulée sans frais.
+              </p>
+            </>
+          ) : (
+            <p>
+              Le moyen de paiement d’une commande arrangée par courrier électronique est convenu
+              dans cet échange, le plus souvent par virement, et la commande est expédiée après
+              encaissement effectif. À l’ouverture de la boutique, le paiement sera encaissé par
+              {' '}{prestataire}, sur ses propres pages et sous sa propre responsabilité, sans
+              qu’aucune donnée bancaire ne parvienne au vendeur.
+            </p>
+          )}
+        </section>
+
+        <section>
+          <h3>7. Livraison</h3>
+          {livraison.map((ligne) => (
+            <p class="legal-line"><strong>{ligne.label}</strong>{ligne.value}</p>
+          ))}
+          <p>
+            À défaut de date indiquée au moment de la commande, le vendeur livre au plus tard
+            trente jours après la conclusion du contrat, conformément à l’article L216-1 du code
+            de la consommation. Passé ce délai et après une mise en demeure restée sans effet,
+            vous pouvez résoudre la commande et obtenir le remboursement intégral des sommes
+            versées.
+          </p>
+          <p>
+            Les risques de perte et de détérioration sont transférés à l’acheteur à la remise du
+            colis. Un colis arrivé endommagé ou incomplet doit nous être signalé dans les
+            meilleurs délais, si possible avec une photographie : le vendeur fait le nécessaire
+            auprès du transporteur, puis vous réexpédie l’article ou vous le rembourse.
+          </p>
+        </section>
+
+        <section>
+          <h3>8. Droit de rétractation</h3>
+          <p>
+            Pour toute commande à distance, vous disposez d’un délai de
+            {' '}<strong>quatorze jours</strong> pour vous rétracter sans avoir à vous justifier ni
+            à payer de pénalité (articles L221-18 et suivants du code de la consommation). Le
+            délai court à compter de la réception de l’article ; lorsqu’une commande est livrée en
+            plusieurs fois, à compter de la réception du dernier article.
+          </p>
+          <p>
+            Pour l’exercer, il suffit de nous le faire savoir avant l’expiration du délai, par
+            courrier électronique à <a href={`mailto:${site.email}`}>{site.email}</a> ou par
+            courrier postal à l’adresse du siège. Le formulaire ci-dessous peut être utilisé, mais
+            n’est pas obligatoire : une déclaration claire suffit.
+          </p>
+          <p>
+            L’article doit nous être renvoyé au plus tard quatorze jours après cette déclaration.
+            <strong> Les frais de retour sont à votre charge.</strong> Le remboursement intervient
+            au plus tard quatorze jours après la récupération de l’article, par le même moyen de
+            paiement que celui utilisé pour la commande, et comprend les frais de livraison
+            initiaux au tarif de la livraison standard.
+          </p>
+          <p>
+            Deux exceptions prévues par l’article L221-28 du code de la consommation concernent
+            directement nos articles :
+          </p>
+          <ul>
+            <li>
+              un disque ou tout autre enregistrement audio <strong>descellé après la
+              livraison</strong> ne peut plus être retourné ;
+            </li>
+            <li>
+              un article confectionné sur mesure ou nettement personnalisé à votre demande n’ouvre
+              pas droit à rétractation.
+            </li>
+          </ul>
+          <p>
+            Un vêtement essayé reste retournable. En revanche, un article rendu inutilisable,
+            lavé, porté au-delà de l’essayage ou amputé de son étiquetage peut voir sa valeur
+            dépréciée, et le remboursement réduit à proportion.
+          </p>
+
+          <h4>Formulaire type de rétractation</h4>
+          <p>
+            À compléter et à nous renvoyer uniquement si vous souhaitez vous rétracter.
+          </p>
+          <div class="legal-form">
+            <p>À l’attention de {editor.name}, {editor.address}, {site.email} :</p>
+            <p>
+              Je vous notifie par la présente ma rétractation du contrat portant sur la vente du
+              bien ci-dessous :
+            </p>
+            <p>
+              — Commandé le … / reçu le …<br />
+              — Désignation de l’article : …<br />
+              — Numéro de commande : …<br />
+              — Nom du consommateur : …<br />
+              — Adresse du consommateur : …
+            </p>
+            <p>Date : …</p>
+            <p>Signature (uniquement en cas de notification sur papier) : …</p>
+          </div>
+        </section>
+
+        <section>
+          <h3>9. Garanties légales</h3>
+          <p>
+            Indépendamment de toute garantie commerciale, le vendeur reste tenu des garanties que
+            la loi accorde à l’acheteur particulier.
+          </p>
+          <p>
+            <strong>Garantie légale de conformité</strong> (articles L217-3 et suivants du code de
+            la consommation) : l’article doit correspondre à sa description et à l’usage attendu.
+            Elle s’exerce pendant <strong>deux ans</strong> à compter de la délivrance. Pour un
+            article neuf, tout défaut apparu dans ce délai est présumé exister dès la délivrance,
+            et vous n’avez pas à le démontrer. Vous pouvez demander la réparation ou le
+            remplacement de l’article et, si cela se révèle impossible ou disproportionné, une
+            réduction du prix ou la résolution de la vente.
+          </p>
+          <p>
+            <strong>Garantie des vices cachés</strong> (articles 1641 et suivants du code civil) :
+            un défaut qui rend l’article impropre à son usage et que vous ne pouviez pas déceler à
+            l’achat vous permet d’obtenir le remboursement ou une réduction du prix. L’action se
+            prescrit par deux ans à compter de la découverte du vice.
+          </p>
+          <p>
+            Ces garanties s’exercent par simple demande à
+            {' '}<a href={`mailto:${site.email}`}>{site.email}</a>, sans frais pour vous.
+          </p>
+        </section>
+
+        <section>
+          <h3>10. Réclamations et médiation de la consommation</h3>
+          <p>
+            Toute réclamation doit d’abord nous être adressée à
+            {' '}<a href={`mailto:${site.email}`}>{site.email}</a> : la plupart des différends se
+            règlent par un échange.
+          </p>
+          <p>
+            Si la réponse ne vous satisfait pas, ou en l’absence de réponse dans un délai de deux
+            mois, vous pouvez recourir gratuitement à un médiateur de la consommation (articles
+            L612-1 et suivants du code de la consommation). Le médiateur dont relève le vendeur
+            est :
+          </p>
+          <p class="legal-line"><strong>Médiateur</strong>{mediator.name}</p>
+          {mediator.address.trim() && (
+            <p class="legal-line"><strong>Adresse</strong>{mediator.address}</p>
+          )}
+          {mediator.url.trim() && (
+            <p class="legal-line">
+              <strong>Saisine en ligne</strong>
+              <a href={mediator.url} target="_blank" rel="noopener">{mediator.url}</a>
+            </p>
+          )}
+          <p>
+            Le recours à la médiation n’est possible qu’après nous avoir saisis par écrit, et ne
+            vous prive pas de porter le litige devant les tribunaux.
+          </p>
+        </section>
+
+        <section>
+          <h3>11. Données personnelles</h3>
+          <p>
+            Les données recueillies pour une commande — nom, adresse de livraison, adresse
+            électronique — servent à traiter cette commande, à l’expédier et à répondre à une
+            réclamation. Elles sont conservées le temps nécessaire au traitement, puis pendant la
+            durée des obligations comptables et de garantie. Aucun numéro de carte bancaire ne
+            nous parvient : le paiement est encaissé hors de ce site, selon les modalités
+            décrites plus haut.
+          </p>
+          <p>
+            Vos droits d’accès, de rectification, d’effacement, de limitation, d’opposition et de
+            portabilité s’exercent auprès du vendeur. Le détail figure dans nos
+            {' '}<a href="/mentions-legales">mentions légales</a>.
+          </p>
+        </section>
+
+        <section>
+          <h3>12. Droit applicable</h3>
+          <p>
+            Les présentes conditions sont soumises au droit français et rédigées en français. Rien
+            n’y déroge aux droits que la loi reconnaît au consommateur ; une clause qui serait
+            jugée nulle laisse les autres en vigueur.
+          </p>
+          <p>
+            Un acheteur résidant dans un autre État de l’Union européenne conserve le bénéfice des
+            dispositions protectrices impératives de son pays de résidence.
+          </p>
+        </section>
+
+        <p class="legal-updated">Dernière mise à jour : {shortDate(updated)}.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

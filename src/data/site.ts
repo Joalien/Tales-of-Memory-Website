@@ -212,6 +212,112 @@ export const site = {
       ],
     },
   ],
+
+  /**
+   * Mentions légales et conditions de vente.
+   *
+   * ATTENTION — CES DEUX TEXTES N'ONT ÉTÉ RELUS PAR AUCUN JURISTE. Ils sont
+   * une base de travail, et doivent passer devant un professionnel avant que
+   * la boutique encaisse un premier paiement : des conditions de vente
+   * fausses engagent le vendeur, jamais l'acheteur.
+   *
+   * Les champs qui dépendent de l'association portent « À REMPLACER » dans la
+   * valeur elle-même, et non en commentaire comme partout ailleurs dans ce
+   * fichier : un numéro SIRET d'apparence plausible publié par distraction
+   * serait une fausse mention légale, alors qu'un trou se lit sur la page et
+   * se corrige. N'invente donc aucun numéro ni aucune adresse ici — laisse le
+   * marqueur jusqu'à ce que le papier existe.
+   */
+  legal: {
+    /** Dernière relecture des deux textes, datée en bas de chaque page. */
+    updated: '2026-10-09',
+
+    /**
+     * L'éditeur du site, c'est-à-dire l'association une fois déclarée.
+     *
+     * `phone` est le seul champ facultatif : aucune obligation n'impose un
+     * téléphone à un éditeur non professionnel, et laissé vide sa ligne
+     * disparaît de la page.
+     */
+    editor: {
+      name: 'À REMPLACER — dénomination de l’association',
+      form: 'À REMPLACER — forme juridique, association loi 1901 envisagée',
+      address: 'À REMPLACER — adresse du siège social',
+      rna: 'À REMPLACER — numéro RNA, W suivi de neuf chiffres',
+      siret: 'À REMPLACER — numéro SIRET, quatorze chiffres',
+      /** Celui qui signe pour l'association : son président, le plus souvent. */
+      representative: 'À REMPLACER — nom du représentant légal',
+      phone: '',
+    },
+
+    /**
+     * Le directeur de la publication répond de ce qui est mis en ligne. C'est
+     * presque toujours le représentant légal, mais la loi distingue les deux
+     * rôles : d'où un champ à part, qu'on peut avoir à dissocier un jour.
+     */
+    publisher: 'À REMPLACER — nom du directeur de la publication',
+
+    /**
+     * L'hébergeur, que les mentions légales doivent nommer.
+     *
+     * Raison sociale, adresse et téléphone relevés sur le formulaire 10-K
+     * déposé par Cloudflare auprès de la SEC pour l'exercice 2025 : une source
+     * publique et datée, à préférer aux annuaires d'entreprises qui recopient
+     * des adresses mortes pendant des années.
+     */
+    host: {
+      name: 'Cloudflare, Inc.',
+      address: '101 Townsend Street, San Francisco, Californie 94107, États-Unis',
+      phone: '+1 (888) 993-5273',
+      url: 'https://www.cloudflare.com',
+    },
+
+    /**
+     * Franchise en base de TVA, vraie tant que l'association reste sous les
+     * seuils de l'article 293 B du CGI.
+     *
+     * Les prix de `merch` sont alors des prix nets, et les conditions de vente
+     * doivent porter la mention d'exonération. À passer à `false` le jour de
+     * l'assujettissement, sinon la page continue d'annoncer une exonération
+     * perdue — et un prix annoncé hors TVA à un particulier est opposable.
+     */
+    vatExempt: true,
+
+    /**
+     * Qui encaisse réellement, nommé dans les conditions de vente pour que
+     * l'acheteur sache à qui il confie sa carte. Stripe est envisagé. Vide,
+     * les conditions parlent d'« un prestataire de paiement » sans avancer un
+     * nom qui pourrait ne pas être le bon.
+     */
+    paymentProvider: '',
+
+    /**
+     * Livraison. Chaque ligne vide disparaît de la page : mieux vaut taire un
+     * délai que d'en annoncer un qu'on ne tiendra pas, car un délai écrit dans
+     * des conditions de vente devient opposable au vendeur.
+     */
+    shipping: {
+      zones: 'À REMPLACER — zones livrées, par exemple France métropolitaine et Union européenne',
+      delay: 'À REMPLACER — délai d’expédition après encaissement',
+      fees: 'À REMPLACER — frais de port',
+      carrier: '',
+    },
+
+    /**
+     * Le médiateur de la consommation.
+     *
+     * Le nommer est obligatoire dès qu'on vend à des particuliers (article
+     * L616-1 du code de la consommation), et l'adhésion à un médiateur se paie
+     * à l'année. Tant qu'aucune n'est souscrite, la page l'écrit noir sur
+     * blanc : un médiateur nommé sans adhésion enverrait l'acheteur vers un
+     * guichet qui le renverrait, ce qui est pire que l'aveu.
+     */
+    mediator: {
+      name: 'À REMPLACER — nom du médiateur de la consommation',
+      address: 'À REMPLACER — adresse postale du médiateur',
+      url: '',
+    },
+  },
 } as const;
 
 export type SiteLink = { label: string; url: string; icon: string };
@@ -233,4 +339,18 @@ export const nav = [
   { label: site.shop.label, href: '/merch' },
   { label: 'Bio', href: '/bio' },
   { label: 'Contact', href: '/contact' },
+];
+
+/**
+ * Les pages légales, reléguées tout en bas du pied de page.
+ *
+ * Elles ne rejoignent pas `nav` : personne ne vient sur le site pour les lire,
+ * et un sixième onglet se paierait sur la place des cinq autres. Les deux
+ * restent affichées même boutique fermée, parce que /merch invite déjà à
+ * commander par courrier électronique : c'est une vente à distance, et le
+ * droit de rétractation s'y applique dès aujourd'hui.
+ */
+export const legalNav = [
+  { label: 'Mentions légales', href: '/mentions-legales' },
+  { label: 'Conditions de vente', href: '/cgv' },
 ];
