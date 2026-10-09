@@ -9,26 +9,27 @@ import { site, activeLinks } from '../data/site';
       <p class="eyebrow">Nous écrire</p>
       <div class="section-head"><h2>Contact</h2></div>
 
+      <p class="contact-main">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+
       <div class="contact-grid">
         <div>
           <p class="what">Booking</p>
-          <a href={`mailto:${site.contacts.booking}`}>{site.contacts.booking}</a>
-          <p class="prose" style="margin-top: 0.6rem; font-size: var(--step--1);">
-            Programmation, fiche technique, conditions.
+          <p class="prose" style="font-size: var(--step--1);">
+            Programmation, fiche technique, conditions d’accueil.
           </p>
         </div>
         <div>
           <p class="what">Presse</p>
-          <a href={`mailto:${site.contacts.press}`}>{site.contacts.press}</a>
-          <p class="prose" style="margin-top: 0.6rem; font-size: var(--step--1);">
+          <p class="prose" style="font-size: var(--step--1);">
             Interviews, accréditations, photos haute définition.
           </p>
         </div>
         <div>
-          <p class="what">Général</p>
-          <a href={`mailto:${site.contacts.general}`}>{site.contacts.general}</a>
-          <p class="prose" style="margin-top: 0.6rem; font-size: var(--step--1);">
-            Tout le reste, y compris les propositions de première partie.
+          <p class="what">Le reste</p>
+          <p class="prose" style="font-size: var(--step--1);">
+            Propositions de première partie, et tout ce qui ne rentre pas ailleurs.
           </p>
         </div>
       </div>

@@ -1,84 +1,57 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tales of Memory//Jeu de test//FR
+PRODID:-//Tales of Memory//Agenda des concerts//FR
 CALSCALE:GREGORIAN
-X-WR-CALNAME:Concerts
+METHOD:PUBLISH
+X-WR-CALNAME:Concerts — Tales of Memory
+X-WR-TIMEZONE:Europe/Paris
 BEGIN:VEVENT
-UID:tom-0001@talesofmemory.com
-DTSTAMP:20261001T120000Z
-SUMMARY:La Maroquinerie — Paris
-LOCATION:23 Rue Boyer\, 75020 Paris
-DTSTART;TZID=Europe/Paris:20261114T203000
-DTEND;TZID=Europe/Paris:20261114T230000
-DESCRIPTION:billets: https://billetterie.example/maroquinerie-tom\nprix: 18€ 
- en prévente / 22€ sur place\navec: Hollow Chant en première partie\ncachet: 
- 650€ net\ncontact régie: Camille 06 11 22 33 44
+UID:tom-2026-05-30-label-tremp@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Label Tremp
+DTSTART;VALUE=DATE:20260530
+DTEND;VALUE=DATE:20260531
 END:VEVENT
 BEGIN:VEVENT
-UID:tom-0002@talesofmemory.com
-DTSTAMP:20261001T120000Z
-SUMMARY:Le Rex — Toulouse
-LOCATION:15 Avenue Honoré Serres\, 31000 Toulouse
-DTSTART;TZID=Europe/Paris:20261205T210000
-DTEND;TZID=Europe/Paris:20261205T233000
-DESCRIPTION:billets: https://billetterie.example/rex-tom\nprix: 15€\navec: Ve
- rtige\, Sombre Atlas
+UID:tom-2026-06-21-houilles@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Fête de la Musique — Houilles
+DTSTART;VALUE=DATE:20260621
+DTEND;VALUE=DATE:20260622
 END:VEVENT
 BEGIN:VEVENT
-UID:tom-0003@talesofmemory.com
-DTSTAMP:20261001T120000Z
-SUMMARY:Les Nuits Cévenoles — Anduze
-LOCATION:Parc des Cordeliers\, 30140 Anduze
-DTSTART;VALUE=DATE:20270220
-DTEND;VALUE=DATE:20270222
-DESCRIPTION:billets: https://billetterie.example/nuits-cevenoles\nprix: 34€ l
- e pass 2 jours
+UID:tom-2026-08-29-massy@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Massy
+DTSTART;VALUE=DATE:20260829
+DTEND;VALUE=DATE:20260830
 END:VEVENT
 BEGIN:VEVENT
-UID:tom-0004@talesofmemory.com
-DTSTAMP:20261001T120000Z
-SUMMARY:Le Ferrailleur — Nantes
-LOCATION:21 Quai des Antilles\, 44200 Nantes
-DTSTART;TZID=Europe/Paris:20261128T203000
-DTEND;TZID=Europe/Paris:20261128T230000
-STATUS:CANCELLED
-DESCRIPTION:billets: https://billetterie.example/ferrailleur-tom
+UID:tom-2026-09-18-tchou-tchou-charbon@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Tchou Tchou Charbon
+DTSTART;VALUE=DATE:20260918
+DTEND;VALUE=DATE:20260919
 END:VEVENT
 BEGIN:VEVENT
-UID:tom-0005@talesofmemory.com
-DTSTAMP:20261001T120000Z
-SUMMARY:Le Bikini — Ramonville-Saint-Agne
-LOCATION:Rue Théodore Monod\, 31520 Ramonville-Saint-Agne
-DTSTART;TZID=Europe/Paris:20270314T200000
-DTEND;TZID=Europe/Paris:20270314T230000
-DESCRIPTION:publier: non\nprix: à confirmer\nnote: la salle annonce le 15 jan
- vier\, ne rien publier avant
+UID:tom-2026-09-24-ladies-rock@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Ladies Rock
+DTSTART;VALUE=DATE:20260924
+DTEND;VALUE=DATE:20260925
 END:VEVENT
 BEGIN:VEVENT
-UID:tom-0006@talesofmemory.com
-DTSTAMP:20260901T120000Z
-SUMMARY:L'Olympic — Nantes
-LOCATION:7 Rue Basse Porte\, 44000 Nantes
-DTSTART;TZID=Europe/Paris:20260912T203000
-DTEND;TZID=Europe/Paris:20260912T230000
-DESCRIPTION:prix: 12€\navec:月 Lune Noire
+UID:tom-2026-10-24-saint-piat@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Saint Piat
+DTSTART;VALUE=DATE:20261024
+DTEND;VALUE=DATE:20261025
 END:VEVENT
 BEGIN:VEVENT
-UID:tom-0007@talesofmemory.com
-DTSTAMP:20260601T120000Z
-SUMMARY:Festival Clair-Obscur — Clermont-Ferrand
-LOCATION:Plaine de Sarliève\, 63800 Cournon-d'Auvergne
-DTSTART;VALUE=DATE:20260628
-DTEND;VALUE=DATE:20260629
-DESCRIPTION:prix: 29€
-END:VEVENT
-BEGIN:VEVENT
-UID:tom-0008@talesofmemory.com
-DTSTAMP:20260501T120000Z
-SUMMARY:Le Molotov — Marseille
-LOCATION:3 Place Paul Cézanne\, 13006 Marseille
-DTSTART;TZID=Europe/Paris:20260516T203000
-DTEND;TZID=Europe/Paris:20260516T230000
-DESCRIPTION:prix: 10€\navec: Cendres
+UID:tom-2027-02-26-tremplin-lestock@talesofmemory.com
+DTSTAMP:20261009T090000Z
+SUMMARY:Tremplin Lestock
+DTSTART;VALUE=DATE:20270226
+DTEND;VALUE=DATE:20270227
 END:VEVENT
 END:VCALENDAR

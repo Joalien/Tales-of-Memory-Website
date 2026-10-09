@@ -10,7 +10,9 @@
     "preview": "astro preview",
     "demo:images": "node scripts/demo-photos.mjs",
     "astro": "astro",
-    "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs"
+    "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs",
+    "test": "node scripts/test-ics.mjs",
+    "photos:dirs": "node scripts/make-photo-dirs.mjs"
   },
   "dependencies": {
     "astro": "^7.3.7"

@@ -33,9 +33,8 @@ import { site, nav, activeLinks } from '../data/site';
       <div>
         <p style="color: var(--ember); letter-spacing: 0.18em; text-transform: uppercase;">Contact</p>
         <ul>
-          <li><a href={`mailto:${site.contacts.booking}`}>Booking</a></li>
-          <li><a href={`mailto:${site.contacts.press}`}>Presse</a></li>
-          <li><a href={`mailto:${site.contacts.general}`}>Général</a></li>
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><a href="/contact">Booking &amp; presse</a></li>
         </ul>
       </div>
     </div>

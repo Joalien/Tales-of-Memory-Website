@@ -37,11 +37,12 @@ export const site = {
     { name: 'Prénom Nom', role: 'Batterie' },
   ],                                                   // À REMPLACER
 
-  contacts: {
-    general: 'contact@talesofmemory.com',
-    booking: 'booking@talesofmemory.com',
-    press: 'presse@talesofmemory.com',
-  },
+  /**
+   * Une seule adresse, parce que c'est la seule boîte réellement routée par
+   * Cloudflare. N'en ajoute pas ici (booking@, presse@…) sans créer d'abord la
+   * règle de redirection correspondante, sinon les messages rebondissent.
+   */
+  email: 'contact@talesofmemory.com',
 
   /** Lien vide = masqué sur le site. */
   links: [
