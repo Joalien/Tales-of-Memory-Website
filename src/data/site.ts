@@ -9,7 +9,7 @@ export const site = {
   name: 'Tales of Memory',
   /** Sous-titre affiché sous le nom, et genre utilisé pour le référencement. */
   tagline: 'Metal progressif atmosphérique',          // À REMPLACER
-  city: 'Nantes',                                      // À REMPLACER
+  city: 'Région parisienne',                           // à préciser si tu veux une ville
   foundedYear: 2019,                                   // À REMPLACER
   domain: 'https://www.talesofmemory.com',
   /** Phrase unique reprise dans les métadonnées et les partages sur réseaux. */
@@ -19,7 +19,7 @@ export const site = {
 
   /** Biographie : un élément du tableau = un paragraphe. */
   bio: [
-    'Tales of Memory est né à Nantes en 2019 de l’envie de raconter des histoires longues, ' +
+    'Tales of Memory est né en région parisienne en 2019 de l’envie de raconter des histoires longues, ' +
       'celles qui demandent dix minutes pour être dites. Le groupe cherche moins la performance ' +
       'que la sensation d’un souvenir qui remonte.',
     'Après deux années passées à écrire en répétition, le groupe sort un premier EP et commence ' +

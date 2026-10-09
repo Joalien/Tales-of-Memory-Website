@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "data": "node scripts/fetch-shows.mjs && node scripts/demo-photos.mjs && node scripts/fetch-photos.mjs",
+    "data": "node scripts/fetch-shows.mjs && node scripts/demo-photos.mjs && node scripts/fetch-photos.mjs && node scripts/ingest-album.mjs",
     "dev": "npm run data && astro dev",
     "build": "npm run data && astro build",
     "preview": "astro preview",
@@ -12,7 +12,8 @@
     "astro": "astro",
     "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs",
     "test": "node scripts/test-ics.mjs",
-    "photos:dirs": "node scripts/make-photo-dirs.mjs"
+    "photos:dirs": "node scripts/make-photo-dirs.mjs",
+    "album": "node scripts/ingest-album.mjs"
   },
   "dependencies": {
     "astro": "^7.3.7"

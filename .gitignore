@@ -32,3 +32,16 @@ photos/*
 public/media/*
 !public/media/manifest.json
 !public/media/presse/
+
+# Sources de l'album : pochette pleine résolution, livret, pistes audio.
+album/*
+!album/README.md
+
+# Dérivés de l'album. Même règle que pour les photos : la pochette est
+# versionnée car légère et stable, le livret PDF et les pistes audio non.
+public/album/*
+!public/album/manifest.json
+!public/album/cover/
+
+# Inventaire de l'album, reconstruit à chaque build.
+src/data/album.json

@@ -1,6 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site, activeLinks } from '../data/site';
+import { cover, coverSrc, coverSrcset, tracks, trackSrc, booklet, bookletHref, humanSize } from '../lib/album';
+
+/** Les fichiers déposés dans album/ illustrent la sortie la plus récente. */
+const hasAlbumFiles = Boolean(cover || tracks.length || booklet);
 ---
 
 <BaseLayout title="Écouter" description={`Les sorties de ${site.name} et où les écouter.`}>
@@ -11,30 +15,62 @@ import { site, activeLinks } from '../data/site';
 
       {site.releases.length === 0 && <p class="empty">Les premières sorties arrivent bientôt.</p>}
 
-      {site.releases.map((release) => (
-        <article class="release">
-          <div class="release-cover">{release.title}</div>
-          <div>
-            <p class="kind">{release.kind} · {release.year}</p>
-            <h3>{release.title}</h3>
-            {release.note && <p class="prose" style="margin-top: 0.75rem;">{release.note}</p>}
-
-            {release.tracks.length > 0 && (
-              <ol class="tracklist">
-                {release.tracks.map((track) => <li>{track}</li>)}
-              </ol>
+      {site.releases.map((release, index) => {
+        const withFiles = index === 0 && hasAlbumFiles;
+        const titles = withFiles && tracks.length ? tracks.map((t) => t.title) : release.tracks;
+        return (
+          <article class="release">
+            {withFiles && cover ? (
+              <img
+                class="release-art"
+                src={coverSrc(800)}
+                srcset={coverSrcset()}
+                sizes="(min-width: 46rem) 18rem, 94vw"
+                width={cover.w}
+                height={cover.h}
+                decoding="async"
+                alt={`Pochette de ${release.title}`}
+              />
+            ) : (
+              <div class="release-cover">{release.title}</div>
             )}
 
-            {release.links.filter((l) => l.url).length > 0 && (
+            <div>
+              <p class="kind">{release.kind} · {release.year}</p>
+              <h3>{release.title}</h3>
+              {release.note && <p class="prose" style="margin-top: 0.75rem;">{release.note}</p>}
+
+              {withFiles && tracks.length > 0 ? (
+                <ol class="tracklist tracklist-audio">
+                  {tracks.map((track) => (
+                    <li>
+                      <span class="t-title">{track.title}</span>
+                      <audio controls preload="none" src={trackSrc(track.file)}>
+                        <a href={trackSrc(track.file)}>Écouter {track.title}</a>
+                      </audio>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                titles.length > 0 && (
+                  <ol class="tracklist">
+                    {titles.map((title) => <li>{title}</li>)}
+                  </ol>
+                )
+              )}
+
               <div class="links-row">
+                {withFiles && booklet && bookletHref && (
+                  <a href={bookletHref} download>Jaquette en PDF · {humanSize(booklet.bytes)}</a>
+                )}
                 {release.links.filter((l) => l.url).map((l) => (
                   <a href={l.url} target="_blank" rel="noopener">{l.label}</a>
                 ))}
               </div>
-            )}
-          </div>
-        </article>
-      ))}
+            </div>
+          </article>
+        );
+      })}
 
       {activeLinks.length > 0 && (
         <div style="margin-top: var(--block);">

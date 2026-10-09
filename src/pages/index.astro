@@ -7,6 +7,7 @@ import { site, activeLinks } from '../data/site';
 import { upcoming, nextShow } from '../lib/shows';
 import { concertGalleries, latestPhotos, pressPhotos, src, srcset } from '../lib/photos';
 import { longDate, time } from '../lib/format';
+import { cover as albumCover, coverSrc, coverSrcset } from '../lib/album';
 
 const nextThree = upcoming.slice(0, 3);
 const recent = latestPhotos(6);
@@ -79,7 +80,21 @@ const hero = press && heroPhoto
           <a class="more" href="/ecouter">Toute la discographie</a>
         </div>
         <div class="release" style="border: 0; padding-top: 0;">
-          <div class="release-cover">{release.title}</div>
+          {albumCover ? (
+            <img
+              class="release-art"
+              src={coverSrc(800)}
+              srcset={coverSrcset()}
+              sizes="(min-width: 46rem) 18rem, 94vw"
+              width={albumCover.w}
+              height={albumCover.h}
+              loading="lazy"
+              decoding="async"
+              alt={`Pochette de ${release.title}`}
+            />
+          ) : (
+            <div class="release-cover">{release.title}</div>
+          )}
           <div>
             <p class="kind">{release.kind} · {release.year}</p>
             <h3>{release.title}</h3>

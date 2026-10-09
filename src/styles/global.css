@@ -524,6 +524,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ember);
   margin-bottom: 0.5rem;
 }
+/* Vraie pochette, quand un fichier a été déposé dans album/. */
+.release-art {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--ink-raise);
+}
+
 .tracklist { margin: 1.25rem 0; counter-reset: t; }
 .tracklist li {
   counter-increment: t;
@@ -537,6 +546,27 @@ ul { margin: 0; padding: 0; list-style: none; }
   content: counter(t, decimal-leading-zero);
   color: var(--bone-faint);
   font-variant-numeric: tabular-nums;
+}
+
+/* Pistes écoutables : le lecteur natif du navigateur, sans aucun JavaScript,
+   et donc accessible au clavier et aux lecteurs d'écran sans effort. */
+.tracklist-audio li {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  gap: 0.35rem 0.9rem;
+  align-items: center;
+  padding-block: 0.8rem;
+}
+.tracklist-audio .t-title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--bone);
+}
+.tracklist-audio audio {
+  grid-column: 2;
+  width: 100%;
+  max-width: 34rem;
+  height: 2.3rem;
 }
 
 .links-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
