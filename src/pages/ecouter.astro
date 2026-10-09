@@ -76,7 +76,11 @@ const hasAlbumFiles = Boolean(cover || tracks.length || booklet || fullAlbum);
 
               <div class="links-row">
                 {withFiles && fullAlbum && fullAlbumHref && (
-                  <a href={fullAlbumHref} download>Télécharger l’album · {humanSize(fullAlbum.bytes)}</a>
+                  <a class="btn-gold" href={fullAlbumHref} download>
+                    <span class="btn-gold-glyph" aria-hidden="true">↓</span>
+                    <span>Télécharger l’album</span>
+                    <span class="btn-gold-size">{humanSize(fullAlbum.bytes)}</span>
+                  </a>
                 )}
                 {withFiles && booklet && bookletHref && (
                   <a href={bookletHref} download>Jaquette en PDF · {humanSize(booklet.bytes)}</a>
