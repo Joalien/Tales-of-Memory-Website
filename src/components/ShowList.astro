@@ -53,7 +53,7 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
             >Y aller</a>
           )}
           {past && gallery && (
-            <a class="btn btn-ghost" href={`/photos/${show.slug}`}>
+            <a class="btn btn-ghost" href={`/concerts/${show.slug}`}>
               {gallery.photos.length} photo{gallery.photos.length > 1 ? 's' : ''}
             </a>
           )}

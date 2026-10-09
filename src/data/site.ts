@@ -110,7 +110,6 @@ export const activeLinks: SiteLink[] = site.links.filter((l) => l.url.trim().len
 
 export const nav = [
   { label: 'Concerts', href: '/concerts' },
-  { label: 'Photos', href: '/photos' },
   { label: 'Écouter', href: '/ecouter' },
   { label: 'Bio', href: '/bio' },
   { label: 'Contact', href: '/contact' },

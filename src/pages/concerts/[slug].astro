@@ -20,7 +20,7 @@ const altPrefix = show ? `${site.name} au ${show.venue}, ${show.city}` : `${site
 <BaseLayout title={title} description={`Photos de ${site.name} — ${title}.`}>
   <section class="block">
     <div class="shell">
-      <p class="eyebrow"><a href="/photos" style="text-decoration: none;">← Toutes les galeries</a></p>
+      <p class="eyebrow"><a href="/concerts" style="text-decoration: none;">← Tous les concerts</a></p>
       <div class="section-head">
         <h2>{title}</h2>
         {show && <span class="more" style="text-transform: none; letter-spacing: 0.08em;">{longDate(show.startsAt)}</span>}
