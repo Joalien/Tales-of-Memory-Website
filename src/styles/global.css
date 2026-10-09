@@ -624,6 +624,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   object-position: 50% 35%;
   opacity: 0;
   transition: opacity 1.4s ease;
+  /* État de repos volontairement calé sur la FIN du rapprochement : quand une
+     photo cesse d'être active, son animation est détachée et elle retrouve
+     cette valeur. Si elle valait scale(1), la photo reviendrait d'un coup à sa
+     taille initiale alors qu'elle est encore visible dans le fondu. */
+  transform: scale(1.09);
 }
 .showcase-slide.is-active { opacity: 1; }
 
@@ -643,11 +648,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .showcase-text { color: var(--bone-dim); }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Lent rapprochement sur la photo affichée : le fond respire au lieu d'être figé. */
-  .showcase-slide.is-active { animation: respire 9s ease-out both; }
+  /* Lent rapprochement sur la photo affichée : le fond respire au lieu d'être
+     figé. La durée est celle de l'intervalle de défilement, pour que le
+     mouvement s'achève juste au moment du passage à la suivante — sinon il
+     s'arrêterait avant, ou serait coupé en cours. Progression linéaire : une
+     décélération se verrait comme un arrêt net avant le changement. */
+  .showcase-slide.is-active { animation: respire var(--duree-photo, 6s) linear both; }
   @keyframes respire {
     from { transform: scale(1.02); }
-    to { transform: scale(1.1); }
+    to { transform: scale(1.09); }
   }
 }
 
@@ -898,4 +907,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .site-footer .brand { font-size: var(--step-2); color: var(--bone); }
 .site-footer a { text-decoration: none; }
 .site-footer a:hover { color: var(--ember); }
+
+/* Une adresse e-mail doit se voir comme cliquable : sans soulignement elle
+   passe pour du texte, et personne ne tente le clic. */
+.site-footer a[href^='mailto:'] {
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 1px;
+}
+.site-footer a[href^='mailto:']:hover { border-bottom-color: var(--ember); }
 .site-footer .legal { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }

@@ -17,7 +17,7 @@ interface Props {
 const { images, interval = 6000 } = Astro.props;
 ---
 
-<section class="showcase" data-interval={interval}>
+<section class="showcase" data-interval={interval} style={`--duree-photo: ${interval}ms`}>
   <div class="showcase-media" aria-hidden="true">
     {images.map((item, i) => (
       <img
