@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T10:46:16.357Z",
+  "generatedAt": "2026-10-09T10:54:04.893Z",
   "cover": {
     "widths": [
       400,
@@ -14,73 +14,87 @@
     "file": "jaquette.pdf",
     "bytes": 4469175
   },
+  "full": {
+    "file": "Forgotten Chapters - album complet.mp3",
+    "bytes": 72393393
+  },
   "tracks": [
     {
-      "n": 1,
-      "file": "01-Arx Memoriae.mp3",
+      "n": 0,
+      "intro": true,
+      "file": "00-Arx Memoriae.mp3",
       "title": "Arx Memoriae",
       "bytes": 3415091,
       "type": "audio/mpeg"
     },
     {
-      "n": 2,
-      "file": "02-Arrow of Justice.mp3",
+      "n": 1,
+      "intro": false,
+      "file": "01-Arrow of Justice.mp3",
       "title": "Arrow of Justice",
       "bytes": 7422488,
       "type": "audio/mpeg"
     },
     {
-      "n": 3,
-      "file": "03-Legend of the Seven Seas.mp3",
+      "n": 2,
+      "intro": false,
+      "file": "02-Legend of the Seven Seas.mp3",
       "title": "Legend of the Seven Seas",
       "bytes": 8520266,
       "type": "audio/mpeg"
     },
     {
-      "n": 4,
-      "file": "04-My Demons.mp3",
+      "n": 3,
+      "intro": false,
+      "file": "03-My Demons.mp3",
       "title": "My Demons",
       "bytes": 8113994,
       "type": "audio/mpeg"
     },
     {
-      "n": 5,
-      "file": "05-One Thousand and One Nights.mp3",
+      "n": 4,
+      "intro": false,
+      "file": "04-One Thousand and One Nights.mp3",
       "title": "One Thousand and One Nights",
       "bytes": 6865777,
       "type": "audio/mpeg"
     },
     {
-      "n": 6,
-      "file": "06-Candlelight.mp3",
+      "n": 5,
+      "intro": false,
+      "file": "05-Candlelight.mp3",
       "title": "Candlelight",
       "bytes": 7616834,
       "type": "audio/mpeg"
     },
     {
-      "n": 7,
-      "file": "07-Letter.mp3",
+      "n": 6,
+      "intro": false,
+      "file": "06-Letter.mp3",
       "title": "Letter",
       "bytes": 6998667,
       "type": "audio/mpeg"
     },
     {
-      "n": 8,
-      "file": "08-Burgundy's Fight.mp3",
+      "n": 7,
+      "intro": false,
+      "file": "07-Burgundy's Fight.mp3",
       "title": "Burgundy's Fight",
       "bytes": 9387314,
       "type": "audio/mpeg"
     },
     {
-      "n": 9,
-      "file": "09-Orléans.mp3",
+      "n": 8,
+      "intro": false,
+      "file": "08-Orléans.mp3",
       "title": "Orléans",
       "bytes": 7441915,
       "type": "audio/mpeg"
     },
     {
-      "n": 10,
-      "file": "10-Last Hope.mp3",
+      "n": 9,
+      "intro": false,
+      "file": "09-Last Hope.mp3",
       "title": "Last Hope",
       "bytes": 6627523,
       "type": "audio/mpeg"

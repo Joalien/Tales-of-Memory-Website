@@ -1,10 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site, activeLinks } from '../data/site';
-import { cover, coverSrc, coverSrcset, tracks, trackSrc, booklet, bookletHref, humanSize } from '../lib/album';
+import {
+  cover, coverSrc, coverSrcset,
+  tracks, trackSrc, trackLabel,
+  booklet, bookletHref,
+  fullAlbum, fullAlbumHref,
+  humanSize,
+} from '../lib/album';
 
 /** Les fichiers déposés dans album/ illustrent la sortie la plus récente. */
-const hasAlbumFiles = Boolean(cover || tracks.length || booklet);
+const hasAlbumFiles = Boolean(cover || tracks.length || booklet || fullAlbum);
 ---
 
 <BaseLayout title="Écouter" description={`Les sorties de ${site.name} et où les écouter.`}>
@@ -17,7 +23,19 @@ const hasAlbumFiles = Boolean(cover || tracks.length || booklet);
 
       {site.releases.map((release, index) => {
         const withFiles = index === 0 && hasAlbumFiles;
-        const titles = withFiles && tracks.length ? tracks.map((t) => t.title) : release.tracks;
+
+        // Une seule structure pour les deux cas : la numérotation doit être
+        // identique que les fichiers audio soient présents ou non, sinon une
+        // construction automatique renumérote l'intro en 01.
+        let played = 0;
+        const rows =
+          withFiles && tracks.length
+            ? tracks.map((t) => ({ label: trackLabel(t), title: t.title, src: trackSrc(t.file) }))
+            : release.tracks.map((t) => {
+                if (t.intro) return { label: 'Intro', title: t.title, src: null as string | null };
+                played += 1;
+                return { label: String(played).padStart(2, '0'), title: t.title, src: null as string | null };
+              });
         return (
           <article class="release">
             {withFiles && cover ? (
@@ -40,26 +58,26 @@ const hasAlbumFiles = Boolean(cover || tracks.length || booklet);
               <h3>{release.title}</h3>
               {release.note && <p class="prose" style="margin-top: 0.75rem;">{release.note}</p>}
 
-              {withFiles && tracks.length > 0 ? (
-                <ol class="tracklist tracklist-audio">
-                  {tracks.map((track) => (
+              {rows.length > 0 && (
+                <ol class:list={['tracklist', { 'tracklist-audio': withFiles && tracks.length > 0 }]}>
+                  {rows.map((row) => (
                     <li>
-                      <span class="t-title">{track.title}</span>
-                      <audio controls preload="none" src={trackSrc(track.file)}>
-                        <a href={trackSrc(track.file)}>Écouter {track.title}</a>
-                      </audio>
+                      <span class="t-num">{row.label}</span>
+                      <span class="t-title">{row.title}</span>
+                      {row.src && (
+                        <audio controls preload="none" src={row.src}>
+                          <a href={row.src}>Écouter {row.title}</a>
+                        </audio>
+                      )}
                     </li>
                   ))}
                 </ol>
-              ) : (
-                titles.length > 0 && (
-                  <ol class="tracklist">
-                    {titles.map((title) => <li>{title}</li>)}
-                  </ol>
-                )
               )}
 
               <div class="links-row">
+                {withFiles && fullAlbum && fullAlbumHref && (
+                  <a href={fullAlbumHref} download>Télécharger l’album · {humanSize(fullAlbum.bytes)}</a>
+                )}
                 {withFiles && booklet && bookletHref && (
                   <a href={bookletHref} download>Jaquette en PDF · {humanSize(booklet.bytes)}</a>
                 )}

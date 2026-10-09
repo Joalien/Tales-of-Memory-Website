@@ -5,22 +5,33 @@ quels : `npm run album` en fabrique les versions destinées au web.
 
 ```
 album/
-├── pochette.jpg        ← la pochette en pleine résolution (.jpg .png .webp .tif)
-├── jaquette.pdf        ← le livret / la jaquette, proposé au téléchargement
+├── pochette.jpg                 ← la pochette en pleine résolution
+├── jaquette.pdf                 ← le livret, proposé au téléchargement
+├── Mon album - complet.mp3      ← l'album en un seul fichier (facultatif)
 └── audio/
-    ├── 01-premier-titre.mp3
-    ├── 02-deuxieme-titre.mp3
+    ├── 00-Mon intro.mp3         ← 00 = intro, hors numérotation
+    ├── 01-Premier titre.mp3
     └── …
 ```
 
+Un fichier audio posé **à la racine** est compris comme l'album entier et
+donne le bouton « Télécharger l'album ». Les pistes séparées, elles, vont
+dans `audio/`.
+
 ## Nommage des pistes
 
-Le numéro en tête donne l'ordre, le reste donne le titre affiché :
+Le numéro en tête donne l'ordre **et le numéro affiché**, le reste donne le
+titre. Le numéro **`00` désigne une intro** : la piste s'affiche « Intro » et
+la numérotation des morceaux repart à 1 juste après.
 
-| Fichier | Titre sur le site |
+| Fichier | Affiché sur le site |
 |---|---|
-| `01-la-derniere-lettre.mp3` | La derniere lettre |
-| `02-Sous les cendres.mp3` | Sous les cendres |
+| `00-Arx Memoriae.mp3` | Intro · Arx Memoriae |
+| `01-Arrow of Justice.mp3` | 01 · Arrow of Justice |
+| `02-Sous les cendres.mp3` | 02 · Sous les cendres |
+
+Tu contrôles donc entièrement l'ordre et la numérotation en renommant les
+fichiers, sans jamais toucher au code.
 
 Les accents et les majuscules du nom de fichier sont conservés, donc
 `03-Rémanence.mp3` s'affiche « Rémanence ». Renomme simplement tes fichiers

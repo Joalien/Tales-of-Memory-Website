@@ -71,24 +71,26 @@ export const site = {
       title: 'Forgotten Chapters',
       year: 2026,
       kind: 'Album',
-      note: 'Dix titres, cinquante minutes. Produit et édité indépendamment.',
+      note: '',
       links: [
         { label: 'Bandcamp', url: '' },
         { label: 'Spotify', url: '' },
       ],
       // Repris du verso de la jaquette. Sert de secours : quand des fichiers
       // audio sont déposés, la liste affichée vient de leurs noms de fichiers.
+      // `intro: true` sort le morceau de la numérotation, comme le préfixe 00
+      // d'un nom de fichier audio.
       tracks: [
-        'Arx Memoriae',
-        'Arrow of Justice',
-        'Legend of the Seven Seas',
-        'My Demons',
-        'One Thousand and One Nights',
-        'Candlelight',
-        'Letter',
-        'Burgundy’s Fight',
-        'Orléans',
-        'Last Hope',
+        { title: 'Arx Memoriae', intro: true },
+        { title: 'Arrow of Justice', intro: false },
+        { title: 'Legend of the Seven Seas', intro: false },
+        { title: 'My Demons', intro: false },
+        { title: 'One Thousand and One Nights', intro: false },
+        { title: 'Candlelight', intro: false },
+        { title: 'Letter', intro: false },
+        { title: 'Burgundy’s Fight', intro: false },
+        { title: 'Orléans', intro: false },
+        { title: 'Last Hope', intro: false },
       ],
     },
   ],

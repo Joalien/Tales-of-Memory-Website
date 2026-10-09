@@ -79,9 +79,20 @@ function buildBooklet() {
   return { file: 'jaquette.pdf', bytes };
 }
 
+/**
+ * Un fichier audio posé à la racine de album/ est l'album en un seul morceau,
+ * par opposition aux pistes séparées rangées dans album/audio/.
+ */
+function buildFullAlbum() {
+  const file = listFiles(SRC).find((f) => AUDIO_EXT.has(path.extname(f).toLowerCase()));
+  if (!file) return null;
+  const bytes = copyIfNeeded(path.join(SRC, file), path.join(OUT, file));
+  return { file, bytes };
+}
+
 function buildTracks() {
   const tracks = [];
-  let total = 0;
+
 
   for (const name of listFiles(path.join(SRC, 'audio')).sort()) {
     const ext = path.extname(name).toLowerCase();
@@ -92,15 +103,16 @@ function buildTracks() {
     if (!AUDIO_EXT.has(ext)) continue;
 
     const bytes = copyIfNeeded(path.join(SRC, 'audio', name), path.join(OUT, 'audio', name));
-    total += bytes;
-    tracks.push({ n: tracks.length + 1, file: name, title: titleFromFilename(name), bytes, type: mimeFor(ext) });
+
+
+    // Le numéro affiché vient du nom de fichier, et 00 désigne une intro :
+    // renommer un fichier suffit donc à changer l'ordre ou la numérotation.
+    const numbered = /^\s*(\d+)/.exec(name);
+    const n = numbered ? Number.parseInt(numbered[1], 10) : tracks.length + 1;
+
+    tracks.push({ n, intro: n === 0, file: name, title: titleFromFilename(name), bytes, type: mimeFor(ext) });
   }
 
-  if (total > 40 * 1024 * 1024) {
-    warnings.push(
-      `${(total / 1024 / 1024).toFixed(0)} Mo d'audio : à ce volume, mieux vaut les servir depuis R2 que depuis le déploiement`,
-    );
-  }
   return tracks;
 }
 
@@ -111,6 +123,7 @@ function onlyPresent(manifest) {
     generatedAt: new Date().toISOString(),
     cover: coverOk ? manifest.cover : null,
     booklet: manifest.booklet && fs.existsSync(path.join(OUT, manifest.booklet.file)) ? manifest.booklet : null,
+    full: manifest.full && fs.existsSync(path.join(OUT, manifest.full.file)) ? manifest.full : null,
     tracks: (manifest.tracks ?? []).filter((t) => fs.existsSync(path.join(OUT, 'audio', t.file))),
   };
 }
@@ -120,7 +133,13 @@ const hasSources = fs.existsSync(SRC) && (listFiles(SRC).length > 0 || listFiles
 let manifest;
 if (hasSources) {
   fs.mkdirSync(OUT, { recursive: true });
-  manifest = { generatedAt: new Date().toISOString(), cover: await buildCover(), booklet: buildBooklet(), tracks: buildTracks() };
+  manifest = {
+    generatedAt: new Date().toISOString(),
+    cover: await buildCover(),
+    booklet: buildBooklet(),
+    full: buildFullAlbum(),
+    tracks: buildTracks(),
+  };
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
 } else if (fs.existsSync(MANIFEST)) {
   manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
@@ -129,12 +148,24 @@ if (hasSources) {
 }
 
 const published = onlyPresent(manifest);
+
+// Seuil calculé sur tout l'audio publié : les pistes séparées et l'album
+// complet voyagent par le même tuyau.
+const audioBytes =
+  (published.full?.bytes ?? 0) + published.tracks.reduce((n, t) => n + t.bytes, 0);
+if (audioBytes > 40 * 1024 * 1024) {
+  warnings.push(
+    `${(audioBytes / 1024 / 1024).toFixed(0)} Mo d'audio au total : à ce volume, mieux vaut le servir depuis R2 que depuis le déploiement`,
+  );
+}
+
 fs.mkdirSync(path.dirname(DATA), { recursive: true });
 fs.writeFileSync(DATA, JSON.stringify(published, null, 2));
 
 const bits = [
   published.cover ? 'pochette' : null,
   published.booklet ? 'jaquette' : null,
+  published.full ? 'album complet' : null,
   published.tracks.length ? `${published.tracks.length} piste(s)` : null,
 ].filter(Boolean);
 console.log(`[album] ${bits.length ? bits.join(', ') : 'rien à publier — voir album/README.md'}`);

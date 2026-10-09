@@ -533,17 +533,21 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: var(--ink-raise);
 }
 
-.tracklist { margin: 1.25rem 0; counter-reset: t; }
+.tracklist { margin: 1.25rem 0; }
 .tracklist li {
-  counter-increment: t;
   display: flex;
   gap: 0.9rem;
   padding-block: 0.4rem;
   border-bottom: 1px solid var(--line);
   color: var(--bone-dim);
 }
-.tracklist li::before {
-  content: counter(t, decimal-leading-zero);
+/* Le numéro vient de la donnée et non d'un compteur CSS : celui-ci ne saurait
+   ni afficher « Intro », ni repartir de 1 juste après elle. */
+.tracklist .t-num {
+  flex: 0 0 auto;
+  font-size: var(--step--1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--bone-faint);
   font-variant-numeric: tabular-nums;
 }
@@ -552,7 +556,7 @@ ul { margin: 0; padding: 0; list-style: none; }
    et donc accessible au clavier et aux lecteurs d'écran sans effort. */
 .tracklist-audio li {
   display: grid;
-  grid-template-columns: 2.2rem 1fr;
+  grid-template-columns: 3.6rem 1fr;
   gap: 0.35rem 0.9rem;
   align-items: center;
   padding-block: 0.8rem;
