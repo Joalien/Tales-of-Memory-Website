@@ -45,3 +45,8 @@ public/album/*
 
 # Inventaire de l'album, reconstruit à chaque build.
 src/data/album.json
+
+# Jetons d'API. Ils restent dans le projet, à portée de main, mais ne doivent
+# jamais partir dans Git : l'historique ne se purge pas, et un secret poussé
+# une fois est un secret à révoquer.
+.secrets/
