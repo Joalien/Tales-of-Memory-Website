@@ -70,7 +70,7 @@ export const site = {
    * Flux public du calendrier « Concerts », pour le bouton d’abonnement des
    * fans. À ne pas confondre avec CALENDAR_ICS_URL qui est l’adresse secrète.
    */
-  publicCalendarUrl: '',
+  publicCalendarUrl: '/concerts.ics',
 
   /** Sorties, de la plus récente à la plus ancienne. */
   releases: [

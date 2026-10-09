@@ -4,15 +4,15 @@ import { site } from '../data/site';
 const TZ = 'Europe/Paris';
 
 /** Date du jour civil parisien correspondant à un instant, au format AAAAMMJJ. */
-const jourParisien = (iso: string) =>
+export const jourParisien = (iso: string) =>
   new Intl.DateTimeFormat('fr-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' })
     .format(new Date(iso))
     .replaceAll('-', '');
 
 /** 2026-11-14T19:30:00.000Z -> 20261114T193000Z */
-const instantCompact = (iso: string) => iso.replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+export const instantCompact = (iso: string) => iso.replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 
-const jourSuivant = (compact: string) => {
+export const jourSuivant = (compact: string) => {
   const d = new Date(Date.UTC(+compact.slice(0, 4), +compact.slice(4, 6) - 1, +compact.slice(6, 8) + 1));
   return d.toISOString().slice(0, 10).replaceAll('-', '');
 };
