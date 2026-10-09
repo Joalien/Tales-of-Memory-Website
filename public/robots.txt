@@ -1,0 +1,5 @@
+# PROVISOIRE — le site est en préparation et son contenu est encore du bouchon.
+# À remplacer par une autorisation complète au moment de brancher
+# talesofmemory.com, sinon le vrai site resterait invisible des moteurs.
+User-agent: *
+Disallow: /

@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "talesofmemory",
+  "compatibility_date": "2026-10-09",
+
+  // Cloudflare a fusionné Pages dans Workers : un Worker sert directement les
+  // fichiers statiques produits par Astro. Le même Worker accueillera plus tard
+  // le point d'entrée d'envoi des photos, sans second déploiement à gérer.
+  "assets": {
+    "directory": "./dist",
+    // Sert le 404.html d'Astro sur les URL inconnues.
+    "not_found_handling": "404-page",
+    // Astro produit concerts/index.html et tous les liens du site pointent sur
+    // /concerts sans slash final. Sans ce réglage, le Worker répond 307 vers
+    // /concerts/ : un aller-retour de plus à chaque clic.
+    "html_handling": "drop-trailing-slash"
+  }
+}
