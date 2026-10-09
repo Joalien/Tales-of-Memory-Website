@@ -60,6 +60,7 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
           </div>
         )}
 
+        {!past && (
         <div class="show-actions">
           {!past && show.ticketsUrl && (
             <a class="btn" href={show.ticketsUrl} target="_blank" rel="noopener">Billetterie</a>
@@ -81,12 +82,8 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
               rel="noopener"
             >Y aller</a>
           )}
-          {/* Pas de bouton quand la bande de vignettes est là : elles mènent
-              déjà à la galerie, et le bouton restait orphelin sous la bande. */}
-          {past && gallery && gallery.photos.length === 0 && (
-            <a class="btn btn-ghost" href={`/concerts/${show.slug}`}>Les photos</a>
-          )}
         </div>
+        )}
       </article>
     );
   })}
