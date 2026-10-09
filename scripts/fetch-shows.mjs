@@ -21,8 +21,20 @@ function write(shows, source) {
   console.log(`[agenda] ${shows.length} concert(s) publiable(s) depuis ${source}`);
 }
 
+/** Cloudflare Pages pose CF_PAGES ; la plupart des autres CI posent CI. */
+const onBuildMachine = Boolean(process.env.CF_PAGES || process.env.CI);
+
 async function main() {
   if (!url) {
+    // La fixture contient des salles et des dates inventées. Utile en local,
+    // désastreux en ligne : un fan pourrait se déplacer pour un concert qui
+    // n'existe pas. Mieux vaut publier un agenda vide.
+    if (onBuildMachine) {
+      console.error('[agenda] CALENDAR_ICS_URL absent sur la machine de build : publication sans aucune date');
+      console.error('[agenda] la fixture de test ne doit jamais partir en ligne');
+      write([], 'aucun agenda configuré');
+      return;
+    }
     write(showsFromIcs(fs.readFileSync(FIXTURE, 'utf8')), 'fixture locale');
     return;
   }

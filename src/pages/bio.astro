@@ -1,6 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
+import { pressPhotos, src, srcset } from '../lib/photos';
+
+const press = pressPhotos;
+const bandPhoto = press?.photos.find((p) => p.w > p.h) ?? press?.photos[0];
 ---
 
 <BaseLayout title="Bio" description={site.summary}>
@@ -8,6 +12,20 @@ import { site } from '../data/site';
     <div class="shell">
       <p class="eyebrow">Le groupe</p>
       <div class="section-head"><h2>{site.name}</h2></div>
+
+      {press && bandPhoto && (
+        <figure class="band-photo">
+          <img
+            src={src(press.slug, bandPhoto.id, 1600)}
+            srcset={srcset(press.slug, bandPhoto.id)}
+            sizes="(min-width: 76rem) 1100px, 94vw"
+            width={bandPhoto.w}
+            height={bandPhoto.h}
+            decoding="async"
+            alt={`Les membres de ${site.name}`}
+          />
+        </figure>
+      )}
 
       <div class="prose" style="font-size: var(--step-1); line-height: 1.6;">
         {site.bio.map((paragraph) => <p>{paragraph}</p>)}

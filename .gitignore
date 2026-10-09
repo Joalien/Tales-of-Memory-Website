@@ -20,4 +20,15 @@ photos/*
 !photos/README.md
 
 # Dérivés web fabriqués en local par `npm run photos`.
-public/media/
+#
+# Exception assumée : les photos de PRESSE sont versionnées. Elles sont peu
+# nombreuses, changent une fois par an, et le bandeau d'accueil comme la page
+# bio doivent fonctionner même sans bucket R2.
+#
+# Les dérivés de CONCERT restent exclus : c'est le volume qui grossit sans
+# cesse, et l'historique Git ne se purge pas. Ils passeront par R2.
+# fetch-photos.mjs ignore d'office les galeries dont les fichiers sont absents,
+# donc un manifeste qui mentionne des concerts non versionnés ne casse rien.
+public/media/*
+!public/media/manifest.json
+!public/media/presse/

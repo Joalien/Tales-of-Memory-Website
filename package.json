@@ -8,7 +8,7 @@
     "dev": "npm run data && astro dev",
     "build": "npm run data && astro build",
     "preview": "astro preview",
-    "demo:images": "node scripts/make-demo-images.mjs",
+    "demo:images": "node scripts/demo-photos.mjs",
     "astro": "astro",
     "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs"
   },

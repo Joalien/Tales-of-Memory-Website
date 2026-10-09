@@ -18,6 +18,13 @@ if ((process.env.PHOTOS_BASE_URL || '').trim()) {
   process.exit(0);
 }
 
+// Dès que de vraies photos sont ingérées, les images bouchon ne sont plus
+// référencées nulle part : les produire ne ferait qu'alourdir le déploiement.
+if (fs.existsSync(path.join('public', 'media', 'manifest.json'))) {
+  console.log('[demo] photos réelles présentes, génération ignorée');
+  process.exit(0);
+}
+
 /** Générateur pseudo-aléatoire déterministe : mêmes images à chaque build. */
 function rng(seed) {
   let a = seed >>> 0;

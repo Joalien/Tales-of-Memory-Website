@@ -22,6 +22,27 @@ function write(payload, source) {
   console.log(`[photos] ${payload.galleries.length} galerie(s), ${total} photo(s) depuis ${source}`);
 }
 
+/**
+ * Ne garde que les photos dont le dérivé est réellement sur le disque.
+ *
+ * Le manifeste est produit en local, où tous les originaux sont présents, mais
+ * seuls les dérivés de presse sont versionnés. Sur la machine de build, les
+ * galeries de concert sont donc listées sans leurs fichiers : sans ce filtre,
+ * le site publierait des images cassées.
+ */
+function withFilesPresent(galleries) {
+  const onDisk = (slug, id) =>
+    fs.existsSync(path.join('public', 'media', slug, '1600', `${id}.webp`));
+
+  return galleries
+    .map((g) => ({ ...g, photos: (g.photos ?? []).filter((p) => onDisk(g.slug, p.id)) }))
+    .filter((g) => g.photos.length > 0)
+    .map((g) => ({
+      ...g,
+      cover: g.photos.some((p) => p.id === g.cover) ? g.cover : g.photos[0].id,
+    }));
+}
+
 function fromDemo() {
   const galleries = [];
   if (fs.existsSync(DEMO_ROOT)) {
@@ -47,7 +68,7 @@ async function main() {
         generatedAt: new Date().toISOString(),
         baseUrl: '/media',
         widths: local.widths ?? [400, 800, 1600],
-        galleries: local.galleries ?? [],
+        galleries: withFilesPresent(local.galleries ?? []),
       }, 'photos locales ingérées');
       return;
     }

@@ -28,8 +28,10 @@ export const site = {
       'ne décore pas la musique mais la porte.',
   ],                                                   // À REMPLACER
 
+  // Cinq emplacements : c'est le nombre de personnes sur la photo promo.
   members: [
     { name: 'Prénom Nom', role: 'Chant' },
+    { name: 'Prénom Nom', role: 'Guitare' },
     { name: 'Prénom Nom', role: 'Guitare' },
     { name: 'Prénom Nom', role: 'Basse' },
     { name: 'Prénom Nom', role: 'Batterie' },

@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-10-09T09:11:40.934Z",
+  "widths": [
+    400,
+    800,
+    1600
+  ],
+  "galleries": [
+    {
+      "slug": "presse",
+      "kind": "press",
+      "cover": "7390abf2d2aa",
+      "photos": [
+        {
+          "id": "7390abf2d2aa",
+          "w": 1536,
+          "h": 1024,
+          "credit": "",
+          "source": "groupe-01.png"
+        },
+        {
+          "id": "516aa62a90c9",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "portrait-01.png"
+        }
+      ]
+    }
+  ]
+}

@@ -5,17 +5,38 @@ import PhotoGrid from '../components/PhotoGrid.astro';
 import Lightbox from '../components/Lightbox.astro';
 import { site, activeLinks } from '../data/site';
 import { upcoming, nextShow } from '../lib/shows';
-import { concertGalleries, latestPhotos } from '../lib/photos';
+import { concertGalleries, latestPhotos, pressPhotos, src, srcset } from '../lib/photos';
 import { longDate, time } from '../lib/format';
 
 const nextThree = upcoming.slice(0, 3);
 const recent = latestPhotos(6);
 const recentGallery = concertGalleries[0];
 const release = site.releases[0];
+
+/** Photo de groupe en fond du bandeau : on privilégie un cliché à l'horizontale. */
+const press = pressPhotos;
+const heroPhoto = press?.photos.find((p) => p.w > p.h) ?? press?.photos[0];
+const hero = press && heroPhoto
+  ? { src: src(press.slug, heroPhoto.id, 1600), srcset: srcset(press.slug, heroPhoto.id), w: heroPhoto.w, h: heroPhoto.h }
+  : null;
 ---
 
 <BaseLayout>
   <section class="hero">
+    {hero && (
+      <div class="hero-media" aria-hidden="true">
+        <img
+          src={hero.src}
+          srcset={hero.srcset}
+          sizes="100vw"
+          width={hero.w}
+          height={hero.h}
+          alt=""
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+    )}
     <div class="shell">
       <h1 class="hero-name">{site.name}</h1>
       <p class="hero-tagline">{site.tagline} · {site.city}</p>
