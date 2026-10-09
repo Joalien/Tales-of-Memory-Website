@@ -9,6 +9,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import sharp from 'sharp';
 
 // Les scripts Node ne lisent pas .env tout seuls, contrairement à Astro.
@@ -70,6 +71,16 @@ async function buildCover() {
   return { widths: COVER_WIDTHS, w: meta.width ?? 0, h: meta.height ?? 0, source: file };
 }
 
+/**
+ * Empreinte courte du contenu, ajoutée en paramètre d'URL.
+ *
+ * Sans elle, un fichier remplacé sur R2 garde son URL, et le cache de bordure
+ * de Cloudflare continue de servir l'ancienne version — ce qui est exactement
+ * arrivé après le premier rognage des silences.
+ */
+const empreinte = (file) =>
+  crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0, 8);
+
 function copyIfNeeded(from, to) {
   const size = fs.statSync(from).size;
   if (remote) return size; // servi depuis R2, inutile de l'embarquer
@@ -82,11 +93,12 @@ function copyIfNeeded(from, to) {
 function buildBooklet() {
   const file = listFiles(SRC).find((f) => path.extname(f).toLowerCase() === '.pdf');
   if (!file) return null;
-  const bytes = copyIfNeeded(path.join(SRC, file), path.join(OUT, 'jaquette.pdf'));
+  const source = path.join(SRC, file);
+  const bytes = copyIfNeeded(source, path.join(OUT, 'jaquette.pdf'));
   if (bytes > 10 * 1024 * 1024) {
     warnings.push(`jaquette de ${(bytes / 1024 / 1024).toFixed(1)} Mo — lourd pour un téléchargement`);
   }
-  return { file: 'jaquette.pdf', bytes };
+  return { file: 'jaquette.pdf', bytes, v: empreinte(source) };
 }
 
 /**
@@ -96,8 +108,9 @@ function buildBooklet() {
 function buildFullAlbum() {
   const file = listFiles(SRC).find((f) => AUDIO_EXT.has(path.extname(f).toLowerCase()));
   if (!file) return null;
-  const bytes = copyIfNeeded(path.join(SRC, file), path.join(OUT, file));
-  return { file, bytes };
+  const source = path.join(SRC, file);
+  const bytes = copyIfNeeded(source, path.join(OUT, file));
+  return { file, bytes, v: empreinte(source) };
 }
 
 function buildTracks() {
@@ -112,7 +125,8 @@ function buildTracks() {
     }
     if (!AUDIO_EXT.has(ext)) continue;
 
-    const bytes = copyIfNeeded(path.join(SRC, 'audio', name), path.join(OUT, 'audio', name));
+    const source = path.join(SRC, 'audio', name);
+    const bytes = copyIfNeeded(source, path.join(OUT, 'audio', name));
 
 
     // Le numéro affiché vient du nom de fichier, et 00 désigne une intro :
@@ -120,7 +134,7 @@ function buildTracks() {
     const numbered = /^\s*(\d+)/.exec(name);
     const n = numbered ? Number.parseInt(numbered[1], 10) : tracks.length + 1;
 
-    tracks.push({ n, intro: n === 0, file: name, title: titleFromFilename(name), bytes, type: mimeFor(ext) });
+    tracks.push({ n, intro: n === 0, file: name, title: titleFromFilename(name), bytes, type: mimeFor(ext), v: empreinte(source) });
   }
 
   return tracks;

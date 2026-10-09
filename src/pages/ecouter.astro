@@ -31,7 +31,7 @@ const hasAlbumFiles = Boolean(cover || tracks.length || booklet || fullAlbum);
         let played = 0;
         const rows =
           withFiles && tracks.length
-            ? tracks.map((t) => ({ label: trackLabel(t), title: t.title, src: trackSrc(t.file) }))
+            ? tracks.map((t) => ({ label: trackLabel(t), title: t.title, src: trackSrc(t) }))
             : release.tracks.map((t) => {
                 if (t.intro) return { label: 'Intro', title: t.title, src: null as string | null };
                 played += 1;

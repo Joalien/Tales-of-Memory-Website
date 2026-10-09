@@ -22,15 +22,8 @@ const TYPES = {
 const wrangler = (args) =>
   execFileSync('npx', ['--yes', 'wrangler', ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
-/** Taille de l'objet distant, ou null s'il n'existe pas. */
-function remoteSize(key) {
-  try {
-    const out = wrangler(['r2', 'object', 'get', `${BUCKET}/${key}`, '--remote', '--pipe']);
-    return Buffer.byteLength(out, 'binary');
-  } catch {
-    return null;
-  }
-}
+/** Filtre optionnel : `npm run album:push -- audio` ne renvoie que les pistes. */
+const filtre = process.argv[2] ?? '';
 
 const jobs = [];
 const full = fs.existsSync(SRC)
@@ -47,6 +40,10 @@ if (fs.existsSync(path.join(SRC, 'audio'))) {
     jobs.push({ file: path.join(SRC, 'audio', name), key: `album/audio/${name}` });
   }
 }
+
+const retenus = filtre ? jobs.filter((j) => j.key.includes(filtre)) : jobs;
+jobs.length = 0;
+jobs.push(...retenus);
 
 if (!jobs.length) {
   console.log('[push] rien à téléverser');
