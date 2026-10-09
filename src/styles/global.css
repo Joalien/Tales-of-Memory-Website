@@ -372,8 +372,41 @@ ul { margin: 0; padding: 0; list-style: none; }
   }
 }
 
-.show.is-past { opacity: 0.82; }
+/* Les dates passées ne sont plus atténuées : le bloc de date suffit à les
+   distinguer, et l'opacité éteignait aussi leurs photos. */
 .show.is-past .show-date .m { color: var(--bone-faint); }
+
+/* Bande de photos sous une date passée. Défilement horizontal plutôt que
+   rotation automatique : cinq carrousels tournant en même temps sur une même
+   page transformeraient la lecture en machine à sous. */
+.show-strip {
+  grid-column: 2 / -1;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.show-strip a {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: block;
+  border: 1px solid var(--line);
+  background: var(--ink-raise);
+  transition: border-color 0.18s ease;
+}
+.show-strip a:hover { border-color: var(--ember); }
+.show-strip img {
+  height: 6.5rem;
+  width: auto;
+  display: block;
+  transition: opacity 0.18s ease;
+}
+.show-strip a:hover img { opacity: 0.85; }
 
 .empty {
   padding: 2.5rem 0;

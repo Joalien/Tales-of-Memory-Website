@@ -1,6 +1,6 @@
 ---
 import type { Show } from '../lib/shows';
-import { galleryFor } from '../lib/photos';
+import { galleryFor, src, srcset } from '../lib/photos';
 import { dayNumber, monthShort, year, longDate, time } from '../lib/format';
 import { googleCalendarUrl } from '../lib/calendar';
 
@@ -41,6 +41,25 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
           </div>
         </div>
 
+        {gallery && gallery.photos.length > 0 && (
+          <div class="show-strip">
+            {gallery.photos.map((photo, i) => (
+              <a href={`/concerts/${show.slug}`} tabindex={i === 0 ? undefined : -1} aria-hidden={i === 0 ? undefined : 'true'}>
+                <img
+                  src={src(show.slug, photo.id, 400)}
+                  srcset={srcset(show.slug, photo.id)}
+                  sizes="12rem"
+                  width={Math.round((104 * photo.w) / photo.h)}
+                  height={104}
+                  loading="lazy"
+                  decoding="async"
+                  alt={i === 0 ? `Photos du concert au ${show.venue}` : ''}
+                />
+              </a>
+            ))}
+          </div>
+        )}
+
         <div class="show-actions">
           {!past && show.ticketsUrl && (
             <a class="btn" href={show.ticketsUrl} target="_blank" rel="noopener">Billetterie</a>
@@ -62,10 +81,10 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
               rel="noopener"
             >Y aller</a>
           )}
-          {past && gallery && (
-            <a class="btn btn-ghost" href={`/concerts/${show.slug}`}>
-              {gallery.photos.length} photo{gallery.photos.length > 1 ? 's' : ''}
-            </a>
+          {/* Pas de bouton quand la bande de vignettes est là : elles mènent
+              déjà à la galerie, et le bouton restait orphelin sous la bande. */}
+          {past && gallery && gallery.photos.length === 0 && (
+            <a class="btn btn-ghost" href={`/concerts/${show.slug}`}>Les photos</a>
           )}
         </div>
       </article>
