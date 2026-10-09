@@ -10,6 +10,8 @@ Usage :
   events <calId>                       lister les événements
   import <calId> <fichier.ics>         importer des événements depuis un .ics
   feed <calId>                         afficher l'URL du flux ICS public
+  add <calId> <titre> <début> [fin] [lieu] [description]
+  delete <calId> <eventId>             supprimer un événement
 """
 import pathlib
 import sys
@@ -119,13 +121,54 @@ def cal_import(cal, fichier):
     print(f'  {n} événement(s)')
 
 
+def cal_add(cal, titre, debut, fin=None, lieu=None, description=None):
+    """
+    Ajoute un concert.
+
+    debut/fin : AAAA-MM-JJ pour une journée entière, ou AAAA-MM-JJTHH:MM.
+    Sans fin, un événement daté dure 3 h et un événement sur la journée un jour.
+    """
+    from datetime import date, datetime, timedelta
+
+    def borne(v, journee_suivante=False):
+        if 'T' in v:
+            return {'dateTime': v if len(v) > 16 else v + ':00', 'timeZone': 'Europe/Paris'}
+        d = date.fromisoformat(v)
+        return {'date': str(d + timedelta(days=1)) if journee_suivante else str(d)}
+
+    if fin is None:
+        if 'T' in debut:
+            fin_v = (datetime.fromisoformat(debut) + timedelta(hours=3)).isoformat(timespec='minutes')
+            fin_b = borne(fin_v)
+        else:
+            fin_b = borne(debut, journee_suivante=True)
+    else:
+        fin_b = borne(fin, journee_suivante='T' not in fin)
+
+    corps = {'summary': titre, 'start': borne(debut), 'end': fin_b}
+    if lieu:
+        corps['location'] = lieu
+    if description:
+        corps['description'] = description
+
+    e = service.events().insert(calendarId=cal, body=corps).execute()
+    print(f"  ajouté : {e['summary']}  ({e['start'].get('date') or e['start'].get('dateTime')})")
+    print(f"      id : {e['id']}")
+
+
+def cal_delete(cal, event_id):
+    service.events().delete(calendarId=cal, eventId=event_id).execute()
+    print(f'  supprimé : {event_id}')
+
+
 def cal_feed(cal):
     from urllib.parse import quote
     print(f'  public : https://calendar.google.com/calendar/ical/{quote(cal)}/public/basic.ics')
 
 
 ACTIONS = {'list': cal_list, 'create': cal_create, 'share': cal_share, 'public': cal_public,
-           'events': cal_events, 'import': cal_import, 'feed': cal_feed}
+           'events': cal_events, 'import': cal_import, 'feed': cal_feed,
+           'add': cal_add, 'delete': cal_delete}
 
 if len(sys.argv) < 2 or sys.argv[1] not in ACTIONS:
     sys.exit(__doc__)

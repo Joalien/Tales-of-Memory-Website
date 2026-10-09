@@ -11,6 +11,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { showsFromIcs } from './lib/ics.mjs';
 
+// Node ne lit pas .env tout seul, contrairement à Astro : sans ceci,
+// CALENDAR_ICS_URL resterait invisible et le site retomberait sur la fixture.
+try { process.loadEnvFile(); } catch { /* pas de .env */ }
+
 const OUT = path.join('src', 'data', 'shows.json');
 const FIXTURE = path.join('fixtures', 'concerts.ics');
 const url = (process.env.CALENDAR_ICS_URL || '').trim();
