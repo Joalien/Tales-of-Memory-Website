@@ -8,13 +8,15 @@
 export const site = {
   name: 'Tales of Memory',
   /** Sous-titre affiché sous le nom, et genre utilisé pour le référencement. */
-  tagline: 'Metal progressif atmosphérique',          // À REMPLACER
+  // Écrit en casse normale : le bandeau le passe en majuscules par le style,
+  // alors que le titre de page et les données structurées le reprennent tel quel.
+  tagline: 'Métal symphonique',
   city: 'Région parisienne',                           // à préciser si tu veux une ville
   foundedYear: 2019,                                   // À REMPLACER
   domain: 'https://www.talesofmemory.com',
   /** Phrase unique reprise dans les métadonnées et les partages sur réseaux. */
   summary:
-    'Tales of Memory est un groupe de metal progressif atmosphérique. Récits intimes, ' +
+    'Tales of Memory est un groupe de métal symphonique. Récits intimes, ' +
     'guitares denses et nappes orchestrales.',          // À REMPLACER
 
   /** Biographie : un élément du tableau = un paragraphe. */
