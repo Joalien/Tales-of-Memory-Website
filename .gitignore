@@ -53,3 +53,6 @@ src/data/album.json
 
 # Environnement Python pour l'API Google (recréable, ~40 Mo).
 .venv-google/
+
+# Cache Python.
+__pycache__/
