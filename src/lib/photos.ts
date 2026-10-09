@@ -1,7 +1,7 @@
 import data from '../data/photos.json';
 
 export type Photo = { id: string; w: number; h: number; credit?: string; source?: string };
-export type GalleryKind = 'concert' | 'press' | 'band' | 'member' | 'merch' | 'unsorted';
+export type GalleryKind = 'concert' | 'press' | 'band' | 'member' | 'merch' | 'poster' | 'unsorted';
 export type Gallery = { slug: string; cover: string; photos: Photo[]; kind?: GalleryKind };
 
 export const baseUrl: string = data.baseUrl;
@@ -28,6 +28,9 @@ export const memberPhotos: Gallery | undefined = galleries.find((g) => g.kind ==
 
 /** Visuels des articles de la boutique, un fichier par article. */
 export const merchPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'merch');
+
+/** Affiches de concert, un fichier par date. */
+export const posterPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'poster');
 
 /**
  * Une photo d'une galerie, retrouvée par le nom de son fichier source.
@@ -70,13 +73,59 @@ export const memberPhoto = (name: string) =>
   photoNamed(memberPhotos, name, { sujet: 'membres', dossier: 'photos/membres/' });
 
 /**
- * Le visuel d'un article, retrouvé par le nom de son fichier source.
+ * Les visuels d'un article, dans l'ordre d'affichage.
  *
- * Même règle que pour les portraits : un visuel absent rend `undefined` et la
- * page boutique affiche un cadre d'attente à sa place.
+ * Un article peut être montré sous plusieurs angles : le fichier principal
+ * porte le nom de l'article, les suivants y ajoutent `-2`, `-3`… Déposer
+ * `mug.jpg`, `mug-2.jpg` et `mug-3.jpg` suffit donc à obtenir trois vues, sans
+ * rien changer à la description de l'article.
+ *
+ * Le suffixe doit être un nombre : un article nommé `mug-special` reste bien
+ * un article à part, et n'est pas avalé comme une vue de `mug`.
+ *
+ * Liste vide si rien n'a été déposé — la page affiche alors un cadre d'attente.
  */
-export const merchPhoto = (name: string) =>
-  photoNamed(merchPhotos, name, { sujet: 'merch', dossier: 'photos/merch/' });
+export function merchPhotoSet(name: string): { gallery: string; photo: Photo }[] {
+  const wanted = name.trim().toLowerCase();
+  if (!wanted || !merchPhotos) return [];
+
+  const rangs = new Map<number, Photo>();
+  for (const photo of merchPhotos.photos) {
+    const base = (photo.source ?? '').toLowerCase().replace(/\.[^.]+$/, '');
+    if (base === wanted) { rangs.set(1, rangs.get(1) ?? photo); continue; }
+    const suite = base.startsWith(`${wanted}-`) ? base.slice(wanted.length + 1) : '';
+    if (/^\d+$/.test(suite)) {
+      const n = Number(suite);
+      if (n > 1 && !rangs.has(n)) rangs.set(n, photo);
+    }
+  }
+  return [...rangs.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([, photo]) => ({ gallery: merchPhotos!.slug, photo }));
+}
+
+/** Le visuel principal d'un article. Raccourci sur `merchPhotoSet`. */
+export const merchPhoto = (name: string) => merchPhotoSet(name)[0];
+
+/**
+ * L'affiche d'un concert, retrouvée par l'identifiant de la date.
+ *
+ * Le fichier porte le nom du concert tel que l'agenda le calcule
+ * (`2026-09-24_ladies-rock.jpg`), le même que son dossier de photos : il n'y a
+ * donc pas de second identifiant à tenir à jour. Une date sans affiche rend
+ * `undefined` et s'affiche comme avant.
+ */
+export const posterFor = (showSlug: string) =>
+  photoNamed(posterPhotos, showSlug, { sujet: 'affiches', dossier: 'photos/affiches/' });
+
+/**
+ * Adresse complète d'une image, pour les endroits qui ne tolèrent pas un
+ * chemin relatif : données structurées et flux RSS, lus hors du site.
+ */
+export const absoluteSrc = (gallerySlug: string, id: string, w: number, domain: string) => {
+  const path = src(gallerySlug, id, w);
+  return /^https?:\/\//i.test(path) ? path : `${domain.replace(/\/+$/, '')}${path}`;
+};
 
 export const galleryFor = (showSlug: string) => concertGalleries.find((g) => g.slug === showSlug);
 

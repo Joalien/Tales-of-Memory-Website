@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { site } from '../../data/site';
-import { concertGalleries } from '../../lib/photos';
+import { concertGalleries, posterFor, src, srcset } from '../../lib/photos';
 import { showBySlug } from '../../lib/shows';
 import { longDate } from '../../lib/format';
 
@@ -15,6 +15,9 @@ const { gallery } = Astro.props;
 const show = showBySlug(gallery.slug);
 const title = show ? `${show.venue}${show.city ? ` · ${show.city}` : ''}` : gallery.slug;
 const altPrefix = show ? `${site.name} au ${show.venue}, ${show.city}` : `${site.name} en concert`;
+// L'affiche ouvre la page quand le groupe l'a gardée : elle situe la soirée
+// avant les photos, qui n'en montrent que des fragments.
+const poster = posterFor(gallery.slug);
 ---
 
 <BaseLayout title={title} description={`Photos de ${site.name} — ${title}.`}>
@@ -25,6 +28,20 @@ const altPrefix = show ? `${site.name} au ${show.venue}, ${show.city}` : `${site
         <h2>{title}</h2>
         {show && <span class="more" style="text-transform: none; letter-spacing: 0.08em;">{longDate(show.startsAt)}</span>}
       </div>
+
+      {poster && (
+        <figure class="concert-poster">
+          <img
+            src={src(poster.gallery, poster.photo.id, 800)}
+            srcset={srcset(poster.gallery, poster.photo.id)}
+            sizes="(min-width: 46rem) 22rem, 80vw"
+            width={poster.photo.w}
+            height={poster.photo.h}
+            decoding="async"
+            alt={`Affiche du concert — ${title}`}
+          />
+        </figure>
+      )}
 
       <PhotoGrid gallery={gallery.slug} photos={gallery.photos} altPrefix={altPrefix} />
 

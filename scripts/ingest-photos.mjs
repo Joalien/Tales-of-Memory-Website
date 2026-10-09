@@ -62,6 +62,11 @@ function collectSources() {
   if (fs.existsSync(path.join(SRC_ROOT, 'merch'))) {
     groups.push({ slug: 'merch', kind: 'merch', files: listImages(path.join(SRC_ROOT, 'merch')) });
   }
+  // Une affiche par date, nommée d'après l'identifiant du concert — le même
+  // que son dossier dans photos/concerts/, calculé depuis l'agenda.
+  if (fs.existsSync(path.join(SRC_ROOT, 'affiches'))) {
+    groups.push({ slug: 'affiches', kind: 'poster', files: listImages(path.join(SRC_ROOT, 'affiches')) });
+  }
   const loose = listImages(SRC_ROOT).filter((f) => path.basename(f).toLowerCase() !== 'readme.md');
   if (loose.length) groups.push({ slug: 'non-classees', kind: 'unsorted', files: loose });
   return groups;

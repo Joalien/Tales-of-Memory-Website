@@ -4,15 +4,25 @@ import ShowList from '../components/ShowList.astro';
 import CalendarSubscribe from '../components/CalendarSubscribe.astro';
 import { site } from '../data/site';
 import { upcoming, past, generatedAt } from '../lib/shows';
+import { posterFor, absoluteSrc } from '../lib/photos';
 import { shortDate, time } from '../lib/format';
 
-/** Données structurées par concert : Google peut afficher les dates directement. */
+/**
+ * Données structurées par concert : Google peut afficher les dates directement.
+ *
+ * L'affiche y sert d'illustration quand elle existe. C'est le champ que les
+ * moteurs reprennent pour la vignette d'un événement, et il leur faut une
+ * adresse complète : un chemin relatif ne serait pas suivi.
+ */
 const jsonLd = upcoming.length
   ? {
       '@context': 'https://schema.org',
-      '@graph': upcoming.map((show) => ({
+      '@graph': upcoming.map((show) => {
+        const poster = posterFor(show.slug);
+        return {
         '@type': 'MusicEvent',
         name: `${site.name} — ${show.venue}`,
+        ...(poster ? { image: absoluteSrc(poster.gallery, poster.photo.id, 1600, site.domain) } : {}),
         startDate: show.startsAt,
         endDate: show.overAt,
         eventStatus: 'https://schema.org/EventScheduled',
@@ -27,7 +37,8 @@ const jsonLd = upcoming.length
         ...(show.ticketsUrl
           ? { offers: { '@type': 'Offer', url: show.ticketsUrl, availability: 'https://schema.org/InStock' } }
           : {}),
-      })),
+        };
+      }),
     }
   : undefined;
 ---

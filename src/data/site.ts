@@ -127,51 +127,47 @@ export const site = {
     {
       name: 'Forgotten Chapters',
       kind: 'CD',
-      price: '12 €',
+      price: '12 €',                                           // À REMPLACER
       text:
         'L’album en disque, dix titres et son livret illustré. ' +
-        'La version physique contient les textes complets.',   // À REMPLACER
+        'La version physique contient les textes complets.',
       photo: '',
       album: true,
       sizes: [],
       url: '',
     },
     {
-      name: 'T-shirt logo',
+      name: 'T-shirt Forgotten Chapters',
       kind: 'T-shirt',
-      price: '20 €',                                           // À REMPLACER
-      text: 'Coton épais, impression sur l’avant. Coupe droite.', // À REMPLACER
-      photo: 'tshirt-logo',
+      price: '22 €',                                           // À REMPLACER
+      text:
+        'La pochette de l’album à l’avant, l’emblème et le nom du groupe au dos. ' +
+        'Noir, impression quadrichromie.',
+      photo: 'tshirt-forgotten-chapters',
       album: false,
       sizes: ['S', 'M', 'L', 'XL', 'XXL'],                     // À REMPLACER
       url: '',
     },
     {
-      name: 'T-shirt Forgotten Chapters',
+      name: 'T-shirt Letter',
       kind: 'T-shirt',
       price: '22 €',                                           // À REMPLACER
-      text: 'La pochette de l’album à l’avant, les dates de tournée au dos.', // À REMPLACER
-      photo: 'tshirt-album',
+      text:
+        'Le visuel de « Letter » à l’avant. Au dos, l’emblème et ' +
+        '« Just say: I believe! and you’ll win that fight ».',
+      photo: 'tshirt-letter',
       album: false,
-      sizes: ['S', 'M', 'L', 'XL'],                            // À REMPLACER
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],                     // À REMPLACER
       url: '',
     },
     {
-      name: 'Tote bag',
-      kind: 'Accessoire',
+      name: 'Mug Forgotten Chapters',
+      kind: 'Mug',
       price: '12 €',                                           // À REMPLACER
-      text: 'Toile écrue, logo sérigraphié.',                  // À REMPLACER
-      photo: 'tote-bag',
-      album: false,
-      sizes: [],
-      url: '',
-    },
-    {
-      name: 'Poster',
-      kind: 'Affiche',
-      price: '8 €',                                            // À REMPLACER
-      text: 'Visuel de l’album, 40 × 60 cm, papier mat.',       // À REMPLACER
-      photo: 'poster',
+      text:
+        'Céramique, intérieur et anse noirs. La pochette d’un côté, ' +
+        'l’emblème de l’autre, le nom du groupe entre les deux.',
+      photo: 'mug-forgotten-chapters',
       album: false,
       sizes: [],
       url: '',

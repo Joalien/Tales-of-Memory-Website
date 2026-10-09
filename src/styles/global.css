@@ -187,12 +187,22 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--font-display);
   font-size: var(--step-1);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
+}
+/* Cale sur la hauteur de la ligne : l'emblème suit la taille du nom au lieu
+   d'imposer la sienne, et le bandeau garde la même hauteur qu'avant. */
+.brand-mark {
+  width: auto;
+  height: 1.6em;
+  flex: 0 0 auto;
 }
 
 .nav {
@@ -234,6 +244,21 @@ ul { margin: 0; padding: 0; list-style: none; }
   text-transform: uppercase;
   margin-bottom: 0.4em;
 }
+/* Le nom du groupe en image. Jamais au-delà de sa taille native : le fichier
+   fourni est une capture, pas un vectoriel, et il se déliterait en grandissant.
+   Il se réduit en revanche librement sur les petits écrans. */
+.hero-logo {
+  margin-bottom: 0.5em;
+  line-height: 0;
+}
+.hero-logo img {
+  /* En deçà de la taille native : le logo gagne en finesse sur les écrans à
+     forte densité, et le bandeau garde la hauteur qu'il avait avec le titre
+     en texte — sans quoi la photo de fond se recadrerait sur une zone vide. */
+  width: min(400px, 80%);
+  height: auto;
+}
+
 .hero-tagline {
   font-size: var(--step-1);
   color: var(--bone-dim);
@@ -403,6 +428,50 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: opacity 0.8s ease;
 }
 .show-slide.is-active { opacity: 1; }
+
+/* Affiche d'une date à venir.
+   Jamais recadrée, contrairement aux photos : une affiche porte du texte, et
+   un recadrage en couperait les bords — lieu, horaire, partenaires. D'où une
+   hauteur imposée et une largeur libre, quel que soit le format fourni. */
+.show-poster {
+  grid-column: 2;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--ink-sink);
+  transition: border-color 0.18s ease;
+}
+.show-poster:where(a):hover { border-color: var(--ember); }
+
+/* Une affiche allonge la ligne : sans cela le centrage vertical de .show
+   ferait flotter la date et les boutons au milieu du vide, loin du titre
+   auquel ils se rapportent. */
+.show:has(.show-poster) { align-items: start; }
+
+/* L'affiche en tête de la page d'un concert. Largeur bornée : à pleine page
+   une affiche A3 écraserait les photos qu'elle est censée introduire. */
+.concert-poster {
+  margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  background: var(--ink-sink);
+}
+.concert-poster img {
+  max-height: 32rem;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+.show-poster img {
+  display: block;
+  height: clamp(9rem, 24vw, 13rem);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
 
 .show-carousel-count {
   position: absolute;
@@ -1064,14 +1133,58 @@ ul { margin: 0; padding: 0; list-style: none; }
   .merch-card:hover { transform: none; }
 }
 
-/* Carré pour tout le monde : un tee-shirt photographié en portrait et un CD
-   carré doivent occuper la même place, sinon la grille ondule. */
+/* Cadre carré pour tout le monde, sinon la grille ondule — mais l'article
+   entier reste visible à l'intérieur. Un visuel de t-shirt montre le recto et
+   le verso côte à côte : le recadrer en carré couperait l'un des deux. */
+.merch-views {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background: var(--ink-sink);
+}
 .merch-art {
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
   background: var(--ink-sink);
-  border-bottom: 1px solid var(--line);
+}
+/* Plusieurs vues : elles se superposent, seule l'active est visible. La
+   première reste dans le flux pour donner sa hauteur au bloc. */
+.merch-views[data-vues] .merch-art:not(.is-active) { display: none; }
+
+/* Changement de vue. Les flèches restent sur l'image, à portée du pouce sur
+   un téléphone, et contrastées sur le fond sombre des visuels. */
+.merch-nav {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+.merch-arrow {
+  display: grid;
+  place-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  font-family: var(--font-body);
+  color: var(--bone);
+  background: rgba(6, 7, 10, 0.72);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+.merch-arrow:hover { border-color: var(--ember); color: var(--ember); }
+.merch-count {
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  color: var(--bone);
+  background: rgba(6, 7, 10, 0.72);
+  padding: 0.2rem 0.5rem;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Même encombrement que le visuel, pour qu'un article sans photo ne décale

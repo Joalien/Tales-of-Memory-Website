@@ -1,5 +1,5 @@
 import { site } from '../data/site';
-import { merchPhoto, src, srcset } from './photos';
+import { merchPhotoSet, src, srcset } from './photos';
 import { cover, coverSrc, coverSrcset } from './album';
 
 /**
@@ -19,8 +19,8 @@ export type MerchItem = {
   sizes: readonly string[];
   /** Lien d'achat retenu : celui de l'article, sinon celui de la boutique. */
   href: string | null;
-  /** Visuel résolu, ou `null` quand le fichier n'a pas encore été déposé. */
-  image: { src: string; srcset: string; w: number; h: number } | null;
+  /** Vues de l'article, dans l'ordre. Vide tant qu'aucun fichier n'est déposé. */
+  images: { src: string; srcset: string; w: number; h: number }[];
 };
 
 /** La boutique est-elle réellement ouverte ? */
@@ -49,12 +49,12 @@ export const shopPlatform: string =
  * seule image de la boutique dont on est certain qu'elle existe.
  */
 const albumImage = cover
-  ? { src: coverSrc(800), srcset: coverSrcset(), w: cover.w, h: cover.h }
-  : null;
+  ? [{ src: coverSrc(800), srcset: coverSrcset(), w: cover.w, h: cover.h }]
+  : [];
 
 export const items: MerchItem[] = site.merch.map((item) => {
   const own = item.url.trim();
-  const found = item.photo ? merchPhoto(item.photo) : undefined;
+  const found = item.photo ? merchPhotoSet(item.photo) : [];
 
   return {
     name: item.name,
@@ -65,15 +65,13 @@ export const items: MerchItem[] = site.merch.map((item) => {
     // Le lien propre à l'article d'abord : une plateforme qui donne une adresse
     // par produit vaut mieux qu'un renvoi vers l'accueil de la boutique.
     href: own || (shopOpen ? shopUrl : null),
-    image: item.album
+    images: item.album
       ? albumImage
-      : found
-        ? {
-            src: src(found.gallery, found.photo.id, 800),
-            srcset: srcset(found.gallery, found.photo.id),
-            w: found.photo.w,
-            h: found.photo.h,
-          }
-        : null,
+      : found.map(({ gallery, photo }) => ({
+          src: src(gallery, photo.id, 800),
+          srcset: srcset(gallery, photo.id),
+          w: photo.w,
+          h: photo.h,
+        })),
   };
 });

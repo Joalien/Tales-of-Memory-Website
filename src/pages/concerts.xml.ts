@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { site } from '../data/site';
 import { upcoming } from '../lib/shows';
+import { posterFor, absoluteSrc } from '../lib/photos';
 import { longDate } from '../lib/format';
 
 const escape = (str: string) =>
@@ -14,12 +15,19 @@ export const GET: APIRoute = () => {
       const body = [longDate(show.startsAt), show.address, show.price && `Tarif : ${show.price}`, show.lineup && `Avec ${show.lineup}`]
         .filter(Boolean)
         .join(' · ');
+      // L'affiche voyage avec la date : c'est ce qu'un agrégateur ou une
+      // rédaction affichera. Adresse complète obligatoire, le flux étant lu
+      // ailleurs que sur le site.
+      const poster = posterFor(show.slug);
+      const enclosure = poster
+        ? `\n      <enclosure url="${escape(absoluteSrc(poster.gallery, poster.photo.id, 1600, site.domain))}" type="image/webp" length="0" />`
+        : '';
       return `    <item>
       <title>${escape(title)}</title>
       <link>${escape(show.ticketsUrl || `${site.domain}/concerts`)}</link>
       <guid isPermaLink="false">${escape(show.slug)}</guid>
       <pubDate>${new Date(show.startsAt).toUTCString()}</pubDate>
-      <description>${escape(body)}</description>
+      <description>${escape(body)}</description>${enclosure}
     </item>`;
     })
     .join('\n');

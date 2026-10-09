@@ -42,20 +42,37 @@ import { items, shopOpen, shopUrl, shopPlatform } from '../lib/merch';
       <ul class="merch-grid">
         {items.map((item) => (
           <li class="merch-card">
-            {item.image ? (
-              <img
-                class="merch-art"
-                src={item.image.src}
-                srcset={item.image.srcset}
-                sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 94vw"
-                width={item.image.w}
-                height={item.image.h}
-                loading="lazy"
-                decoding="async"
-                alt={item.name}
-              />
-            ) : (
+            {item.images.length === 0 && (
               <div class="merch-waiting" aria-hidden="true"><span>Visuel à venir</span></div>
+            )}
+
+            {/* Les vues sont toutes dans le HTML et superposées : sans
+                JavaScript, la première reste visible et les flèches, inutiles,
+                ne s'affichent pas. */}
+            {item.images.length > 0 && (
+              <div class="merch-views" data-vues={item.images.length}>
+                {item.images.map((image, i) => (
+                  <img
+                    class:list={['merch-art', { 'is-active': i === 0 }]}
+                    src={image.src}
+                    srcset={image.srcset}
+                    sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 94vw"
+                    width={image.w}
+                    height={image.h}
+                    loading="lazy"
+                    decoding="async"
+                    alt={item.images.length > 1 ? `${item.name} — vue ${i + 1}` : item.name}
+                  />
+                ))}
+
+                {item.images.length > 1 && (
+                  <div class="merch-nav" hidden>
+                    <button type="button" class="merch-arrow" data-pas="-1" aria-label={`Vue précédente de ${item.name}`}>‹</button>
+                    <span class="merch-count" aria-hidden="true"><b>1</b>/{item.images.length}</span>
+                    <button type="button" class="merch-arrow" data-pas="1" aria-label={`Vue suivante de ${item.name}`}>›</button>
+                  </div>
+                )}
+              </div>
             )}
 
             <div class="merch-body">
@@ -94,3 +111,46 @@ import { items, shopOpen, shopUrl, shopPlatform } from '../lib/merch';
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  /**
+   * Les vues d'un article, changées à la main.
+   *
+   * Pas de défilement automatique, contrairement aux photos de concert : on
+   * regarde un article à son rythme, et une image qui bouge toute seule
+   * empêche de la détailler.
+   */
+  for (const vues of document.querySelectorAll<HTMLElement>('.merch-views[data-vues]')) {
+    const images = Array.from(vues.querySelectorAll<HTMLImageElement>('.merch-art'));
+    if (images.length < 2) continue;
+
+    const nav = vues.querySelector<HTMLElement>('.merch-nav');
+    const compteur = vues.querySelector('.merch-count b');
+    let index = 0;
+
+    // Révélées seulement maintenant : sans ce script, elles ne feraient rien.
+    if (nav) nav.hidden = false;
+
+    const montrer = (suivant: number) => {
+      images[index].classList.remove('is-active');
+      index = (suivant + images.length) % images.length;
+      images[index].classList.add('is-active');
+      // La première image est la seule à ne pas être différée : les autres ne
+      // se chargent qu'une fois demandées.
+      images[index].loading = 'eager';
+      if (compteur) compteur.textContent = String(index + 1);
+    };
+
+    for (const bouton of vues.querySelectorAll<HTMLButtonElement>('.merch-arrow')) {
+      bouton.addEventListener('click', () => montrer(index + Number(bouton.dataset.pas)));
+    }
+
+    // Les flèches du clavier valent les boutons une fois qu'on est dedans.
+    vues.addEventListener('keydown', (event) => {
+      const pas = { ArrowLeft: -1, ArrowRight: 1 }[(event as KeyboardEvent).key];
+      if (!pas) return;
+      event.preventDefault();
+      montrer(index + pas);
+    });
+  }
+</script>

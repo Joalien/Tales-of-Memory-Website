@@ -22,11 +22,14 @@ photos/*
 !photos/merch/
 photos/merch/*
 !photos/merch/README.md
+!photos/affiches/
+photos/affiches/*
+!photos/affiches/README.md
 
 # Dérivés web fabriqués en local par `npm run photos`.
 #
-# Exception assumée : les photos de PRESSE, les PORTRAITS des membres et les
-# VISUELS DE LA BOUTIQUE sont versionnés. Ils sont peu nombreux, changent une
+# Exception assumée : les photos de PRESSE, les PORTRAITS des membres, les
+# VISUELS DE LA BOUTIQUE et les AFFICHES de concert sont versionnés. Ils sont peu nombreux, changent une
 # fois par an, et le bandeau d'accueil, la page bio comme la page merch doivent
 # fonctionner même sans bucket R2 — une boutique dont les articles n'ont pas
 # d'image ne vend rien.
@@ -40,6 +43,7 @@ public/media/*
 !public/media/presse/
 !public/media/membres/
 !public/media/merch/
+!public/media/affiches/
 
 # Sources de l'album : pochette pleine résolution, livret, pistes audio.
 album/*

@@ -10,9 +10,10 @@ Node ne sert qu'à la construction, jamais à l'exécution.
 | --- | --- | --- |
 | Dates de concert | tout le groupe | Google Agenda « Concerts » |
 | Photos de concert | tout le groupe | page `/envoyer` du site *(phase 2)* |
+| Affiches de concert | administrateur | `photos/affiches/` |
 | Textes, bio, membres, liens | administrateur | `src/data/site.ts` |
 | Articles de la boutique | administrateur | `src/data/site.ts` + `photos/merch/` |
-| Identité visuelle | administrateur | `src/styles/global.css` |
+| Identité visuelle | administrateur | `src/styles/global.css`, `public/identite/` |
 
 Le groupe ne peut rien casser : il ajoute du contenu, il ne touche ni au gabarit
 ni au style.
@@ -101,6 +102,38 @@ Trois états, sans aucune bascule à actionner :
 
 Tant que `shop.url` est vide, la page annonce la vente au stand les soirs de
 concert : elle ne promet jamais un bouton qui n'existe pas.
+
+## Le logo
+
+Le nom stylisé et l'emblème vivent dans `public/identite/`, détourés sur fond
+transparent — voir le mode d'emploi qui s'y trouve. Le nom ouvre la page
+d'accueil, l'emblème accompagne le nom dans le bandeau et sert d'icône
+d'onglet.
+
+Les sources sont des captures d'écran et non des fichiers vectoriels : le nom
+n'est jamais affiché au-delà de 400 pixels de large, faute de quoi son tracé se
+déliterait. Des fichiers d'origine (SVG, AI, EPS) lèveraient cette contrainte.
+
+## Les affiches
+
+Une affiche par date, déposée dans `photos/affiches/` et nommée d'après
+l'identifiant du concert : `2026-10-24_saint-piat.jpg`, le même nom que son
+dossier dans `photos/concerts/`. Lancez `npm run photos:dirs` pour lire les
+identifiants du moment, puis `npm run photos`.
+
+L'affiche illustre alors la date partout où elle a un sens : dans l'agenda du
+site et sur la page d'accueil, en tête de la page du concert, dans le flux RSS
+et dans les données structurées — c'est l'image que les moteurs de recherche
+reprennent pour la vignette d'un événement.
+
+Elle n'est **jamais recadrée**, contrairement aux photos : une affiche porte du
+texte, et un recadrage en couperait le lieu ou l'horaire. Le format importe
+donc peu. Une date sans affiche s'affiche comme avant.
+
+**Google Agenda n'accepte pas d'illustration.** Un événement n'a pas de champ
+image ; seules des pièces jointes Google Drive peuvent lui être rattachées, et
+elles s'affichent comme un lien, pas comme une image. L'affiche ne vit donc que
+sur le site.
 
 ## Configuration
 

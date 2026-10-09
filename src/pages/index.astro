@@ -50,7 +50,22 @@ const hero = press && heroPhoto
       </div>
     )}
     <div class="shell">
-      <h1 class="hero-name">{site.name}</h1>
+      {/* Le nom reste un vrai <h1> : c'est l'image qui porte le titre, et son
+          texte de remplacement le rend au lecteur d'écran comme au moteur de
+          recherche. Largeur bornée à la taille native du fichier, au-delà de
+          laquelle il perdrait sa finesse. */}
+      <h1 class="hero-name hero-logo">
+        <img
+          src="/identite/nom-400.webp"
+          srcset="/identite/nom-400.webp 400w, /identite/nom-800.webp 800w"
+          sizes="min(400px, 80vw)"
+          width="800"
+          height="407"
+          alt={site.name}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </h1>
       <p class="hero-tagline">{site.tagline}</p>
       <div class="hero-actions">
         <a class="btn" href="/concerts">Les concerts</a>

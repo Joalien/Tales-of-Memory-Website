@@ -1,6 +1,6 @@
 ---
 import type { Show } from '../lib/shows';
-import { galleryFor, src, srcset } from '../lib/photos';
+import { galleryFor, posterFor, src, srcset } from '../lib/photos';
 import { dayNumber, monthShort, year, longDate, time } from '../lib/format';
 import { googleCalendarUrl } from '../lib/calendar';
 
@@ -18,6 +18,13 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
 
   {shows.map((show) => {
     const gallery = past ? galleryFor(show.slug) : undefined;
+    const hasPhotos = Boolean(gallery && gallery.photos.length > 0);
+    // Les photos d'abord, l'affiche à défaut : elles occupent la même place et
+    // ne s'affichent jamais ensemble. Une date passée sans photos montre donc
+    // son affiche plutôt qu'un vide — sans quoi celle d'un concert resté sans
+    // photo ne s'afficherait nulle part, faute de page de galerie.
+    const poster = hasPhotos ? undefined : posterFor(show.slug);
+    const PosterTag = show.ticketsUrl ? 'a' : 'div';
     return (
       <article class:list={['show', { 'is-past': past }]}>
         <div class="show-date" aria-hidden="true">
@@ -41,7 +48,7 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
           </div>
         </div>
 
-        {gallery && gallery.photos.length > 0 && (
+        {hasPhotos && gallery && (
           <a
             class="show-carousel"
             href={`/concerts/${show.slug}`}
@@ -65,6 +72,30 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
               <span class="show-carousel-count"><b>1</b>/{gallery.photos.length}</span>
             )}
           </a>
+        )}
+
+        {poster && (
+          // Lien vers la billetterie quand il y en a une — c'est le geste
+          // attendu de qui s'arrête sur une affiche —, simple image sinon :
+          // un lien qui ne mène nulle part se signale au clavier pour rien.
+          <PosterTag
+            class="show-poster"
+            href={show.ticketsUrl || undefined}
+            target={show.ticketsUrl ? '_blank' : undefined}
+            rel={show.ticketsUrl ? 'noopener' : undefined}
+            aria-label={show.ticketsUrl ? `Billetterie — ${show.venue}` : undefined}
+          >
+            <img
+              src={src(poster.gallery, poster.photo.id, 800)}
+              srcset={srcset(poster.gallery, poster.photo.id)}
+              sizes="(min-width: 52rem) 24rem, 92vw"
+              width={poster.photo.w}
+              height={poster.photo.h}
+              loading="lazy"
+              decoding="async"
+              alt={`Affiche du concert au ${show.venue}`}
+            />
+          </PosterTag>
         )}
 
         {!past && (
