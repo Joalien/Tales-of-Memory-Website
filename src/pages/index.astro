@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ShowList from '../components/ShowList.astro';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import Lightbox from '../components/Lightbox.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 import { site, activeLinks } from '../data/site';
 import { upcoming, nextShow } from '../lib/shows';
 import { concertGalleries, latestPhotos, pressPhotos, src, srcset } from '../lib/photos';
@@ -44,6 +45,7 @@ const hero = press && heroPhoto
       <div class="hero-actions">
         <a class="btn" href="/concerts">Les concerts</a>
         <a class="btn btn-ghost" href="/ecouter">Écouter</a>
+        <SocialLinks variant="compact" />
       </div>
 
       {nextShow && (
@@ -132,9 +134,7 @@ const hero = press && heroPhoto
     <section class="block">
       <div class="shell">
         <div class="section-head"><h2>Nous suivre</h2></div>
-        <div class="links-row">
-          {activeLinks.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
-        </div>
+        <SocialLinks variant="full" />
       </div>
     </section>
   )}

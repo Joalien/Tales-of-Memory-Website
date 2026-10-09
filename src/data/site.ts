@@ -46,16 +46,21 @@ export const site = {
    */
   email: 'contact@talesofmemory.com',
 
-  /** Lien vide = masqué sur le site. */
+  /**
+   * Réseaux et plateformes. Un lien vide est simplement masqué, l'ordre ici est
+   * celui de l'affichage. `icon` doit correspondre à une clé de ICONS dans
+   * src/components/SocialLinks.astro.
+   */
   links: [
-    { label: 'Bandcamp', url: '' },
-    { label: 'Spotify', url: '' },
-    { label: 'YouTube', url: '' },
-    { label: 'Instagram', url: '' },
-    { label: 'Deezer', url: '' },
-    { label: 'Apple Music', url: '' },
-    { label: 'SoundCloud', url: '' },
-    { label: 'Facebook', url: '' },
+    { label: 'Instagram', icon: 'instagram', url: 'https://www.instagram.com/tales_of_memory/' },
+    { label: 'YouTube', icon: 'youtube', url: 'https://www.youtube.com/@talesofmemory-4marj' },
+    { label: 'Facebook', icon: 'facebook', url: 'https://www.facebook.com/talesofmemory/' },
+    { label: 'Spotify', icon: 'spotify', url: '' },
+    { label: 'Deezer', icon: 'deezer', url: '' },
+    { label: 'Apple Music', icon: 'applemusic', url: '' },
+    { label: 'Bandcamp', icon: 'bandcamp', url: '' },
+    { label: 'SoundCloud', icon: 'soundcloud', url: '' },
+    { label: 'TikTok', icon: 'tiktok', url: '' },
   ],
 
   /** Boutique externe : Bandcamp, BigCartel… Vide = onglet masqué. */
@@ -98,7 +103,7 @@ export const site = {
   ],
 } as const;
 
-export type SiteLink = { label: string; url: string };
+export type SiteLink = { label: string; url: string; icon: string };
 
 /** Ne garde que les liens réellement renseignés. */
 export const activeLinks: SiteLink[] = site.links.filter((l) => l.url.trim().length > 0);

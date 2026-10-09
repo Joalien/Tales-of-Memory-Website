@@ -1,0 +1,59 @@
+---
+/**
+ * Liens vers les réseaux et plateformes, avec les logos officiels.
+ *
+ * Les tracés viennent de simple-icons, utilisé uniquement à la construction :
+ * le SVG est intégré dans la page, il n'y a donc ni requête ni JavaScript
+ * côté visiteur. Les redessiner à la main donnerait des logos approximatifs.
+ */
+import {
+  siInstagram, siFacebook, siYoutube, siSpotify,
+  siBandcamp, siDeezer, siApplemusic, siSoundcloud, siTiktok,
+} from 'simple-icons';
+import { site, activeLinks } from '../data/site';
+
+interface Props {
+  /** `compact` : icônes seules, pour le bandeau. `full` : icône et nom. */
+  variant?: 'compact' | 'full';
+}
+
+const { variant = 'full' } = Astro.props;
+
+const ICONS: Record<string, { path: string }> = {
+  instagram: siInstagram,
+  facebook: siFacebook,
+  youtube: siYoutube,
+  spotify: siSpotify,
+  bandcamp: siBandcamp,
+  deezer: siDeezer,
+  applemusic: siApplemusic,
+  soundcloud: siSoundcloud,
+  tiktok: siTiktok,
+};
+---
+
+{activeLinks.length > 0 && (
+  <ul class:list={['socials', variant]}>
+    {activeLinks.map((link) => {
+      const icon = ICONS[link.icon];
+      return (
+        <li>
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener"
+            aria-label={`${site.name} sur ${link.label}`}
+            title={link.label}
+          >
+            {icon && (
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                <path d={icon.path} fill="currentColor" />
+              </svg>
+            )}
+            {variant === 'full' && <span>{link.label}</span>}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+)}

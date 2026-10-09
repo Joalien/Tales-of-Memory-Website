@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 import { site, activeLinks } from '../data/site';
 ---
 
@@ -37,9 +38,7 @@ import { site, activeLinks } from '../data/site';
       {activeLinks.length > 0 && (
         <div style="margin-top: var(--block);">
           <div class="section-head"><h2>Réseaux</h2></div>
-          <div class="links-row">
-            {activeLinks.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
-          </div>
+          <SocialLinks variant="full" />
         </div>
       )}
     </div>
