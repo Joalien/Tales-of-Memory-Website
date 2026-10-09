@@ -2,6 +2,7 @@
 import type { Show } from '../lib/shows';
 import { galleryFor } from '../lib/photos';
 import { dayNumber, monthShort, year, longDate, time } from '../lib/format';
+import { googleCalendarUrl } from '../lib/calendar';
 
 interface Props {
   shows: Show[];
@@ -43,6 +44,15 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
         <div class="show-actions">
           {!past && show.ticketsUrl && (
             <a class="btn" href={show.ticketsUrl} target="_blank" rel="noopener">Billetterie</a>
+          )}
+          {!past && (
+            <a
+              class="btn btn-ghost"
+              href={googleCalendarUrl(show)}
+              target="_blank"
+              rel="noopener"
+              aria-label={`Ajouter ${show.venue} à mon agenda`}
+            >Ajouter à mon agenda</a>
           )}
           {!past && show.address && (
             <a

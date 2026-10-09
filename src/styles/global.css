@@ -361,7 +361,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   gap: 0.6rem;
 }
 @media (min-width: 52rem) {
-  .show-actions { grid-column: 3; margin-top: 0; }
+  .show-actions {
+    grid-column: 3;
+    margin-top: 0;
+    /* Une date complète porte jusqu'à trois boutons — billetterie, itinéraire,
+       agenda. Cette largeur les fait passer à la ligne proprement au lieu de
+       comprimer le nom de la salle. */
+    max-width: 22rem;
+    justify-content: flex-end;
+  }
 }
 
 .show.is-past { opacity: 0.82; }
