@@ -42,22 +42,29 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
         </div>
 
         {gallery && gallery.photos.length > 0 && (
-          <div class="show-strip">
+          <a
+            class="show-carousel"
+            href={`/concerts/${show.slug}`}
+            data-depart={String(gallery.photos.length > 1)}
+            aria-label={`Voir les ${gallery.photos.length} photo${gallery.photos.length > 1 ? 's' : ''} du concert au ${show.venue}`}
+          >
             {gallery.photos.map((photo, i) => (
-              <a href={`/concerts/${show.slug}`} tabindex={i === 0 ? undefined : -1} aria-hidden={i === 0 ? undefined : 'true'}>
-                <img
-                  src={src(show.slug, photo.id, 400)}
-                  srcset={srcset(show.slug, photo.id)}
-                  sizes="12rem"
-                  width={Math.round((104 * photo.w) / photo.h)}
-                  height={104}
-                  loading="lazy"
-                  decoding="async"
-                  alt={i === 0 ? `Photos du concert au ${show.venue}` : ''}
-                />
-              </a>
+              <img
+                class:list={['show-slide', { 'is-active': i === 0 }]}
+                src={src(show.slug, photo.id, 800)}
+                srcset={srcset(show.slug, photo.id)}
+                sizes="(min-width: 52rem) 24rem, 92vw"
+                width={photo.w}
+                height={photo.h}
+                loading="lazy"
+                decoding="async"
+                alt=""
+              />
             ))}
-          </div>
+            {gallery.photos.length > 1 && (
+              <span class="show-carousel-count"><b>1</b>/{gallery.photos.length}</span>
+            )}
+          </a>
         )}
 
         {!past && (
@@ -99,3 +106,50 @@ const { shows, past = false, empty = 'Aucune date pour le moment.' } = Astro.pro
     white-space: nowrap;
   }
 </style>
+
+<script>
+  const carrousels = Array.from(document.querySelectorAll<HTMLElement>('.show-carousel[data-depart="true"]'));
+  const calme = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  carrousels.forEach((carrousel, rang) => {
+    const vues = Array.from(carrousel.querySelectorAll<HTMLImageElement>('.show-slide'));
+    const compteur = carrousel.querySelector('.show-carousel-count b');
+    let index = 0;
+    let minuteur: number | undefined;
+    let demarrage: number | undefined;
+
+    const avancer = () => {
+      vues[index].classList.remove('is-active');
+      index = (index + 1) % vues.length;
+      vues[index].classList.add('is-active');
+      if (compteur) compteur.textContent = String(index + 1);
+    };
+
+    const arreter = () => {
+      if (minuteur) { clearInterval(minuteur); minuteur = undefined; }
+      if (demarrage) { clearTimeout(demarrage); demarrage = undefined; }
+    };
+
+    const lancer = () => {
+      arreter();
+      if (calme.matches) return;
+      // Décalage selon le rang : sans lui, toutes les dates basculeraient à la
+      // même seconde et la page clignoterait d'un bloc.
+      demarrage = window.setTimeout(() => {
+        avancer();
+        minuteur = window.setInterval(avancer, 5200);
+      }, 1300 * (rang % 4));
+    };
+
+    // Seuls les carrousels réellement à l'écran tournent.
+    new IntersectionObserver(
+      ([e]) => (e.isIntersecting && !document.hidden ? lancer() : arreter()),
+      { threshold: 0.3 },
+    ).observe(carrousel);
+
+    carrousel.addEventListener('mouseenter', arreter);
+    carrousel.addEventListener('mouseleave', lancer);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) arreter(); });
+    calme.addEventListener('change', lancer);
+  });
+</script>

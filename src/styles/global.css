@@ -376,42 +376,45 @@ ul { margin: 0; padding: 0; list-style: none; }
    distinguer, et l'opacité éteignait aussi leurs photos. */
 .show.is-past .show-date .m { color: var(--bone-faint); }
 
-/* Bande de photos sous une date passée. Défilement horizontal plutôt que
-   rotation automatique : cinq carrousels tournant en même temps sur une même
-   page transformeraient la lecture en machine à sous. */
-.show-strip {
+/* Carrousel de photos sous une date passée.
+   Les bascules sont décalées d'une date à l'autre et ne tournent que pour les
+   carrousels visibles : sans cela, cinq photos changeant à la même seconde
+   feraient clignoter la page d'un bloc. */
+.show-carousel {
   grid-column: 2 / -1;
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.9rem;
-  padding-bottom: 0.5rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line-strong) transparent;
-}
-.show-strip a {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
+  position: relative;
   display: block;
+  width: min(24rem, 100%);
+  aspect-ratio: 16 / 10;
+  margin-top: 0.9rem;
+  overflow: hidden;
   border: 1px solid var(--line);
   background: var(--ink-raise);
   transition: border-color 0.18s ease;
 }
-.show-strip a:hover { border-color: var(--ember); }
-.show-strip img {
-  height: 6.5rem;
-  width: auto;
-  display: block;
-  transition: opacity 0.18s ease;
-}
-.show-strip a:hover img { opacity: 0.85; }
+.show-carousel:hover { border-color: var(--ember); }
 
-.empty {
-  padding: 2.5rem 0;
-  color: var(--bone-dim);
-  border-bottom: 1px solid var(--line);
+.show-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.show-slide.is-active { opacity: 1; }
+
+.show-carousel-count {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--bone);
+  background: rgba(6, 7, 10, 0.7);
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- Galeries ------------------------------------------------------------- */
