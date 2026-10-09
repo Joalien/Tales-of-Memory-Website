@@ -592,72 +592,126 @@ ul { margin: 0; padding: 0; list-style: none; }
   height: 2.3rem;
 }
 
-/* --- Carrousel ------------------------------------------------------------ */
+/* --- Bandeau d'images ------------------------------------------------------
+   Les photos ne sont pas un élément posé sur la page mais sa matière de fond :
+   elles passent derrière le texte, sous un voile qui garantit la lecture.
+   -------------------------------------------------------------------------- */
 
-.carousel-stage {
+.showcase {
   position: relative;
-  aspect-ratio: 16 / 9;
+  isolation: isolate;
+  min-height: min(78vh, 42rem);
+  display: grid;
+  align-content: center;
+  padding-block: var(--block);
+  border-block: 1px solid var(--line);
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--ink-sink);
-}
-@media (max-width: 40rem) {
-  .carousel-stage { aspect-ratio: 4 / 3; }
 }
 
-.carousel-slide {
+/* Débordement vertical : le fond peut glisser au défilement sans découvrir
+   les bords de la section. */
+.showcase-media {
   position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  transition: opacity 0.9s ease;
+  inset: -8% 0;
+  z-index: -2;
 }
-.carousel-slide.is-active { opacity: 1; }
-
-/* Fond flouté tiré de la photo elle-même : les portraits s'affichent entiers
-   sans laisser de bandes noires sur les côtés. */
-.carousel-back {
+.showcase-slide {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.15);
-  filter: blur(28px) saturate(0.6) brightness(0.4);
+  object-position: 50% 35%;
+  opacity: 0;
+  transition: opacity 1.4s ease;
 }
-.carousel-front {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.showcase-slide.is-active { opacity: 1; }
+
+/* Voile posé sur la section et non sur les images, pour qu'il ne bouge pas
+   avec elles. Plus dense à gauche, là où se trouve le texte. */
+.showcase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(10, 11, 14, 0.92) 0%, rgba(10, 11, 14, 0.45) 55%, rgba(10, 11, 14, 0.7) 100%),
+    linear-gradient(180deg, var(--ink) 0%, rgba(10, 11, 14, 0.1) 20%, rgba(10, 11, 14, 0.1) 78%, var(--ink) 100%);
 }
 
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+.showcase-body h2 { font-size: var(--step-3); margin-bottom: 0.9rem; }
+.showcase-text { color: var(--bone-dim); }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Lent rapprochement sur la photo affichée : le fond respire au lieu d'être figé. */
+  .showcase-slide.is-active { animation: respire 9s ease-out both; }
+  @keyframes respire {
+    from { transform: scale(1.02); }
+    to { transform: scale(1.1); }
+  }
 }
-.carousel-dots button {
-  width: 2.25rem;
-  height: 1.75rem;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
+
+/* --- Effets au défilement --------------------------------------------------
+   Animations pilotées par le défilement, sans JavaScript : elles tournent sur
+   le compositeur du navigateur, donc sans à-coups. Les navigateurs qui ne les
+   gèrent pas affichent simplement la page sans effet.
+   -------------------------------------------------------------------------- */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* La photo du bandeau descend moins vite que la page : elle semble rester. */
+    .hero-media img {
+      animation: fond-glisse linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    @keyframes fond-glisse {
+      from { transform: scale(1.12) translateY(0); }
+      to { transform: scale(1.12) translateY(4.5%); }
+    }
+
+    /* Le texte, lui, s'élève et s'efface. */
+    .hero .shell {
+      animation: texte-seleve linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 72vh;
+    }
+    @keyframes texte-seleve {
+      from { transform: translateY(0); opacity: 1; }
+      55% { opacity: 1; }
+      to { transform: translateY(-4rem); opacity: 0; }
+    }
+
+    /* Même principe pour le bandeau d'images.
+       `view()` se mesure par rapport au conteneur de défilement le plus proche,
+       or l'overflow: hidden de .showcase en fait justement un — un conteneur
+       qui ne défile jamais, donc une progression figée à zéro. On nomme donc
+       explicitement la chronologie sur la section, qui elle traverse bien la
+       page, et le fond s'y rattache. */
+    .showcase { view-timeline-name: --traversee-bandeau; }
+
+    .showcase-media {
+      animation: fond-traverse linear both;
+      animation-timeline: --traversee-bandeau;
+      animation-range: entry 0% exit 100%;
+    }
+    @keyframes fond-traverse {
+      from { transform: translateY(-5%); }
+      to { transform: translateY(5%); }
+    }
+
+    /* Les sections montent et se révèlent en entrant dans l'écran. */
+    .reveal {
+      animation: apparait linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 55%;
+    }
+    @keyframes apparait {
+      from { opacity: 0; transform: translateY(2.5rem); }
+      to { opacity: 1; transform: none; }
+    }
+  }
 }
-.carousel-dots button::after {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 2px;
-  background: var(--line-strong);
-  transition: background 0.2s ease;
-}
-.carousel-dots button:hover::after { background: var(--bone-dim); }
-.carousel-dots button[aria-selected='true']::after { background: var(--ember); }
 
 /* --- Réseaux sociaux ------------------------------------------------------ */
 
@@ -678,8 +732,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--bone-dim);
   transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
+/* Au survol, le contour reprend la couleur du réseau — le logo, lui, la porte
+   déjà en permanence. Repli sur l'ambre du site si l'icône n'en déclare pas. */
 .socials a:hover,
-.socials a:focus-visible { color: var(--ember); border-color: var(--ember); }
+.socials a:focus-visible {
+  color: var(--bone);
+  border-color: var(--brand, var(--ember));
+  box-shadow: 0 0 18px -6px var(--brand, var(--ember));
+}
 .socials svg { flex: 0 0 auto; }
 
 /* Icônes seules : 44 px de côté, la cible tactile recommandée. */

@@ -1,5 +1,6 @@
 ---
 import { site, nav, activeLinks } from '../data/site';
+import SocialLinks from './SocialLinks.astro';
 ---
 
 <footer class="site-footer">
@@ -21,12 +22,8 @@ import { site, nav, activeLinks } from '../data/site';
 
       {activeLinks.length > 0 && (
         <div>
-          <p style="color: var(--ember); letter-spacing: 0.18em; text-transform: uppercase;">Écouter &amp; suivre</p>
-          <ul>
-            {activeLinks.map((l) => (
-              <li><a href={l.url} target="_blank" rel="noopener">{l.label}</a></li>
-            ))}
-          </ul>
+          <p style="color: var(--ember); letter-spacing: 0.18em; text-transform: uppercase;">Nous suivre</p>
+          <SocialLinks variant="compact" />
         </div>
       )}
 

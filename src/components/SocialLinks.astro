@@ -1,10 +1,10 @@
 ---
 /**
- * Liens vers les réseaux et plateformes, avec les logos officiels.
+ * Liens vers les réseaux et plateformes, avec les logos officiels en couleur.
  *
  * Les tracés viennent de simple-icons, utilisé uniquement à la construction :
  * le SVG est intégré dans la page, il n'y a donc ni requête ni JavaScript
- * côté visiteur. Les redessiner à la main donnerait des logos approximatifs.
+ * côté visiteur.
  */
 import {
   siInstagram, siFacebook, siYoutube, siSpotify,
@@ -13,13 +13,13 @@ import {
 import { site, activeLinks } from '../data/site';
 
 interface Props {
-  /** `compact` : icônes seules, pour le bandeau. `full` : icône et nom. */
+  /** `compact` : icônes seules. `full` : icône et nom. */
   variant?: 'compact' | 'full';
 }
 
 const { variant = 'full' } = Astro.props;
 
-const ICONS: Record<string, { path: string }> = {
+const ICONS: Record<string, { path: string; hex: string }> = {
   instagram: siInstagram,
   facebook: siFacebook,
   youtube: siYoutube,
@@ -30,12 +30,26 @@ const ICONS: Record<string, { path: string }> = {
   soundcloud: siSoundcloud,
   tiktok: siTiktok,
 };
+
+/**
+ * Instagram n'a pas de couleur unique : son logo est un dégradé. Une couleur
+ * plate le rendrait méconnaissable, on le traite donc à part.
+ */
+const DEGRADES: Record<string, string[]> = {
+  instagram: ['#F9CE34', '#EE2A7B', '#6228D7'],
+};
+
+// Identifiant unique par instance : le composant apparaît plusieurs fois sur
+// une même page, et deux dégradés portant le même id seraient du HTML invalide.
+const uid = Math.random().toString(36).slice(2, 8);
 ---
 
 {activeLinks.length > 0 && (
   <ul class:list={['socials', variant]}>
     {activeLinks.map((link) => {
       const icon = ICONS[link.icon];
+      const degrade = DEGRADES[link.icon];
+      const gradId = `grad-${link.icon}-${uid}`;
       return (
         <li>
           <a
@@ -44,10 +58,22 @@ const ICONS: Record<string, { path: string }> = {
             rel="noopener"
             aria-label={`${site.name} sur ${link.label}`}
             title={link.label}
+            style={icon ? `--brand: #${icon.hex}` : undefined}
           >
             {icon && (
-              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
-                <path d={icon.path} fill="currentColor" />
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                {degrade && (
+                  <defs>
+                    <linearGradient id={gradId} x1="0" y1="1" x2="1" y2="0">
+                      {degrade.map((stop, i) => (
+                        <stop offset={`${(i / (degrade.length - 1)) * 100}%`} stop-color={stop} />
+                      ))}
+                    </linearGradient>
+                  </defs>
+                )}
+                {/* evenodd : sans lui, les creux du logo se remplissent — l'objectif
+                    d'Instagram disparaît et l'icône devient un carré plein. */}
+                <path d={icon.path} fill-rule="evenodd" fill={degrade ? `url(#${gradId})` : 'var(--brand)'} />
               </svg>
             )}
             {variant === 'full' && <span>{link.label}</span>}

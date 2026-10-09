@@ -1,0 +1,76 @@
+---
+/**
+ * Bandeau pleine largeur dont le fond défile lentement entre plusieurs photos.
+ *
+ * Les clichés ne sont pas présentés comme une galerie mais comme une matière :
+ * ils passent derrière le texte, sous un voile sombre qui garantit la lecture.
+ * Purement décoratifs, ils sont donc masqués aux lecteurs d'écran — la galerie
+ * complète, elle, reste accessible depuis le lien de la section.
+ */
+import { src, srcset, type Photo } from '../lib/photos';
+
+interface Props {
+  images: { gallery: string; photo: Photo }[];
+  interval?: number;
+}
+
+const { images, interval = 6000 } = Astro.props;
+---
+
+<section class="showcase" data-interval={interval}>
+  <div class="showcase-media" aria-hidden="true">
+    {images.map((item, i) => (
+      <img
+        class:list={['showcase-slide', { 'is-active': i === 0 }]}
+        src={src(item.gallery, item.photo.id, 800)}
+        srcset={srcset(item.gallery, item.photo.id)}
+        sizes="100vw"
+        width={item.photo.w}
+        height={item.photo.h}
+        loading={i === 0 ? 'eager' : 'lazy'}
+        decoding="async"
+        alt=""
+      />
+    ))}
+  </div>
+
+  <div class="shell showcase-body">
+    <slot />
+  </div>
+</section>
+
+<script>
+  for (const showcase of document.querySelectorAll<HTMLElement>('.showcase')) {
+    const slides = Array.from(showcase.querySelectorAll<HTMLElement>('.showcase-slide'));
+    if (slides.length < 2) continue;
+
+    const calme = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const delai = Number(showcase.dataset.interval ?? 6000);
+    let index = 0;
+    let minuteur: number | undefined;
+
+    const avancer = () => {
+      slides[index].classList.remove('is-active');
+      index = (index + 1) % slides.length;
+      slides[index].classList.add('is-active');
+    };
+
+    const arreter = () => { if (minuteur) { clearInterval(minuteur); minuteur = undefined; } };
+    const lancer = () => {
+      arreter();
+      if (calme.matches) return;
+      minuteur = window.setInterval(avancer, delai);
+    };
+
+    // Inutile de faire tourner un fond que personne ne regarde : on suspend
+    // hors écran et quand l'onglet passe en arrière-plan.
+    const vue = new IntersectionObserver(
+      ([entree]) => (entree.isIntersecting && !document.hidden ? lancer() : arreter()),
+      { threshold: 0 },
+    );
+    vue.observe(showcase);
+
+    document.addEventListener('visibilitychange', () => (document.hidden ? arreter() : undefined));
+    calme.addEventListener('change', lancer);
+  }
+</script>
