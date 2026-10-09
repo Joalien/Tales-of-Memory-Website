@@ -1,7 +1,7 @@
 import data from '../data/photos.json';
 
-export type Photo = { id: string; w: number; h: number; credit?: string };
-export type GalleryKind = 'concert' | 'press' | 'band' | 'unsorted';
+export type Photo = { id: string; w: number; h: number; credit?: string; source?: string };
+export type GalleryKind = 'concert' | 'press' | 'band' | 'member' | 'unsorted';
 export type Gallery = { slug: string; cover: string; photos: Photo[]; kind?: GalleryKind };
 
 export const baseUrl: string = data.baseUrl;
@@ -22,6 +22,33 @@ export const bandPhotos: Gallery | undefined = galleries.find((g) => g.kind === 
 
 /** Photos promo, utilisables pour la page bio et le dossier de presse. */
 export const pressPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'press');
+
+/** Portraits des membres, un fichier par personne. */
+export const memberPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'member');
+
+/**
+ * Le portrait d'un membre, retrouvé par le nom de son fichier source.
+ *
+ * Le rattachement passe par le nom du fichier déposé dans `photos/membres/` et
+ * non par l'ordre de la liste : un portrait absent rend `undefined` et la page
+ * bio affiche un cadre d'attente, sans décaler les autres membres.
+ */
+export function memberPhoto(name: string): { gallery: string; photo: Photo } | undefined {
+  const wanted = name.trim().toLowerCase();
+  if (!wanted || !memberPhotos) return undefined;
+
+  const found = memberPhotos.photos.filter(
+    (p) => (p.source ?? '').toLowerCase().replace(/\.[^.]+$/, '') === wanted,
+  );
+  // Deux fichiers de même nom et d'extensions différentes se disputeraient la
+  // place en silence, et c'est l'ordre alphabétique qui trancherait. Mieux vaut
+  // le dire à la construction que de laisser une photo changer toute seule.
+  if (found.length > 1) {
+    const noms = found.map((p) => p.source).join(', ');
+    console.warn(`[membres] « ${name} » a ${found.length} portraits (${noms}) ; ${found[0].source} est retenu. Supprime les autres de photos/membres/.`);
+  }
+  return found[0] ? { gallery: memberPhotos.slug, photo: found[0] } : undefined;
+}
 
 export const galleryFor = (showSlug: string) => concertGalleries.find((g) => g.slug === showSlug);
 

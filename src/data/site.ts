@@ -5,6 +5,14 @@
  * met à jour partout. Un lien laissé vide est simplement masqué, rien ne casse.
  */
 
+/**
+ * Texte d'attente des présentations individuelles : le même pour tous, pour
+ * qu'on voie d'un coup d'œil ce qui reste à écrire.
+ */
+const PLACEHOLDER_MEMBER =
+  'Deux ou trois phrases à écrire : le parcours, les influences, ce que cette ' +
+  'place apporte au groupe. À REMPLACER.';
+
 export const site = {
   name: 'Tales of Memory',
   /** Sous-titre affiché sous le nom, et genre utilisé pour le référencement. */
@@ -30,14 +38,28 @@ export const site = {
       'ne décore pas la musique mais la porte.',
   ],                                                   // À REMPLACER
 
-  // Cinq emplacements : c'est le nombre de personnes sur la photo promo.
+  /**
+   * Le line-up, dans l'ordre de la bande de portraits de la page bio.
+   *
+   * Noms et instruments repris du livret du CD « Forgotten Chapters », page
+   * « The Band » : c'est la source que le groupe a lui-même publiée, à préférer
+   * à ce qui traîne ailleurs. L'ordre, lui, est celui de la rangée de portraits
+   * et non celui du livret : le chant est placé au centre des cinq.
+   *
+   * `photo` est le nom du fichier déposé dans `photos/membres/`, sans son
+   * extension : `photos/membres/josquin.png` s'écrit `photo: 'josquin'`.
+   * C'est le nom du fichier qui fait le rattachement, pas l'ordre de la liste.
+   * Si le fichier manque, la bande affiche un cadre d'attente à sa place et la
+   * mise en page ne bouge pas : les valeurs ci-dessous nomment donc aussi les
+   * portraits qui restent à fournir.
+   */
   members: [
-    { name: 'Prénom Nom', role: 'Chant' },
-    { name: 'Prénom Nom', role: 'Guitare' },
-    { name: 'Prénom Nom', role: 'Guitare' },
-    { name: 'Prénom Nom', role: 'Basse' },
-    { name: 'Prénom Nom', role: 'Batterie' },
-  ],                                                   // À REMPLACER
+    { name: 'Josquin Cornec', role: 'Basse', photo: 'josquin', text: PLACEHOLDER_MEMBER },
+    { name: 'Alexis Delapierre', role: 'Guitares', photo: 'alexis', text: PLACEHOLDER_MEMBER },
+    { name: 'Marianna Nikiforova Gonzalez', role: 'Chant', photo: 'marianna', text: PLACEHOLDER_MEMBER },
+    { name: 'Julien Pires', role: 'Batterie', photo: 'julien', text: PLACEHOLDER_MEMBER },
+    { name: 'Amine Benabdelmoumen', role: 'Claviers & synthés', photo: 'amine', text: PLACEHOLDER_MEMBER },
+  ],
 
   /**
    * Une seule adresse, parce que c'est la seule boîte réellement routée par
@@ -55,12 +77,12 @@ export const site = {
     { label: 'Instagram', icon: 'instagram', url: 'https://www.instagram.com/tales_of_memory/' },
     { label: 'YouTube', icon: 'youtube', url: 'https://www.youtube.com/@talesofmemory-4marj' },
     { label: 'Facebook', icon: 'facebook', url: 'https://www.facebook.com/talesofmemory/' },
-    { label: 'Spotify', icon: 'spotify', url: '' },
-    { label: 'Deezer', icon: 'deezer', url: '' },
-    { label: 'Apple Music', icon: 'applemusic', url: '' },
+    { label: 'Spotify', icon: 'spotify', url: 'https://open.spotify.com/artist/4MgmYQ7lDvNW65n7BbkuPT' },
+    { label: 'Deezer', icon: 'deezer', url: 'https://www.deezer.com/artist/365867122' },
+    { label: 'Apple Music', icon: 'applemusic', url: 'https://music.apple.com/fr/artist/tales-of-memory/1866689751' },
     { label: 'Bandcamp', icon: 'bandcamp', url: '' },
     { label: 'SoundCloud', icon: 'soundcloud', url: '' },
-    { label: 'TikTok', icon: 'tiktok', url: '' },
+    { label: 'TikTok', icon: 'tiktok', url: 'https://www.tiktok.com/@tales_of_memory' },
   ],
 
   /** Boutique externe : Bandcamp, BigCartel… Vide = onglet masqué. */

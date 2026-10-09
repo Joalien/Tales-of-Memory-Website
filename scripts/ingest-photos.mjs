@@ -51,6 +51,12 @@ function collectSources() {
   if (fs.existsSync(path.join(SRC_ROOT, 'groupe'))) {
     groups.push({ slug: 'groupe', kind: 'band', files: listImages(path.join(SRC_ROOT, 'groupe')) });
   }
+  // Un portrait par personne, nommé d'après la valeur `photo` du membre dans
+  // src/data/site.ts : c'est le nom du fichier qui fait le rattachement, pas
+  // l'ordre de la liste, donc renommer un fichier suffit à corriger une erreur.
+  if (fs.existsSync(path.join(SRC_ROOT, 'membres'))) {
+    groups.push({ slug: 'membres', kind: 'member', files: listImages(path.join(SRC_ROOT, 'membres')) });
+  }
   const loose = listImages(SRC_ROOT).filter((f) => path.basename(f).toLowerCase() !== 'readme.md');
   if (loose.length) groups.push({ slug: 'non-classees', kind: 'unsorted', files: loose });
   return groups;

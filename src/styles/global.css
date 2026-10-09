@@ -517,22 +517,122 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* --- Membres, sorties, liens --------------------------------------------- */
 
-.members {
-  display: grid;
-  gap: 1px;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.members li { background: var(--ink); padding: 1.15rem 1.25rem; }
-.members .name { font-family: var(--font-display); font-size: var(--step-1); }
-.members .role {
+/* --- Le line-up : une bande de portraits, pleine largeur ------------------
+   Cinq colonnes égales d'un bord à l'autre de l'écran. Un portrait ouvre sa
+   présentation juste en dessous, une seule à la fois. La bande reste à cinq
+   colonnes à toutes les tailles : c'est la rangée entière qui fait l'image du
+   groupe, la couper en deux lignes la ferait disparaître. */
+.lineup .hint {
   font-size: var(--step--1);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  margin: 0;
+}
+/* Sans JavaScript, tout est déjà lisible : l'invite à cliquer n'aurait pas de
+   sens, et les présentations s'enchaînent simplement sous la bande. */
+.lineup:not(.is-interactive) .hint { display: none; }
+
+.lineup-strip {
+  display: grid;
+  /* minmax(0, 1fr) et non 1fr : sans le minimum à zéro, le libellé du cadre
+     d'attente impose sa largeur minimale et déforme la rangée. */
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border-block: 1px solid var(--line);
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+}
+
+.lineup-card {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--ink-raise);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.lineup-card img,
+.lineup-waiting {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  /* Le haut du cadrage : un portrait recadré doit garder le visage. */
+  object-position: 50% 25%;
+  /* Les portraits non choisis reculent sans disparaître. */
+  opacity: 0.72;
+  transition: opacity 0.25s ease;
+}
+.lineup-card:hover img,
+.lineup-card:focus-visible img,
+.lineup-card[aria-expanded='true'] img,
+.lineup-card:hover .lineup-waiting,
+.lineup-card[aria-expanded='true'] .lineup-waiting { opacity: 1; }
+
+/* Tant qu'un fichier manque dans photos/membres/, le cadre garde sa place :
+   la bande ne se réorganisera pas à l'arrivée des portraits. */
+.lineup-waiting {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 0.5rem;
+  background: linear-gradient(170deg, var(--ink-raise) 0%, var(--ink-sink) 100%);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  text-align: center;
+}
+
+.lineup-id {
+  display: block;
+  padding: 0.85rem clamp(0.4rem, 1.2vw, 1rem) 1rem;
+  /* Le trait d'en haut matérialise le portrait ouvert. */
+  border-top: 2px solid transparent;
+}
+.lineup-card[aria-expanded='true'] .lineup-id { border-top-color: var(--ember); }
+.lineup-id .role {
+  display: block;
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ember);
-  margin-top: 0.2rem;
 }
+.lineup-id .given {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.2;
+  margin-top: 0.15rem;
+}
+
+/* Sous ~46rem, cinq colonnes ne laissent plus la place d'écrire : la bande
+   devient une rangée de visages, et c'est la présentation ouverte qui nomme. */
+@media (max-width: 46rem) {
+  .lineup-id { padding: 0.5rem 0.25rem 0.6rem; border-top-width: 3px; }
+  .lineup-id .role { display: none; }
+  .lineup-id .given { font-size: var(--step--1); text-align: center; }
+  /* Illisible à cette largeur, et le prénom en légende dit déjà qui manque. */
+  .lineup-waiting span { display: none; }
+}
+
+.lineup-panel + .lineup-panel { margin-top: clamp(1.75rem, 4vw, 2.5rem); }
+.lineup-panel .role {
+  font-size: var(--step--1);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin: 0 0 0.4rem;
+}
+.lineup-panel h3 { font-size: var(--step-2); margin: 0 0 0.9rem; }
+/* Tant que la présentation n'est pas écrite, le nom est seul dans le panneau :
+   sa marge basse n'a plus rien à séparer. Elle revient avec le paragraphe. */
+.lineup-panel h3:last-child { margin-bottom: 0; }
 
 .release {
   display: grid;

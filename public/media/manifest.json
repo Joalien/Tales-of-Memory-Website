@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T16:06:54.208Z",
+  "generatedAt": "2026-10-09T17:30:30.381Z",
   "widths": [
     400,
     800,
@@ -19,6 +19,13 @@
           "source": "Image collée (2).png"
         },
         {
+          "id": "4c7fae840fe1",
+          "w": 2048,
+          "h": 1590,
+          "credit": "",
+          "source": "Image collée (3).png"
+        },
+        {
           "id": "d607c4663f64",
           "w": 1536,
           "h": 864,
@@ -36,6 +43,146 @@
           "id": "79d50026a17b",
           "w": 768,
           "h": 1024,
+          "credit": "",
+          "source": "Image collée.png"
+        }
+      ]
+    },
+    {
+      "slug": "2026-08-29_massy",
+      "kind": "concert",
+      "cover": "9c8da84caa8e",
+      "photos": [
+        {
+          "id": "9c8da84caa8e",
+          "w": 1600,
+          "h": 1066,
+          "credit": "",
+          "source": "Image collée (2).png"
+        },
+        {
+          "id": "db7f6edc88d5",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (3).png"
+        },
+        {
+          "id": "3129ee49a5d6",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (4).png"
+        },
+        {
+          "id": "b440976f2423",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (5).png"
+        },
+        {
+          "id": "4e053e7759d0",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (6).png"
+        },
+        {
+          "id": "c6506b76fed7",
+          "w": 1600,
+          "h": 1066,
+          "credit": "",
+          "source": "Image collée (7).png"
+        },
+        {
+          "id": "a0cbc08ae3c6",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée.png"
+        }
+      ]
+    },
+    {
+      "slug": "2026-09-24_ladies-rock",
+      "kind": "concert",
+      "cover": "030fea5c1391",
+      "photos": [
+        {
+          "id": "030fea5c1391",
+          "w": 900,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (2).png"
+        },
+        {
+          "id": "36095a72875f",
+          "w": 1080,
+          "h": 1436,
+          "credit": "",
+          "source": "Image collée (3).png"
+        },
+        {
+          "id": "c0af5018d83c",
+          "w": 1080,
+          "h": 1436,
+          "credit": "",
+          "source": "Image collée (4).png"
+        },
+        {
+          "id": "d7aae22e08ee",
+          "w": 1080,
+          "h": 1436,
+          "credit": "",
+          "source": "Image collée (5).png"
+        },
+        {
+          "id": "737b57d9d240",
+          "w": 900,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (6).png"
+        },
+        {
+          "id": "9dd1e9f02cc0",
+          "w": 900,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (7).png"
+        },
+        {
+          "id": "030fea5c1391",
+          "w": 900,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (8).png"
+        },
+        {
+          "id": "9dd1e9f02cc0",
+          "w": 900,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée.png"
+        }
+      ]
+    },
+    {
+      "slug": "underworld",
+      "kind": "concert",
+      "cover": "809700572652",
+      "photos": [
+        {
+          "id": "809700572652",
+          "w": 2000,
+          "h": 1500,
+          "credit": "",
+          "source": "Image collée (2).png"
+        },
+        {
+          "id": "b117947c8b2c",
+          "w": 2048,
+          "h": 1536,
           "credit": "",
           "source": "Image collée.png"
         }
@@ -65,8 +212,169 @@
     {
       "slug": "groupe",
       "kind": "band",
-      "cover": "49b1f78f3302",
+      "cover": "024eb21339fc",
       "photos": [
+        {
+          "id": "024eb21339fc",
+          "w": 1366,
+          "h": 2048,
+          "credit": "",
+          "source": "Image collée (10).png"
+        },
+        {
+          "id": "9dd1e9f02cc0",
+          "w": 900,
+          "h": 1600,
+          "credit": "",
+          "source": "Image collée (11).png"
+        },
+        {
+          "id": "4f8e11b1fb76",
+          "w": 643,
+          "h": 965,
+          "credit": "",
+          "source": "Image collée (12).png"
+        },
+        {
+          "id": "db9edd279df6",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (14).png"
+        },
+        {
+          "id": "95b9b06483e7",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (15).png"
+        },
+        {
+          "id": "abec1ba62e5f",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (16).png"
+        },
+        {
+          "id": "bd162f7cb6b3",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (17).png"
+        },
+        {
+          "id": "315d4b350c32",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (18).png"
+        },
+        {
+          "id": "5e0c5dbefb68",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (19).png"
+        },
+        {
+          "id": "49e0e513ab86",
+          "w": 2048,
+          "h": 1366,
+          "credit": "",
+          "source": "Image collée (2).png"
+        },
+        {
+          "id": "f27c7454f644",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (20).png"
+        },
+        {
+          "id": "10f300b887a8",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (21).png"
+        },
+        {
+          "id": "0b658d7d506d",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (22).png"
+        },
+        {
+          "id": "afd3d1c84d95",
+          "w": 683,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée (23).png"
+        },
+        {
+          "id": "eb45977494f0",
+          "w": 1536,
+          "h": 2048,
+          "credit": "",
+          "source": "Image collée (3).png"
+        },
+        {
+          "id": "94da827a6fc3",
+          "w": 1206,
+          "h": 1608,
+          "credit": "",
+          "source": "Image collée (4).png"
+        },
+        {
+          "id": "f50918e91713",
+          "w": 2048,
+          "h": 1152,
+          "credit": "",
+          "source": "Image collée (5).png"
+        },
+        {
+          "id": "db5014f7a5dc",
+          "w": 2048,
+          "h": 1366,
+          "credit": "",
+          "source": "Image collée (6).png"
+        },
+        {
+          "id": "0ec02f335810",
+          "w": 1366,
+          "h": 2048,
+          "credit": "",
+          "source": "Image collée (7).png"
+        },
+        {
+          "id": "c5273fdd75e9",
+          "w": 1366,
+          "h": 2048,
+          "credit": "",
+          "source": "Image collée (8).png"
+        },
+        {
+          "id": "7dc59919a8b3",
+          "w": 1366,
+          "h": 2048,
+          "credit": "",
+          "source": "Image collée (9).png"
+        },
+        {
+          "id": "c6506b76fed7",
+          "w": 1600,
+          "h": 1066,
+          "credit": "",
+          "source": "Image collée.png"
+        },
+        {
+          "id": "3c783c8736fd",
+          "w": 495,
+          "h": 660,
+          "credit": "",
+          "source": "alexis.jpg"
+        },
         {
           "id": "49b1f78f3302",
           "w": 1080,
@@ -96,6 +404,13 @@
           "source": "amine-04.jpg"
         },
         {
+          "id": "2550673af055",
+          "w": 507,
+          "h": 676,
+          "credit": "",
+          "source": "amine.jpg"
+        },
+        {
           "id": "4177b761d2e6",
           "w": 1280,
           "h": 960,
@@ -110,39 +425,25 @@
           "source": "duo-01.png"
         },
         {
-          "id": "c58eecb3f893",
-          "w": 1395,
-          "h": 742,
+          "id": "829d07b4024a",
+          "w": 517,
+          "h": 689,
           "credit": "",
-          "source": "groupe-01.jpg"
+          "source": "josquin.jpg"
         },
         {
-          "id": "cfd452ba70ef",
-          "w": 1374,
-          "h": 700,
+          "id": "fd200bb4c72b",
+          "w": 488,
+          "h": 651,
           "credit": "",
-          "source": "groupe-02.jpg"
+          "source": "julien.jpg"
         },
         {
-          "id": "b8a24404329d",
-          "w": 1372,
-          "h": 685,
+          "id": "bf84f388312f",
+          "w": 510,
+          "h": 680,
           "credit": "",
-          "source": "groupe-03.jpg"
-        },
-        {
-          "id": "03738cbc5bb5",
-          "w": 1312,
-          "h": 715,
-          "credit": "",
-          "source": "groupe-04.jpg"
-        },
-        {
-          "id": "a30fa7842707",
-          "w": 1062,
-          "h": 1333,
-          "credit": "",
-          "source": "groupe-05.png"
+          "source": "marianna.jpg"
         },
         {
           "id": "7aee88a98cc4",
@@ -208,13 +509,6 @@
           "source": "repetition-07.jpg"
         },
         {
-          "id": "85dc79369be1",
-          "w": 5184,
-          "h": 3456,
-          "credit": "",
-          "source": "repetition-08.png"
-        },
-        {
           "id": "6d61942a1bcd",
           "w": 1373,
           "h": 1333,
@@ -241,6 +535,48 @@
           "h": 1024,
           "credit": "",
           "source": "studio-03.png"
+        }
+      ]
+    },
+    {
+      "slug": "membres",
+      "kind": "member",
+      "cover": "3129ee49a5d6",
+      "photos": [
+        {
+          "id": "3129ee49a5d6",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Alexis.png"
+        },
+        {
+          "id": "b440976f2423",
+          "w": 1066,
+          "h": 1600,
+          "credit": "",
+          "source": "Julien.png"
+        },
+        {
+          "id": "208bcfb925cd",
+          "w": 1366,
+          "h": 1346,
+          "credit": "",
+          "source": "Marianna.png"
+        },
+        {
+          "id": "74e31ecdcaa8",
+          "w": 892,
+          "h": 720,
+          "credit": "",
+          "source": "amine.jpg"
+        },
+        {
+          "id": "bc53990010c5",
+          "w": 5184,
+          "h": 3456,
+          "credit": "",
+          "source": "josquin.jpg"
         }
       ]
     }

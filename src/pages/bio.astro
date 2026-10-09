@@ -1,10 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
-import { pressPhotos, src, srcset } from '../lib/photos';
+import { pressPhotos, memberPhoto, src, srcset } from '../lib/photos';
 
 const press = pressPhotos;
 const bandPhoto = press?.photos.find((p) => p.w > p.h) ?? press?.photos[0];
+
+/**
+ * Chaque membre avec son portrait résolu et les identifiants qui relient le
+ * portrait à sa description. Le prénom seul légende la photo : sur une bande
+ * de cinq colonnes, un nom complet ne tiendrait pas sans se couper.
+ */
+const members = site.members.map((member, i) => ({
+  ...member,
+  firstName: member.name.split(' ')[0],
+  portrait: memberPhoto(member.photo),
+  photoId: `portrait-${i}`,
+  panelId: `membre-${i}`,
+}));
 ---
 
 <BaseLayout title="Bio" description={site.summary}>
@@ -30,26 +43,111 @@ const bandPhoto = press?.photos.find((p) => p.w > p.h) ?? press?.photos[0];
       <div class="prose" style="font-size: var(--step-1); line-height: 1.6;">
         {site.bio.map((paragraph) => <p>{paragraph}</p>)}
       </div>
+    </div>
+  </section>
 
-      <div style="margin-top: var(--block);">
-        <div class="section-head"><h2>Qui joue</h2></div>
-        <ul class="members">
-          {site.members.map((member) => (
-            <li>
-              <p class="name">{member.name}</p>
-              <p class="role">{member.role}</p>
-            </li>
-          ))}
-        </ul>
+  <section class="block lineup">
+    <div class="shell">
+      <div class="section-head">
+        <h2>Qui joue</h2>
+        {/* À rétablir en même temps que les textes ci-dessous.
+            <p class="hint">Choisissez un portrait pour lire la présentation.</p> */}
       </div>
+    </div>
 
-      <div style="margin-top: var(--block);">
-        <div class="section-head"><h2>Dossier de presse</h2></div>
-        <p class="prose">
-          Journalistes, programmateurs : photos haute définition, biographie et fiche technique sur demande à
-          <a href={`mailto:${site.email}`}>{site.email}</a>.
-        </p>
-      </div>
+    <ul class="lineup-strip">
+      {members.map((member) => (
+        <li>
+          <button
+            type="button"
+            class="lineup-card"
+            id={member.photoId}
+            aria-controls={member.panelId}
+            aria-expanded="false"
+          >
+            {member.portrait ? (
+              <img
+                src={src(member.portrait.gallery, member.portrait.photo.id, 800)}
+                srcset={srcset(member.portrait.gallery, member.portrait.photo.id)}
+                sizes="20vw"
+                width={member.portrait.photo.w}
+                height={member.portrait.photo.h}
+                loading="lazy"
+                decoding="async"
+                alt={`${member.name}, ${member.role.toLowerCase()}`}
+              />
+            ) : (
+              <span class="lineup-waiting" aria-hidden="true"><span>Portrait à venir</span></span>
+            )}
+
+            <span class="lineup-id">
+              <span class="role">{member.role}</span>
+              <span class="given">{member.firstName}</span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <div class="shell">
+      {members.map((member) => (
+        <article class="lineup-panel" id={member.panelId} aria-labelledby={member.photoId}>
+          <p class="role">{member.role}</p>
+          <h3>{member.name}</h3>
+          {/* Les présentations ne sont pas écrites : afficher cinq fois la
+              phrase d'attente ne dirait rien à personne. Dès que les `text`
+              de `members` dans src/data/site.ts sont rédigés, décommenter
+              cette ligne et l'invite plus haut.
+          <p class="prose">{member.text}</p> */}
+        </article>
+      ))}
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  /**
+   * Un portrait ouvre sa présentation sous la bande, un seul à la fois.
+   *
+   * Les présentations sont écrites visibles dans le HTML et repliées ici : sans
+   * JavaScript, la page reste une suite de textes lisibles plutôt qu'une bande
+   * de photos muettes.
+   */
+  for (const lineup of document.querySelectorAll<HTMLElement>('.lineup')) {
+    const cards = Array.from(lineup.querySelectorAll<HTMLButtonElement>('.lineup-card'));
+    const panelOf = (card: HTMLButtonElement) =>
+      document.getElementById(card.getAttribute('aria-controls') ?? '');
+
+    const close = (card: HTMLButtonElement) => {
+      card.setAttribute('aria-expanded', 'false');
+      const panel = panelOf(card);
+      if (panel) panel.hidden = true;
+    };
+
+    for (const card of cards) close(card);
+    lineup.classList.add('is-interactive');
+
+    for (const card of cards) {
+      card.addEventListener('click', () => {
+        const wasOpen = card.getAttribute('aria-expanded') === 'true';
+        for (const other of cards) close(other);
+        if (wasOpen) return;
+
+        card.setAttribute('aria-expanded', 'true');
+        const panel = panelOf(card);
+        if (panel) panel.hidden = false;
+      });
+    }
+
+    // Les flèches parcourent la bande comme une seule rangée : une fois dans
+    // les portraits, on passe de l'un à l'autre sans repasser par la tabulation.
+    lineup.addEventListener('keydown', (event) => {
+      const pas = { ArrowLeft: -1, ArrowRight: 1 }[(event as KeyboardEvent).key];
+      if (!pas) return;
+      const from = cards.indexOf(document.activeElement as HTMLButtonElement);
+      if (from < 0) return;
+      event.preventDefault();
+      cards[(from + pas + cards.length) % cards.length].focus();
+    });
+  }
+</script>
