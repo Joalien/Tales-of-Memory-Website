@@ -46,6 +46,11 @@ function collectSources() {
   if (fs.existsSync(path.join(SRC_ROOT, 'presse'))) {
     groups.push({ slug: 'presse', kind: 'press', files: listImages(path.join(SRC_ROOT, 'presse')) });
   }
+  // Coulisses, studio, portraits informels : pas rattachés à un concert, et
+  // à ne pas confondre avec les photos officielles, qui alimentent le bandeau.
+  if (fs.existsSync(path.join(SRC_ROOT, 'groupe'))) {
+    groups.push({ slug: 'groupe', kind: 'band', files: listImages(path.join(SRC_ROOT, 'groupe')) });
+  }
   const loose = listImages(SRC_ROOT).filter((f) => path.basename(f).toLowerCase() !== 'readme.md');
   if (loose.length) groups.push({ slug: 'non-classees', kind: 'unsorted', files: loose });
   return groups;

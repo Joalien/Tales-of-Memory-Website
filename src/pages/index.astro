@@ -4,9 +4,10 @@ import ShowList from '../components/ShowList.astro';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import Lightbox from '../components/Lightbox.astro';
 import SocialLinks from '../components/SocialLinks.astro';
+import Carousel from '../components/Carousel.astro';
 import { site, activeLinks } from '../data/site';
 import { upcoming, nextShow } from '../lib/shows';
-import { concertGalleries, latestPhotos, pressPhotos, src, srcset } from '../lib/photos';
+import { concertGalleries, latestPhotos, pressPhotos, bandPhotos, src, srcset } from '../lib/photos';
 import { longDate, time } from '../lib/format';
 import { cover as albumCover, coverSrc, coverSrcset } from '../lib/album';
 
@@ -110,6 +111,15 @@ const hero = press && heroPhoto
             )}
           </div>
         </div>
+      </div>
+    </section>
+  )}
+
+  {bandPhotos && bandPhotos.photos.length > 0 && (
+    <section class="block">
+      <div class="shell">
+        <div class="section-head"><h2>En coulisses</h2></div>
+        <Carousel gallery={bandPhotos.slug} photos={bandPhotos.photos} label="Tales of Memory en coulisses" />
       </div>
     </section>
   )}

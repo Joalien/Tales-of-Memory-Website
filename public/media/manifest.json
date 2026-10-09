@@ -1,11 +1,46 @@
 {
-  "generatedAt": "2026-10-09T09:11:40.934Z",
+  "generatedAt": "2026-10-09T11:41:32.198Z",
   "widths": [
     400,
     800,
     1600
   ],
   "galleries": [
+    {
+      "slug": "2026-05-30_label-tremp",
+      "kind": "concert",
+      "cover": "09ee8e7241ca",
+      "photos": [
+        {
+          "id": "09ee8e7241ca",
+          "w": 1280,
+          "h": 960,
+          "credit": "",
+          "source": "Image collée (2).png"
+        },
+        {
+          "id": "d607c4663f64",
+          "w": 1536,
+          "h": 864,
+          "credit": "",
+          "source": "Image collée.png"
+        }
+      ]
+    },
+    {
+      "slug": "2026-06-21_fete-de-la-musique-houilles",
+      "kind": "concert",
+      "cover": "79d50026a17b",
+      "photos": [
+        {
+          "id": "79d50026a17b",
+          "w": 768,
+          "h": 1024,
+          "credit": "",
+          "source": "Image collée.png"
+        }
+      ]
+    },
     {
       "slug": "presse",
       "kind": "press",
@@ -24,6 +59,48 @@
           "h": 1024,
           "credit": "",
           "source": "portrait-01.png"
+        }
+      ]
+    },
+    {
+      "slug": "groupe",
+      "kind": "band",
+      "cover": "4177b761d2e6",
+      "photos": [
+        {
+          "id": "4177b761d2e6",
+          "w": 1280,
+          "h": 960,
+          "credit": "",
+          "source": "batterie-01.png"
+        },
+        {
+          "id": "09f91536b563",
+          "w": 768,
+          "h": 1024,
+          "credit": "",
+          "source": "duo-01.png"
+        },
+        {
+          "id": "5d173e03af37",
+          "w": 768,
+          "h": 1024,
+          "credit": "",
+          "source": "studio-01.png"
+        },
+        {
+          "id": "acab91db18d1",
+          "w": 768,
+          "h": 1024,
+          "credit": "",
+          "source": "studio-02.png"
+        },
+        {
+          "id": "e00ba9b10b95",
+          "w": 768,
+          "h": 1024,
+          "credit": "",
+          "source": "studio-03.png"
         }
       ]
     }

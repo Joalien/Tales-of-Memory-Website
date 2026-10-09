@@ -1,7 +1,7 @@
 import data from '../data/photos.json';
 
 export type Photo = { id: string; w: number; h: number; credit?: string };
-export type GalleryKind = 'concert' | 'press' | 'unsorted';
+export type GalleryKind = 'concert' | 'press' | 'band' | 'unsorted';
 export type Gallery = { slug: string; cover: string; photos: Photo[]; kind?: GalleryKind };
 
 export const baseUrl: string = data.baseUrl;
@@ -16,6 +16,9 @@ export const srcset = (gallerySlug: string, id: string) =>
 
 /** Galeries rattachées à un concert : la presse et le vrac en sont exclus. */
 export const concertGalleries: Gallery[] = galleries.filter((g) => (g.kind ?? 'concert') === 'concert');
+
+/** Coulisses et studio : alimentent le carrousel de la page d'accueil. */
+export const bandPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'band');
 
 /** Photos promo, utilisables pour la page bio et le dossier de presse. */
 export const pressPhotos: Gallery | undefined = galleries.find((g) => g.kind === 'press');
