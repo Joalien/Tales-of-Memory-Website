@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T11:41:32.198Z",
+  "generatedAt": "2026-10-09T16:06:54.208Z",
   "widths": [
     400,
     800,
@@ -65,8 +65,36 @@
     {
       "slug": "groupe",
       "kind": "band",
-      "cover": "4177b761d2e6",
+      "cover": "49b1f78f3302",
       "photos": [
+        {
+          "id": "49b1f78f3302",
+          "w": 1080,
+          "h": 720,
+          "credit": "",
+          "source": "amine-01.jpg"
+        },
+        {
+          "id": "48b848cc6a16",
+          "w": 1080,
+          "h": 720,
+          "credit": "",
+          "source": "amine-02.jpg"
+        },
+        {
+          "id": "c50be2b4a5fd",
+          "w": 1080,
+          "h": 720,
+          "credit": "",
+          "source": "amine-03.jpg"
+        },
+        {
+          "id": "597e498a8c0e",
+          "w": 1080,
+          "h": 720,
+          "credit": "",
+          "source": "amine-04.jpg"
+        },
         {
           "id": "4177b761d2e6",
           "w": 1280,
@@ -80,6 +108,118 @@
           "h": 1024,
           "credit": "",
           "source": "duo-01.png"
+        },
+        {
+          "id": "c58eecb3f893",
+          "w": 1395,
+          "h": 742,
+          "credit": "",
+          "source": "groupe-01.jpg"
+        },
+        {
+          "id": "cfd452ba70ef",
+          "w": 1374,
+          "h": 700,
+          "credit": "",
+          "source": "groupe-02.jpg"
+        },
+        {
+          "id": "b8a24404329d",
+          "w": 1372,
+          "h": 685,
+          "credit": "",
+          "source": "groupe-03.jpg"
+        },
+        {
+          "id": "03738cbc5bb5",
+          "w": 1312,
+          "h": 715,
+          "credit": "",
+          "source": "groupe-04.jpg"
+        },
+        {
+          "id": "a30fa7842707",
+          "w": 1062,
+          "h": 1333,
+          "credit": "",
+          "source": "groupe-05.png"
+        },
+        {
+          "id": "7aee88a98cc4",
+          "w": 1202,
+          "h": 1600,
+          "credit": "",
+          "source": "marianne-01.jpg"
+        },
+        {
+          "id": "d636c6edc9a8",
+          "w": 1373,
+          "h": 1333,
+          "credit": "",
+          "source": "portrait-josquin.png"
+        },
+        {
+          "id": "bc53990010c5",
+          "w": 5184,
+          "h": 3456,
+          "credit": "",
+          "source": "repetition-01.jpg"
+        },
+        {
+          "id": "3593924dfa80",
+          "w": 3456,
+          "h": 5184,
+          "credit": "",
+          "source": "repetition-02.jpg"
+        },
+        {
+          "id": "ff16219838f2",
+          "w": 3456,
+          "h": 5184,
+          "credit": "",
+          "source": "repetition-03.jpg"
+        },
+        {
+          "id": "c4f97957d549",
+          "w": 3456,
+          "h": 5184,
+          "credit": "",
+          "source": "repetition-04.jpg"
+        },
+        {
+          "id": "e319d51eb746",
+          "w": 5184,
+          "h": 3456,
+          "credit": "",
+          "source": "repetition-05.jpg"
+        },
+        {
+          "id": "e85e2224b25e",
+          "w": 5184,
+          "h": 3456,
+          "credit": "",
+          "source": "repetition-06.jpg"
+        },
+        {
+          "id": "9eee4a16bba3",
+          "w": 5184,
+          "h": 3456,
+          "credit": "",
+          "source": "repetition-07.jpg"
+        },
+        {
+          "id": "85dc79369be1",
+          "w": 5184,
+          "h": 3456,
+          "credit": "",
+          "source": "repetition-08.png"
+        },
+        {
+          "id": "6d61942a1bcd",
+          "w": 1373,
+          "h": 1333,
+          "credit": "",
+          "source": "repetition-09.png"
         },
         {
           "id": "5d173e03af37",

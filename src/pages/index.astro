@@ -13,10 +13,16 @@ const nextThree = upcoming.slice(0, 3);
  * Un seul bandeau d'images pour la scène et les coulisses : les deux disaient
  * la même chose — à quoi ressemble le groupe en vrai.
  */
-const enImages = [
-  ...(bandPhotos?.photos.map((photo) => ({ gallery: bandPhotos.slug, photo })) ?? []),
-  ...latestPhotos(6),
-].slice(0, 10);
+const coulisses = bandPhotos?.photos.map((photo) => ({ gallery: bandPhotos.slug, photo })) ?? [];
+const scene = latestPhotos(6);
+
+// Alternance plutôt que concaténation : les photos de coulisses sont bien plus
+// nombreuses et noieraient complètement celles de concert si on se contentait
+// de tronquer la liste.
+const enImages = Array.from(
+  { length: Math.min(12, coulisses.length + scene.length) },
+  (_, i) => (i % 2 === 0 ? coulisses[Math.floor(i / 2)] : scene[Math.floor(i / 2)]),
+).filter(Boolean);
 const release = site.releases[0];
 
 /** Photo de groupe en fond du bandeau : on privilégie un cliché à l'horizontale. */
