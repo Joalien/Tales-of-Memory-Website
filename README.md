@@ -109,6 +109,39 @@ Le prix n'est écrit qu'une fois. Un champ de prix caché dans la page serait
 modifiable en trois clics : le Worker relit donc toujours `cents` dans le
 catalogue et ignore ce que le formulaire prétend.
 
+### Les produits côté Stripe
+
+La caisse sait vendre sans qu'aucun produit n'existe dans Stripe : le Worker
+décrit l'article à la volée. Mais Stripe regroupe alors ses rapports par
+**chaîne de caractères** — renommer un article coupe ses ventes en deux, et
+plus rien ne se totalise d'une saison à l'autre.
+
+```bash
+npm run stripe:produits
+```
+
+Crée un produit **par taille** : douze références pour quatre articles. Un
+produit par article aurait suffi aux rapports, mais Stripe affiche le nom du
+produit sur la page de paiement, et l'acheteur n'y verrait plus la taille
+qu'il vient de choisir. Les variantes règlent les deux d'un coup, et les
+rapports disent enfin quelles tailles partent — ce qu'on veut savoir pour
+recommander.
+
+L'identifiant Stripe **est** le sku (`tshirt-letter-L`) et non un `prod_…`
+engendré par Stripe : le même identifiant désigne le même article en bac à
+sable et en production, donc le Worker n'a rien à mémoriser.
+
+Le script n'envoie **aucun prix**. Stripe ne connaît que le nom et la
+description ; le montant reste dans `site.ts` et part à chaque session. Créer
+aussi des Prices donnerait deux sources au même montant — et c'est le prix
+affiché sur la page qui engage le vendeur.
+
+Le script est rejouable sans dégât : il crée ce qui manque et met à jour le
+reste. **À relancer avec la clé de production avant l'ouverture**, les produits
+d'un mode n'existant pas dans l'autre. Si on l'oublie, la vente passe quand
+même : le Worker retombe sur les libellés à la volée et écrit dans le journal
+ce qu'il faut faire. Seuls les rapports en souffrent.
+
 ### Trois états
 
 | `shop.url` | `shop.checkout` | Ce que voit le visiteur |
@@ -172,6 +205,7 @@ tarifs faux.
 - [ ] **Le délai d'expédition** (`legal.shipping.delay`)
 - [ ] **L'adhésion à un médiateur de la consommation**, obligatoire et payante
       à l'année dès qu'on vend à des particuliers
+- [ ] `npm run stripe:produits` relancé avec la clé de production
 - [ ] **Une relecture juridique** des deux pages légales
 - [ ] `SHOP_LIVE=true` et la clé de production, une fois tout le reste fait
 
@@ -254,7 +288,8 @@ scripts/
 ├── lib/ics.mjs         lecture du flux iCalendar
 ├── fetch-shows.mjs     agenda   -> src/data/shows.json
 ├── fetch-photos.mjs    manifeste -> src/data/photos.json
-└── demo-photos.mjs     images de démonstration hors ligne
+├── demo-photos.mjs     images de démonstration hors ligne
+└── stripe-products.mjs produits et variantes de taille dans Stripe
 worker/
 ├── index.ts            la caisse : /api/commande, /api/stripe/webhook
 └── catalog.ts          relecture des prix côté serveur, validation du panier

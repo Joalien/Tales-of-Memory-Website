@@ -16,13 +16,15 @@
     "photos:dirs": "node scripts/make-photo-dirs.mjs",
     "album": "node scripts/ingest-album.mjs",
     "album:push": "node scripts/push-album.mjs",
-    "album:extract": "node scripts/extract-ddp.mjs"
+    "album:extract": "node scripts/extract-ddp.mjs",
+    "stripe:produits": "node scripts/stripe-products.mjs"
   },
   "dependencies": {
     "astro": "^7.3.7",
     "stripe": "^23.0.0"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "sharp": "^0.35.5",
     "simple-icons": "^16.34.0",
     "wrangler": "^4.148.0"

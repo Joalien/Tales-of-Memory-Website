@@ -86,6 +86,46 @@ const json = (data: unknown, status = 200) =>
 const refuseLive = (key: string, env: Env) =>
   key.startsWith('sk_live_') && env.SHOP_LIVE !== 'true';
 
+/**
+ * Le produit Stripe correspondant à une ligne : un par taille.
+ *
+ * Référencer un produit plutôt que de décrire l'article à la volée donne à
+ * Stripe une identité stable, et donc des rapports qui se totalisent d'une
+ * saison à l'autre même si l'on renomme l'article. Les produits sont créés
+ * par `npm run stripe:produits`, qui impose ces identifiants.
+ */
+const produit = (line: Line) => (line.size ? `${line.sku}-${line.size}` : line.sku);
+
+/** Le libellé affiché. Identique au nom du produit Stripe, volontairement. */
+const libelle = (line: Line) => (line.size ? `${line.name} — taille ${line.size}` : line.name);
+
+/**
+ * Les lignes de la session.
+ *
+ * `avecProduits` à faux décrit chaque article à la volée, sans rien référencer.
+ * C'est le repli quand les produits n'existent pas dans le mode Stripe courant
+ * — un passage en production où le script de synchronisation a été oublié. La
+ * vente se fait quand même, seuls les rapports y perdent.
+ *
+ * Dans les deux cas le montant vient de `line.cents`, relu dans le catalogue.
+ */
+const lignes = (lines: Line[], avecProduits: boolean) =>
+  lines.map((line) => ({
+    quantity: line.qty,
+    price_data: {
+      currency: 'eur' as const,
+      unit_amount: line.cents,
+      ...(avecProduits
+        ? { product: produit(line) }
+        : {
+            product_data: {
+              name: libelle(line),
+              metadata: { sku: line.sku, ...(line.size ? { taille: line.size } : {}) },
+            },
+          }),
+    },
+  }));
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -150,23 +190,12 @@ async function commander(request: Request, env: Env, origin: string): Promise<Re
   const stripe = client(key);
   const tos = env.STRIPE_TOS_CONSENT === 'true';
 
-  try {
-    const session = await stripe.checkout.sessions.create({
+  const parametres = (avecProduits: boolean): Stripe.Checkout.SessionCreateParams => ({
       mode: 'payment',
       locale: 'fr',
 
-      line_items: cart.lines.map((line) => ({
-        quantity: line.qty,
-        price_data: {
-          currency: 'eur',
-          // Relu dans le catalogue, jamais lu dans le formulaire.
-          unit_amount: line.cents,
-          product_data: {
-            name: line.size ? `${line.name} — taille ${line.size}` : line.name,
-            metadata: { sku: line.sku, ...(line.size ? { taille: line.size } : {}) },
-          },
-        },
-      })),
+      // Le montant vient toujours du catalogue, jamais du formulaire.
+      line_items: lignes(cart.lines, avecProduits),
 
       shipping_address_collection: {
         allowed_countries: [...site.shop.countries] as Stripe.Checkout.SessionCreateParams.ShippingAddressCollection['allowed_countries'],
@@ -204,7 +233,26 @@ async function commander(request: Request, env: Env, origin: string): Promise<Re
 
       success_url: `${origin}/merch/merci?session={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/merch#commande`,
-    });
+  });
+
+  try {
+    let session: Stripe.Checkout.Session;
+    try {
+      session = await stripe.checkout.sessions.create(parametres(true));
+    } catch (error) {
+      // Les produits d'un mode n'existent pas dans l'autre. Plutôt que de
+      // refuser la vente, on retombe sur les libellés à la volée et on le dit
+      // fort dans les journaux : une boutique qui vend mal vaut mieux qu'une
+      // boutique qui ne vend pas.
+      if (!(error instanceof Stripe.errors.StripeInvalidRequestError) || error.code !== 'resource_missing') {
+        throw error;
+      }
+      console.error(
+        'Produits Stripe absents dans ce mode : repli sur les libellés à la volée. ' +
+          'Lance « npm run stripe:produits » avec la clé de ce mode pour rétablir les rapports.',
+      );
+      session = await stripe.checkout.sessions.create(parametres(false));
+    }
 
     if (!session.url) {
       console.error('Session créée sans URL de paiement :', session.id);
