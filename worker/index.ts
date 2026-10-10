@@ -68,6 +68,10 @@ const client = (key: string) =>
 const back = (origin: string, anchor: string) =>
   new Response(null, { status: 303, headers: { Location: `${origin}/merch#${anchor}` } });
 
+/** « 61,90 € ». Un journal se lit, autant qu'il s'écrive en français. */
+const euros = (cents: number | null | undefined) =>
+  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format((cents ?? 0) / 100);
+
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
     status,
@@ -354,7 +358,7 @@ async function webhook(request: Request, env: Env): Promise<Response> {
     case 'checkout.session.async_payment_succeeded': {
       const s = event.data.object;
       console.log(
-        `Commande payée — ${s.id} — ${(s.amount_total ?? 0) / 100} ${s.currency?.toUpperCase()} — ${s.metadata?.panier ?? 'panier inconnu'}`,
+        `Commande payée — ${s.id} — ${euros(s.amount_total)} — ${s.metadata?.panier ?? 'panier inconnu'}`,
       );
       break;
     }
