@@ -124,7 +124,7 @@ même article, sous peine de vendre deux fois le dernier t-shirt.
 
 ```bash
 cp .dev.vars.example .dev.vars   # puis y coller la clé sk_test_ du bac à sable
-npm run shop                     # construit le site et sert le tout sur :8787
+npm run shop                     # construit le site et sert le tout sur :8788
 ```
 
 Les clés se prennent dans Stripe > Développeurs > Clés d'API, **en mode bac à
@@ -138,7 +138,7 @@ Le relancer suffit — c'est ce que fait `npm run shop`, qui construit d'abord.
 Pour voir passer les webhooks, dans un second terminal :
 
 ```bash
-stripe listen --forward-to http://localhost:8787/api/stripe/webhook
+stripe listen --forward-to http://localhost:8788/api/stripe/webhook
 ```
 
 La commande affiche un secret `whsec_…` à coller dans `.dev.vars`. Sans lui,

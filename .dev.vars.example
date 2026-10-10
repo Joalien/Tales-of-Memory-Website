@@ -17,7 +17,7 @@ STRIPE_SECRET_KEY=sk_test_à_remplacer
 
 # --- Secret de signature du webhook ----------------------------------------
 # En local, il est affiché par :
-#   npx stripe listen --forward-to http://localhost:8787/api/stripe/webhook
+#   npx stripe listen --forward-to http://localhost:8788/api/stripe/webhook
 # En production, il est donné à la création du point de terminaison dans
 # Stripe > Développeurs > Webhooks. Commence par whsec_.
 #
