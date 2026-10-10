@@ -114,7 +114,7 @@ catalogue et ignore ce que le formulaire prétend.
 | `shop.url` | `shop.checkout` | Ce que voit le visiteur |
 | --- | --- | --- |
 | vide | `false` | La fiche, sans bouton, et l'adresse mail pour commander |
-| vide | `true` | Le formulaire de commande et « Passer à la caisse » |
+| vide | `true` | Le formulaire de commande et le bouton « Acheter » |
 | renseignée | *indifférent* | Un bouton « Commander » vers la plateforme externe |
 
 Une boutique externe l'emporte toujours : on ne tient pas deux caisses pour le
