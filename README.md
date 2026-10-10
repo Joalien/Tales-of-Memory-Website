@@ -82,26 +82,112 @@ restaurable 30 jours avant purge automatique.
 
 ## La boutique
 
-Le site est statique : **il ne peut pas encaisser un paiement.** La page
-`/merch` est une vitrine, l'argent passe par une plateforme tierce qui tient la
-caisse, le port et la TVA.
+La page `/merch` est une vitrine, et une caisse quand on le décide. Le site
+reste entièrement statique : c'est un Worker Cloudflare (`worker/`) qui ouvre
+une session de paiement Stripe et y redirige l'acheteur.
 
-Les articles se décrivent dans `merch` (`src/data/site.ts`), un objet par
-article. Leurs visuels se déposent dans `photos/merch/`, nommés d'après la
-valeur `photo` de l'article : c'est le nom du fichier qui fait le rattachement,
-comme pour les portraits des membres. Le CD fait exception, il porte
-`album: true` et reprend la pochette déjà dérivée.
+**Rien de Stripe n'est chargé dans la page.** Le formulaire est un formulaire
+HTML qui poste vers `/api/commande` ; le Worker répond par une redirection
+vers `checkout.stripe.com`. C'est ce qui permet au site de continuer à
+n'embarquer aucun script tiers, aucun cookie et aucun bandeau de consentement —
+ce que les mentions légales affirment noir sur blanc. Charger `Stripe.js` sur
+`/merch` rendrait cette phrase fausse. La boutique fonctionne d'ailleurs sans
+JavaScript du tout.
 
-Trois états, sans aucune bascule à actionner :
+### Les articles
 
-| `shop.url` | `url` de l'article | Ce que voit le visiteur |
+Ils se décrivent dans `merch` (`src/data/site.ts`), un objet par article.
+
+| Champ | Rôle |
+| --- | --- |
+| `sku` | identifiant stable, repris dans la commande Stripe. **Jamais réutilisé**, même si l'article disparaît |
+| `cents` | le prix en centimes, **seule** source du montant : la fiche l'affiche, Stripe l'encaisse |
+| `sizes` | les tailles proposées. Non vide, le choix devient obligatoire à la commande |
+| `photo` | nom du fichier déposé dans `photos/merch/`, sans extension |
+
+Le prix n'est écrit qu'une fois. Un champ de prix caché dans la page serait
+modifiable en trois clics : le Worker relit donc toujours `cents` dans le
+catalogue et ignore ce que le formulaire prétend.
+
+### Trois états
+
+| `shop.url` | `shop.checkout` | Ce que voit le visiteur |
 | --- | --- | --- |
-| vide | vide | La fiche, sans bouton, et l'adresse mail pour commander |
-| renseignée | vide | Un bouton « Commander » vers l'accueil de la boutique |
-| renseignée | renseignée | Un bouton « Commander » vers la fiche produit |
+| vide | `false` | La fiche, sans bouton, et l'adresse mail pour commander |
+| vide | `true` | Le formulaire de commande et « Passer à la caisse » |
+| renseignée | *indifférent* | Un bouton « Commander » vers la plateforme externe |
 
-Tant que `shop.url` est vide, la page annonce la vente au stand les soirs de
-concert : elle ne promet jamais un bouton qui n'existe pas.
+Une boutique externe l'emporte toujours : on ne tient pas deux caisses pour le
+même article, sous peine de vendre deux fois le dernier t-shirt.
+
+### Essayer en local
+
+```bash
+cp .dev.vars.example .dev.vars   # puis y coller la clé sk_test_ du bac à sable
+npm run shop                     # construit le site et sert le tout sur :8787
+```
+
+Les clés se prennent dans Stripe > Développeurs > Clés d'API, **en mode bac à
+sable**. Carte de test : `4242 4242 4242 4242`, n'importe quelle date future,
+n'importe quel code.
+
+`wrangler dev` fige la liste des fichiers au démarrage : après un `npm run
+build` lancé pendant qu'il tourne, il répond 404 sur les pages reconstruites.
+Le relancer suffit — c'est ce que fait `npm run shop`, qui construit d'abord.
+
+Pour voir passer les webhooks, dans un second terminal :
+
+```bash
+stripe listen --forward-to http://localhost:8787/api/stripe/webhook
+```
+
+La commande affiche un secret `whsec_…` à coller dans `.dev.vars`. Sans lui,
+le Worker refuse les webhooks plutôt que de croire n'importe quel appelant
+annonçant un paiement.
+
+### Mettre en production
+
+```bash
+npx wrangler secret put STRIPE_SECRET_KEY
+npx wrangler secret put STRIPE_WEBHOOK_SECRET
+```
+
+Puis déclarer le point de terminaison dans Stripe > Développeurs > Webhooks :
+`https://www.talesofmemory.com/api/stripe/webhook`, abonné à
+`checkout.session.completed`, `checkout.session.async_payment_succeeded` et
+`checkout.session.async_payment_failed`.
+
+**Le Worker refuse toute clé `sk_live_` tant que `SHOP_LIVE` ne vaut pas
+`true`.** C'est délibéré : les frais de port de `site.ts` sont encore des
+valeurs d'essai et plusieurs mentions légales restent à remplir. Mieux vaut une
+boutique qui refuse de vendre qu'une boutique qui encaisse pour de vrai sur des
+tarifs faux.
+
+### Ce qui reste à trancher avant d'encaisser
+
+- [ ] **Les prix et les frais de port** (`merch` et `shop.shipping`) — valeurs
+      d'essai, et un montant annoncé est opposable au vendeur
+- [ ] **L'identité de l'association** dans `legal` — les `À REMPLACER` sont
+      visibles sur les deux pages légales
+- [ ] **Le délai d'expédition** (`legal.shipping.delay`)
+- [ ] **L'adhésion à un médiateur de la consommation**, obligatoire et payante
+      à l'année dès qu'on vend à des particuliers
+- [ ] **Une relecture juridique** des deux pages légales
+- [ ] `SHOP_LIVE=true` et la clé de production, une fois tout le reste fait
+
+### Ce que le site ne fait pas
+
+- **Aucun suivi de stock.** Rien n'empêche de vendre trois fois le dernier
+  t-shirt ; `shop.maxPerItem` ne fait que plafonner une commande.
+- **Aucune copie des commandes.** Stripe détient déjà la commande et l'adresse,
+  et son tableau de bord est l'endroit où l'on prépare l'expédition. En garder
+  un double créerait un second fichier de données personnelles à sécuriser et
+  à purger, sans rien apporter.
+- **Aucun courriel au groupe.** Le webhook journalise (`wrangler tail`) ; c'est
+  là qu'on branchera un envoi le jour où l'on en voudra un.
+- **Aucune case « j'accepte les CGV »**, sauf à poser `STRIPE_TOS_CONSENT=true`
+  — ce qui exige d'avoir d'abord renseigné l'adresse des CGV dans Stripe >
+  Paramètres > Paiements > Checkout, faute de quoi Stripe refuse la session.
 
 ## Le logo
 
@@ -144,6 +230,11 @@ Copier `.env.example` vers `.env` et renseigner :
 | `CALENDAR_ICS_URL` | adresse **secrète** du flux iCal du calendrier « Concerts » |
 | `PHOTOS_BASE_URL` | domaine public du bucket R2, ex. `https://img.talesofmemory.com` |
 
+Les clés de la caisse ne sont pas dans `.env` : ce fichier alimente la
+construction du site, alors que Stripe tourne dans le Worker. Elles vivent dans
+`.dev.vars` en local (modèle : `.dev.vars.example`) et dans les secrets
+Cloudflare en production.
+
 Laissées vides, le site retombe sur les données de démonstration. Si un flux est
 injoignable au moment de la construction, les données de la construction
 précédente sont conservées : une panne côté Google ne publie pas un site sans
@@ -164,6 +255,9 @@ scripts/
 ├── fetch-shows.mjs     agenda   -> src/data/shows.json
 ├── fetch-photos.mjs    manifeste -> src/data/photos.json
 └── demo-photos.mjs     images de démonstration hors ligne
+worker/
+├── index.ts            la caisse : /api/commande, /api/stripe/webhook
+└── catalog.ts          relecture des prix côté serveur, validation du panier
 ```
 
 ## Référencement
@@ -175,6 +269,7 @@ recherche. Un flux RSS des prochaines dates est exposé sur `/concerts.xml`.
 ## Feuille de route
 
 - [x] Site statique, agenda, galeries
+- [x] Caisse Stripe en bac à sable (formulaire, webhook, page de remerciement)
 - [ ] Worker d'envoi des photos + page `/envoyer`
 - [ ] Vue de curation (supprimer, réordonner, couverture, corbeille)
 - [ ] Déploiement Cloudflare Pages + Access + cron de reconstruction

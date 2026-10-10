@@ -101,13 +101,81 @@ export const site = {
    */
   shop: {
     label: 'Merch',
+
+    /**
+     * Boutique externe, si le groupe préfère un jour vendre ailleurs —
+     * Bandcamp, par exemple. Renseignée, elle prend le pas sur la commande en
+     * direct : les fiches renvoient vers elle et le formulaire disparaît. On
+     * ne tient pas deux caisses à la fois.
+     */
     url: '',
     /** Nom de la plateforme, dit sur le bouton pour qu'on sache où l'on va. */
     platform: '',
+
+    /**
+     * Commande directe sur le site, encaissée par Stripe.
+     *
+     * Le formulaire de /merch n'apparaît que si ceci vaut `true` et que
+     * `shop.url` est vide. Le paiement lui-même a lieu sur checkout.stripe.com,
+     * jamais ici : le site ne charge aucun script tiers, et c'est précisément
+     * ce qui lui permet de n'avoir ni cookie ni bandeau de consentement.
+     *
+     * Le Worker refuse une clé `sk_live_` tant que la variable SHOP_LIVE ne
+     * vaut pas « true ». Les frais de port ci-dessous sont encore des valeurs
+     * d'essai : une boutique ouverte par distraction encaisserait de vrais
+     * paiements sur des tarifs faux.
+     */
+    checkout: true,
+
+    /**
+     * Quantité maximale par article.
+     *
+     * Le site ne tient aucun inventaire : rien n'empêche de vendre trois fois
+     * le dernier t-shirt en stock. Ce plafond limite les dégâts d'une
+     * commande déraisonnable, il ne remplace pas un comptage.
+     */
+    maxPerItem: 5,
+
+    /**
+     * Frais de port, en centimes.
+     *
+     * À VALIDER AVANT OUVERTURE — ce sont des valeurs d'essai, pas des tarifs
+     * relevés chez un transporteur. Elles s'affichent sur la page des
+     * conditions de vente et sont facturées telles quelles par Stripe, or des
+     * frais annoncés sont opposables au vendeur.
+     *
+     * Stripe présente les modes de livraison avant de connaître l'adresse :
+     * c'est donc l'acheteur qui choisit sa ligne. Les intitulés doivent rester
+     * explicites, et une commande dont le port ne correspond pas au pays se
+     * rattrape à la main avant l'expédition.
+     */
+    shipping: [
+      { id: 'fr', label: 'France métropolitaine', cents: 590, days: [2, 5] },
+      { id: 'eu', label: 'Union européenne', cents: 1190, days: [5, 10] },
+    ],
+
+    /**
+     * Pays livrés, au format ISO 3166-1 alpha-2. Hors de cette liste, Stripe
+     * refuse l'adresse au moment du paiement plutôt qu'après encaissement.
+     * Tous relèvent de l'Union : les intitulés de `shipping` le disent, et
+     * ajouter la Suisse ou le Royaume-Uni demanderait une ligne de port à eux,
+     * une déclaration douanière, et donc une décision du groupe.
+     */
+    countries: ['FR', 'BE', 'LU', 'DE', 'ES', 'IT', 'NL', 'PT', 'AT', 'IE'],
   },
 
   /**
    * Les articles, dans l'ordre d'affichage.
+   *
+   * `sku` identifie l'article pour la caisse. Il part dans la commande Stripe
+   * et dans l'enregistrement qui en est gardé : c'est lui qu'on lit six mois
+   * plus tard pour savoir ce qui a été vendu. Il ne doit donc jamais être
+   * réutilisé pour autre chose, même si l'article disparaît du catalogue.
+   *
+   * `cents` est le prix en centimes, et la seule source du montant : la fiche
+   * l'affiche, Stripe l'encaisse. Écrire le prix deux fois, une pour l'œil et
+   * une pour la caisse, finit toujours par un écart — et c'est le prix annoncé
+   * qui engage le vendeur. À 0, l'article s'affiche sans prix ni bouton.
    *
    * `photo` est le nom du fichier déposé dans `photos/merch/`, sans son
    * extension : `photos/merch/tshirt-logo.jpg` s'écrit `photo: 'tshirt-logo'`.
@@ -125,9 +193,10 @@ export const site = {
    */
   merch: [
     {
+      sku: 'cd-forgotten-chapters',
       name: 'Forgotten Chapters',
       kind: 'CD',
-      price: '12 €',                                           // À REMPLACER
+      cents: 1200,                                          // À REMPLACER
       text:
         'L’album en disque, dix titres et son livret illustré. ' +
         'La version physique contient les textes complets.',
@@ -137,9 +206,10 @@ export const site = {
       url: '',
     },
     {
+      sku: 'tshirt-forgotten-chapters',
       name: 'T-shirt Forgotten Chapters',
       kind: 'T-shirt',
-      price: '22 €',                                           // À REMPLACER
+      cents: 2200,                                          // À REMPLACER
       text:
         'La pochette de l’album à l’avant, l’emblème et le nom du groupe au dos. ' +
         'Noir, impression quadrichromie.',
@@ -149,9 +219,10 @@ export const site = {
       url: '',
     },
     {
+      sku: 'tshirt-letter',
       name: 'T-shirt Letter',
       kind: 'T-shirt',
-      price: '22 €',                                           // À REMPLACER
+      cents: 2200,                                          // À REMPLACER
       text:
         'Le visuel de « Letter » à l’avant. Au dos, l’emblème et ' +
         '« Just say: I believe! and you’ll win that fight ».',
@@ -161,9 +232,10 @@ export const site = {
       url: '',
     },
     {
+      sku: 'mug-forgotten-chapters',
       name: 'Mug Forgotten Chapters',
       kind: 'Mug',
-      price: '12 €',                                           // À REMPLACER
+      cents: 1200,                                          // À REMPLACER
       text:
         'Céramique, intérieur et anse noirs. La pochette d’un côté, ' +
         'l’emblème de l’autre, le nom du groupe entre les deux.',
@@ -285,11 +357,15 @@ export const site = {
 
     /**
      * Qui encaisse réellement, nommé dans les conditions de vente pour que
-     * l'acheteur sache à qui il confie sa carte. Stripe est envisagé. Vide,
-     * les conditions parlent d'« un prestataire de paiement » sans avancer un
-     * nom qui pourrait ne pas être le bon.
+     * l'acheteur sache à qui il confie sa carte, et dans les mentions légales
+     * comme destinataire de ses données. Vide, les conditions parlent d'« un
+     * prestataire de paiement » sans avancer un nom qui pourrait ne pas être
+     * le bon.
+     *
+     * Changer ce nom ne change pas qui encaisse : le prestataire réel est
+     * celui dont la clé est configurée dans le Worker.
      */
-    paymentProvider: '',
+    paymentProvider: 'Stripe',
 
     /**
      * Livraison. Chaque ligne vide disparaît de la page : mieux vaut taire un

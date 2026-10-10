@@ -19,6 +19,10 @@
   --ember: #c8894a;
   --ember-lift: #e0a665;
   --ember-glow: rgba(200, 137, 74, 0.13);
+  /* Terre cuite : assez proche de l'ambre pour rester dans la palette, assez
+     distincte pour qu'un message d'erreur ne se lise pas comme un ornement. */
+  --alert: #d4785d;
+  --alert-glow: rgba(212, 120, 93, 0.1);
 
   /* Typographie */
   --font-display: ui-serif, Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
@@ -1026,12 +1030,20 @@ ul { margin: 0; padding: 0; list-style: none; }
    Plaque d'or pour l'action principale de la page. La bande reste volontairement
    claire sur toute sa hauteur : le texte est sombre, et des zones trop foncées
    le rendraient illisible. Les tons bruns sont donc réservés au contour et à
-   l'ombre portée. Les règles sont écrites en .links-row a.btn-gold pour passer
-   devant le survol générique des liens voisins.
+   l'ombre portée. Les sélecteurs passent par :is() pour couvrir à la fois le
+   lien et le <button> du formulaire de commande, en gardant la spécificité de
+   l'ancien `.links-row a.btn-gold` — sans quoi le survol générique des liens
+   voisins repasserait devant.
    -------------------------------------------------------------------------- */
 
-.links-row a.btn-gold {
+:is(.links-row a, button).btn-gold {
   position: relative;
+  font-family: inherit;
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
   isolation: isolate;
   overflow: hidden;
   display: inline-flex;
@@ -1057,8 +1069,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.links-row a.btn-gold:hover,
-.links-row a.btn-gold:focus-visible {
+:is(.links-row a, button).btn-gold:hover,
+:is(.links-row a, button).btn-gold:focus-visible {
   color: #2a1906;
   border-color: #fff4d4;
   transform: translateY(-1px);
@@ -1068,7 +1080,7 @@ ul { margin: 0; padding: 0; list-style: none; }
     0 12px 32px -10px rgba(224, 166, 101, 0.95);
 }
 
-.links-row a.btn-gold:active { transform: translateY(0); }
+:is(.links-row a, button).btn-gold:active { transform: translateY(0); }
 
 .btn-gold-glyph { font-size: 1.1em; line-height: 1; }
 
@@ -1082,7 +1094,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* Reflet qui balaie la plaque au survol. Posé en z-index négatif dans un
    contexte isolé : au-dessus du dégradé, sous le texte. */
-.links-row a.btn-gold::after {
+:is(.links-row a, button).btn-gold::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1097,12 +1109,12 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.links-row a.btn-gold:hover::after,
-.links-row a.btn-gold:focus-visible::after { transform: translateX(130%); }
+:is(.links-row a, button).btn-gold:hover::after,
+:is(.links-row a, button).btn-gold:focus-visible::after { transform: translateX(130%); }
 
 @media (prefers-reduced-motion: reduce) {
-  .links-row a.btn-gold::after { display: none; }
-  .links-row a.btn-gold:hover { transform: none; }
+  :is(.links-row a, button).btn-gold::after { display: none; }
+  :is(.links-row a, button).btn-gold:hover { transform: none; }
 }
 
 /* --- Boutique -------------------------------------------------------------
@@ -1270,6 +1282,108 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-variant-numeric: tabular-nums;
 }
 .merch-buy .links-row { margin: 0; }
+
+/* --- Commande -------------------------------------------------------------
+   Le choix des tailles et des quantités, puis la barre de passage en caisse.
+   Tout fonctionne sans JavaScript : ce sont des <select> dans un <form>, et
+   les messages d'erreur sont révélés par le fragment d'URL que renvoie le
+   Worker (:target). D'où leur présence dans la page alors qu'ils n'y sont
+   jamais visibles au chargement.
+   -------------------------------------------------------------------------- */
+
+.merch-pick { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+.pick { display: flex; flex-direction: column; gap: 0.3rem; margin: 0; }
+.pick label {
+  font-size: var(--step--1);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+.pick select {
+  font-family: inherit;
+  font-size: var(--step-0);
+  color: var(--bone);
+  background: var(--ink-sink);
+  border: 1px solid var(--line-strong);
+  border-radius: 1px;
+  padding: 0.5rem 0.6rem;
+  /* Assez large pour le pouce sur un écran tactile. */
+  min-width: 4.5rem;
+  min-height: 2.75rem;
+}
+.pick select:hover { border-color: var(--ember); }
+.pick select:focus-visible { outline: 2px solid var(--ember); outline-offset: 1px; }
+
+.order {
+  margin-top: var(--block);
+  padding-top: clamp(1.75rem, 4vw, 2.5rem);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  /* Le fragment #commande amène ici : sans ce dégagement, la barre se collerait
+     sous le bandeau fixe. */
+  scroll-margin-top: 6rem;
+}
+
+/* Masqués tant que l'URL ne les désigne pas. Le Worker renvoie sur
+   /merch#erreur-vide et le navigateur fait le reste, sans une ligne de script. */
+.order-error { display: none; }
+.order-error:target {
+  display: block;
+  margin: 0;
+  max-width: var(--measure);
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--alert);
+  border-left-width: 3px;
+  background: var(--alert-glow);
+  color: var(--bone);
+  scroll-margin-top: 6rem;
+}
+.order-error:target a { color: var(--alert); }
+
+.order-note,
+.order-fine {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--bone-dim);
+  font-size: var(--step--1);
+  line-height: 1.6;
+}
+.order-fine { color: var(--bone-faint); }
+.order-fine a { color: var(--bone-dim); }
+.order-fine a:hover { color: var(--ember); }
+
+.order-submit { align-self: flex-start; }
+
+/* --- Récapitulatif de commande ------------------------------------------- */
+
+.recap-title {
+  font-size: var(--step-1);
+  color: var(--bone);
+  margin: var(--block) 0 0.9rem;
+}
+.recap-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  max-width: var(--measure);
+  border-top: 1px solid var(--line);
+}
+.recap-list li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--bone);
+}
+.recap-total {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--bone);
+  font-variant-numeric: tabular-nums;
+}
 
 .contact-main {
   margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);

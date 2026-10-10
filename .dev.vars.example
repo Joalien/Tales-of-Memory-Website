@@ -1,0 +1,44 @@
+# Secrets de la caisse, lus par `wrangler dev`.
+#
+# Copie ce fichier en `.dev.vars` et renseigne tes clés de BAC À SABLE. Ce
+# fichier-ci est un modèle suivi par Git ; `.dev.vars`, lui, en est exclu.
+#
+# En production, ces valeurs ne sont PAS dans un fichier : elles se posent une
+# fois pour toutes avec
+#   npx wrangler secret put STRIPE_SECRET_KEY
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET
+# et Cloudflare les chiffre. Un secret poussé dans Git est un secret à révoquer.
+
+# --- Clé secrète Stripe ----------------------------------------------------
+# Tableau de bord Stripe > Développeurs > Clés d'API, en mode bac à sable.
+# Commence par sk_test_ ; une clé sk_live_ est refusée par le Worker tant que
+# SHOP_LIVE ne vaut pas « true » (voir plus bas).
+STRIPE_SECRET_KEY=sk_test_à_remplacer
+
+# --- Secret de signature du webhook ----------------------------------------
+# En local, il est affiché par :
+#   npx stripe listen --forward-to http://localhost:8787/api/stripe/webhook
+# En production, il est donné à la création du point de terminaison dans
+# Stripe > Développeurs > Webhooks. Commence par whsec_.
+#
+# Sans lui, le Worker refuse les webhooks plutôt que de croire n'importe quel
+# appelant annonçant un paiement.
+STRIPE_WEBHOOK_SECRET=whsec_à_remplacer
+
+# --- Garde-fou de production -----------------------------------------------
+# Laissé vide ou absent, le Worker REFUSE toute clé sk_live_ : les frais de
+# port de site.ts sont encore des valeurs d'essai et plusieurs mentions
+# légales restent à remplir. À passer à « true » le jour où le groupe a
+# validé les tarifs, l'identité de l'association et le médiateur de la
+# consommation — pas avant.
+SHOP_LIVE=
+
+# --- Acceptation des conditions de vente -----------------------------------
+# « true » ajoute sur la page de paiement une case « j'accepte les conditions
+# de vente », que Stripe rend obligatoire pour payer.
+#
+# EXIGE d'avoir d'abord renseigné l'adresse des CGV dans Stripe >
+# Paramètres > Paiements > Checkout. Sans cela, Stripe refuse de créer la
+# session et la boutique renvoie « la caisse n'a pas répondu ». D'où le
+# réglage, désactivé par défaut.
+STRIPE_TOS_CONSENT=

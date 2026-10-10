@@ -3,6 +3,10 @@
   "name": "talesofmemory",
   "compatibility_date": "2026-10-09",
 
+  // La caisse. Elle ne répond que sur /api/* — voir `run_worker_first` plus
+  // bas — et le reste du site continue d'être servi comme des fichiers.
+  "main": "./worker/index.ts",
+
   // Cloudflare a fusionné Pages dans Workers : un Worker sert directement les
   // fichiers statiques produits par Astro. Le même Worker accueillera plus tard
   // le point d'entrée d'envoi des photos, sans second déploiement à gérer.
@@ -13,6 +17,21 @@
     // Astro produit concerts/index.html et tous les liens du site pointent sur
     // /concerts sans slash final. Sans ce réglage, le Worker répond 307 vers
     // /concerts/ : un aller-retour de plus à chaque clic.
-    "html_handling": "drop-trailing-slash"
-  }
+    "html_handling": "drop-trailing-slash",
+
+    // Le Worker lit les fichiers statiques par cette liaison, pour le cas où
+    // une requête hors /api/* lui parviendrait malgré tout.
+    "binding": "ASSETS",
+
+    // INDISPENSABLE. Sans cette ligne, `not_found_handling: "404-page"` répond
+    // la page 404 sur /api/commande — qui n'existe pas en tant que fichier —
+    // sans jamais appeler le Worker : la boutique renverrait un 404 au moment
+    // de payer. Seules les adresses listées ici passent par le code ; tout le
+    // reste garde exactement le comportement d'avant.
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Journaux consultables par `wrangler tail`, le seul moyen de voir passer un
+  // webhook en production.
+  "observability": { "enabled": true }
 }

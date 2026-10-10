@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+
+/**
+ * Après le paiement.
+ *
+ * Stripe renvoie ici avec `?session=cs_…`. La page est statique : elle ne sait
+ * donc rien de la commande par elle-même, et son texte doit rester vrai sans
+ * le moindre script. Le récapitulatif est un supplément, demandé à
+ * /api/commande et ajouté s'il arrive ; s'il n'arrive pas, la page reste juste.
+ *
+ * ELLE NE FAIT FOI DE RIEN. Y arriver ne prouve pas le paiement — on peut
+ * fermer l'onglet avant, ou ouvrir cette adresse à la main. Le paiement est
+ * constaté par le webhook, et la commande se lit dans le tableau de bord
+ * Stripe. D'où le soin mis à ne rien affirmer ici que Stripe n'ait confirmé.
+ */
+---
+
+<BaseLayout
+  title="Merci"
+  description={`Votre commande chez ${site.name} est enregistrée.`}
+  noindex
+>
+  <section class="block">
+    <div class="shell">
+      <p class="eyebrow">Commande</p>
+      <div class="section-head"><h2>Merci</h2></div>
+
+      <p class="prose">
+        Votre commande nous est parvenue. Stripe vous envoie le reçu par courrier
+        électronique — vérifiez les indésirables s’il tarde. On vous écrit dès que
+        le colis part.
+      </p>
+
+      {/* Rempli par le script ci-dessous quand Stripe confirme. Vide, il ne
+          laisse aucun trou dans la page : le texte au-dessus suffit. */}
+      <div id="recap" hidden>
+        <h3 class="recap-title">Votre commande</h3>
+        <ul class="recap-list"></ul>
+        <p class="recap-total"></p>
+      </div>
+
+      <p class="prose">
+        Une question, une erreur dans la commande, une taille à changer ? Écrivez-nous
+        à <a href={`mailto:${site.email}`}>{site.email}</a> en citant la date de
+        votre commande.
+      </p>
+
+      <div class="links-row" style="margin-top: var(--block);">
+        <a href="/merch">Retour à la boutique</a>
+        <a href="/concerts">Voir les concerts</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  /**
+   * Le récapitulatif, demandé au Worker.
+   *
+   * Seuls les articles et le montant reviennent : ni nom, ni adresse, ni
+   * courriel, bien que Stripe les connaisse. Un identifiant de session voyage
+   * dans une URL, donc dans les journaux et les historiques, et ce qu'on
+   * n'affiche pas ne peut pas fuiter par un copier-coller d'adresse.
+   */
+  const recap = document.getElementById('recap');
+  const session = new URLSearchParams(location.search).get('session');
+
+  if (recap && session) {
+    // L'identifiant disparaît de la barre d'adresse une fois lu : il n'a plus
+    // d'usage, et il resterait sinon dans l'historique et dans les partages.
+    const propre = () => history.replaceState(null, '', location.pathname);
+
+    type Article = { libelle: string | null; quantite: number | null; montant: number | null };
+    type Commande = { payee: boolean; total: number | null; articles: Article[] };
+
+    const euros = (cents: number) =>
+      new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+      }).format(cents / 100);
+
+    fetch(`/api/commande?session=${encodeURIComponent(session)}`)
+      .then((r) => (r.ok ? (r.json() as Promise<Commande>) : null))
+      .then((commande) => {
+        propre();
+        // Pas payée : on n'affiche rien plutôt que d'annoncer une commande qui
+        // n'existe pas. Le texte de la page, lui, reste vrai.
+        if (!commande?.payee) return;
+
+        const liste = recap.querySelector('.recap-list');
+        const total = recap.querySelector('.recap-total');
+        if (!liste || !total) return;
+
+        for (const article of commande.articles) {
+          const li = document.createElement('li');
+          const quantite = article.quantite && article.quantite > 1 ? ` × ${article.quantite}` : '';
+          li.textContent = `${article.libelle ?? 'Article'}${quantite}`;
+          liste.append(li);
+        }
+
+        if (commande.total !== null) {
+          total.textContent = `Total, frais de port compris : ${euros(commande.total)}`;
+        }
+
+        recap.hidden = false;
+      })
+      .catch(propre);
+  }
+</script>

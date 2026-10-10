@@ -1,15 +1,49 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
-import { items, shopOpen, shopUrl, shopPlatform } from '../lib/merch';
+import {
+  items,
+  shopExternal,
+  checkoutOpen,
+  shopUrl,
+  shopPlatform,
+  maxPerItem,
+  shippingSummary,
+} from '../lib/merch';
 
 /**
- * La vitrine. Le site est statique et n'encaisse rien : l'achat se fait sur la
- * plateforme externe, ou de la main à la main sur un concert.
+ * La vitrine, et la caisse quand elle est ouverte.
  *
- * Tant qu'aucune boutique n'est ouverte, la page ne promet pas un bouton qui
- * n'existe pas : elle dit où trouver les articles.
+ * Trois états, un seul à la fois : une plateforme externe encaisse, le site
+ * prend la commande lui-même, ou rien n'est ouvert et la page dit alors
+ * simplement où trouver les articles — elle ne promet pas un bouton qui
+ * n'existe pas.
+ *
+ * EN COMMANDE DIRECTE, LA PAGE N'EMBARQUE AUCUN JAVASCRIPT DE PAIEMENT. Le
+ * formulaire est un formulaire : il poste vers /api/commande, le Worker ouvre
+ * une session Stripe et répond par une redirection. C'est ce qui permet au
+ * site de n'avoir ni script tiers, ni cookie, ni bandeau de consentement — et
+ * ce que les mentions légales affirment. Charger Stripe.js ici rendrait cette
+ * promesse fausse.
+ *
+ * Les messages d'erreur sont dans la page, masqués, et révélés par le fragment
+ * d'URL en CSS (`:target`). Le Worker renvoie donc sur /merch#erreur-vide et
+ * la bonne phrase apparaît, sans script.
  */
+
+/** 0 à `maxPerItem` : zéro veut dire « pas commandé ». */
+const quantites = Array.from({ length: maxPerItem + 1 }, (_, n) => n);
+
+/**
+ * La grille est dans un <form> seulement quand il y a quelque chose à
+ * envoyer. Boutique fermée ou plateforme externe, un formulaire sans champ ni
+ * bouton n'aurait rien à poster, et offrirait quand même une adresse à qui
+ * s'amuse à envoyer des requêtes.
+ */
+const Panier = checkoutOpen ? 'form' : 'div';
+const attributsPanier = checkoutOpen
+  ? { method: 'post', action: '/api/commande' }
+  : {};
 ---
 
 <BaseLayout
@@ -18,11 +52,19 @@ import { items, shopOpen, shopUrl, shopPlatform } from '../lib/merch';
 >
   <section class="block">
     <div class="shell">
-      <p class="eyebrow">{shopOpen ? 'Boutique' : 'En vente aux concerts'}</p>
+      <p class="eyebrow">
+        {checkoutOpen ? 'Boutique' : shopExternal ? 'Boutique' : 'En vente aux concerts'}
+      </p>
       <div class="section-head"><h2>{site.shop.label}</h2></div>
 
       <p class="prose">
-        {shopOpen ? (
+        {checkoutOpen ? (
+          <>
+            Choisissez vos articles et passez à la caisse : le paiement se fait sur
+            Stripe, qui ne nous transmet jamais votre numéro de carte. Aucun compte
+            à créer. Tout est aussi en vente au stand les soirs de concert.
+          </>
+        ) : shopExternal ? (
           <>
             Les commandes passent par {shopPlatform}, qui s’occupe du paiement et de
             l’expédition. Tout est aussi en vente au stand les soirs de concert.
@@ -39,71 +81,139 @@ import { items, shopOpen, shopUrl, shopPlatform } from '../lib/merch';
 
       {items.length === 0 && <p class="empty">Les premiers articles arrivent bientôt.</p>}
 
-      <ul class="merch-grid">
-        {items.map((item) => (
-          <li class="merch-card">
-            {item.images.length === 0 && (
-              <div class="merch-waiting" aria-hidden="true"><span>Visuel à venir</span></div>
-            )}
-
-            {/* Les vues sont toutes dans le HTML et superposées : sans
-                JavaScript, la première reste visible et les flèches, inutiles,
-                ne s'affichent pas. */}
-            {item.images.length > 0 && (
-              <div class="merch-views" data-vues={item.images.length}>
-                {item.images.map((image, i) => (
-                  <img
-                    class:list={['merch-art', { 'is-active': i === 0 }]}
-                    src={image.src}
-                    srcset={image.srcset}
-                    sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 94vw"
-                    width={image.w}
-                    height={image.h}
-                    loading="lazy"
-                    decoding="async"
-                    alt={item.images.length > 1 ? `${item.name} — vue ${i + 1}` : item.name}
-                  />
-                ))}
-
-                {item.images.length > 1 && (
-                  <div class="merch-nav" hidden>
-                    <button type="button" class="merch-arrow" data-pas="-1" aria-label={`Vue précédente de ${item.name}`}>‹</button>
-                    <span class="merch-count" aria-hidden="true"><b>1</b>/{item.images.length}</span>
-                    <button type="button" class="merch-arrow" data-pas="1" aria-label={`Vue suivante de ${item.name}`}>›</button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div class="merch-body">
-              <p class="kind">{item.kind}</p>
-              <h3>{item.name}</h3>
-              {item.text && <p class="merch-text">{item.text}</p>}
-
-              {item.sizes.length > 0 && (
-                <p class="merch-sizes">
-                  <span class="merch-sizes-label">Tailles</span>
-                  {item.sizes.map((size) => <span class="merch-size">{size}</span>)}
-                </p>
+      {/* Un seul formulaire pour toute la grille : une commande, un envoi, des
+          frais de port payés une fois. Un panier par article aurait obligé à
+          payer le port autant de fois qu'on prend d'articles. */}
+      <Panier {...attributsPanier} class="merch-form">
+        <ul class="merch-grid">
+          {items.map((item) => (
+            <li class="merch-card">
+              {item.images.length === 0 && (
+                <div class="merch-waiting" aria-hidden="true"><span>Visuel à venir</span></div>
               )}
 
-              {/* Le prix et le bouton restent collés en bas de la fiche :
-                  d'une carte à l'autre ils se lisent sur la même ligne, même
-                  quand les descriptions n'ont pas la même longueur. */}
-              <div class="merch-buy">
-                {item.price && <p class="merch-price">{item.price}</p>}
-                {item.href && (
-                  <div class="links-row">
-                    <a href={item.href} target="_blank" rel="noopener">Commander</a>
-                  </div>
-                )}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+              {/* Les vues sont toutes dans le HTML et superposées : sans
+                  JavaScript, la première reste visible et les flèches, inutiles,
+                  ne s'affichent pas. */}
+              {item.images.length > 0 && (
+                <div class="merch-views" data-vues={item.images.length}>
+                  {item.images.map((image, i) => (
+                    <img
+                      class:list={['merch-art', { 'is-active': i === 0 }]}
+                      src={image.src}
+                      srcset={image.srcset}
+                      sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 94vw"
+                      width={image.w}
+                      height={image.h}
+                      loading="lazy"
+                      decoding="async"
+                      alt={item.images.length > 1 ? `${item.name} — vue ${i + 1}` : item.name}
+                    />
+                  ))}
 
-      {shopOpen && (
+                  {item.images.length > 1 && (
+                    <div class="merch-nav" hidden>
+                      <button type="button" class="merch-arrow" data-pas="-1" aria-label={`Vue précédente de ${item.name}`}>‹</button>
+                      <span class="merch-count" aria-hidden="true"><b>1</b>/{item.images.length}</span>
+                      <button type="button" class="merch-arrow" data-pas="1" aria-label={`Vue suivante de ${item.name}`}>›</button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div class="merch-body">
+                <p class="kind">{item.kind}</p>
+                <h3>{item.name}</h3>
+                {item.text && <p class="merch-text">{item.text}</p>}
+
+                {/* Hors commande directe, les tailles sont une information.
+                    En commande directe, elles deviennent un choix. */}
+                {item.sizes.length > 0 && !(checkoutOpen && item.cents > 0) && (
+                  <p class="merch-sizes">
+                    <span class="merch-sizes-label">Tailles</span>
+                    {item.sizes.map((size) => <span class="merch-size">{size}</span>)}
+                  </p>
+                )}
+
+                {/* Le prix et le bouton restent collés en bas de la fiche :
+                    d'une carte à l'autre ils se lisent sur la même ligne, même
+                    quand les descriptions n'ont pas la même longueur. */}
+                <div class="merch-buy">
+                  {item.price && <p class="merch-price">{item.price}</p>}
+
+                  {checkoutOpen && item.cents > 0 && (
+                    <div class="merch-pick">
+                      {item.sizes.length > 0 && (
+                        <p class="pick">
+                          <label for={`taille-${item.sku}`}>Taille</label>
+                          {/* Volontairement sans valeur par défaut : une taille
+                              servie d'office se commande sans y penser, et un
+                              t-shirt renvoyé coûte plus cher qu'un aller-retour
+                              sur cette page. L'oubli est rattrapé par le
+                              Worker, qui répond #erreur-taille. */}
+                          <select id={`taille-${item.sku}`} name={`taille:${item.sku}`}>
+                            <option value="">—</option>
+                            {item.sizes.map((size) => <option value={size}>{size}</option>)}
+                          </select>
+                        </p>
+                      )}
+
+                      <p class="pick">
+                        <label for={`qte-${item.sku}`}>Quantité</label>
+                        <select id={`qte-${item.sku}`} name={`qte:${item.sku}`}>
+                          {quantites.map((n) => <option value={n}>{n}</option>)}
+                        </select>
+                      </p>
+                    </div>
+                  )}
+
+                  {item.href && (
+                    <div class="links-row">
+                      <a href={item.href} target="_blank" rel="noopener">Commander</a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        {checkoutOpen && (
+          <div class="order" id="commande">
+            {/* Masqués par défaut, révélés par le fragment que renvoie le
+                Worker. `role="alert"` les fait lire à voix haute dès qu'ils
+                apparaissent. */}
+            <p class="order-error" id="erreur-vide" role="alert">
+              Aucun article choisi : indiquez au moins une quantité avant de passer à la caisse.
+            </p>
+            <p class="order-error" id="erreur-taille" role="alert">
+              Une taille n’a pas été choisie. Sélectionnez-la pour chaque vêtement commandé.
+            </p>
+            <p class="order-error" id="erreur-panier" role="alert">
+              Cette commande n’a pas pu être lue. Si la page est restée ouverte un
+              moment, rechargez-la et recommencez.
+            </p>
+            <p class="order-error" id="erreur-caisse" role="alert">
+              La caisse n’a pas répondu. Rien n’a été débité. Écrivez-nous à
+              {' '}<a href={`mailto:${site.email}`}>{site.email}</a> et on s’en occupe à la main.
+            </p>
+
+            <p class="order-note">
+              Frais de port : {shippingSummary}, choisis au moment du paiement.
+              {site.legal.vatExempt && ' TVA non applicable, article 293 B du CGI.'}
+            </p>
+
+            <button type="submit" class="btn-gold order-submit">Passer à la caisse</button>
+
+            <p class="order-fine">
+              Vous serez redirigé vers Stripe pour le paiement. En commandant, vous
+              acceptez nos <a href="/cgv">conditions de vente</a>.
+            </p>
+          </div>
+        )}
+      </Panier>
+
+      {shopExternal && (
         <div class="links-row" style="margin-top: var(--block);">
           <a href={shopUrl} target="_blank" rel="noopener">Voir toute la boutique sur {shopPlatform}</a>
         </div>

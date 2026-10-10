@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
-import { shopOpen, shopPlatform } from '../lib/merch';
+import { shopOpen, shopPlatform, checkoutOpen, shipping as tarifs, shippingSummary } from '../lib/merch';
 import { shortDate } from '../lib/format';
 
 /**
@@ -44,11 +44,31 @@ const vendeur = [
   { label: 'Téléphone', value: editor.phone },
 ].filter((ligne) => ligne.value.trim().length > 0);
 
-/** Idem pour la livraison : un délai inconnu se tait, il ne s'improvise pas. */
+/**
+ * Idem pour la livraison : un délai inconnu se tait, il ne s'improvise pas.
+ *
+ * Zones et frais de port sont DÉRIVÉS des tarifs que la caisse facture
+ * réellement (`site.shop.shipping`) dès que la commande directe est ouverte,
+ * au lieu d'être ressaisis ici. Deux saisies divergent toujours un jour, et
+ * c'est le montant annoncé sur cette page qui engagerait le vendeur, pas celui
+ * que Stripe aurait prélevé.
+ *
+ * « Délai d'expédition » reste saisi à la main : c'est le moment où le colis
+ * part, que seul le groupe connaît. Les jours portés par les tarifs sont des
+ * estimations de LIVRAISON, affichées comme telles par Stripe au moment du
+ * paiement — les confondre promettrait une remise en main propre le jour où
+ * l'on se contente de poster.
+ */
+const zones = tarifs.map((t) => t.label).join(', ');
+const delais = tarifs
+  .map((t) => `${t.label} : ${t.days[0]} à ${t.days[1]} jours ouvrés`)
+  .join(' ; ');
+
 const livraison = [
-  { label: 'Zones livrées', value: shipping.zones },
+  { label: 'Zones livrées', value: checkoutOpen ? zones : shipping.zones },
   { label: 'Délai d’expédition', value: shipping.delay },
-  { label: 'Frais de port', value: shipping.fees },
+  { label: 'Frais de port', value: checkoutOpen ? shippingSummary : shipping.fees },
+  { label: 'Délai de livraison annoncé', value: checkoutOpen ? delais : '' },
   { label: 'Transporteur', value: shipping.carrier },
 ].filter((ligne) => ligne.value.trim().length > 0);
 ---

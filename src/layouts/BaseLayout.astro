@@ -9,9 +9,18 @@ interface Props {
   description?: string;
   /** Données structurées supplémentaires propres à la page. */
   jsonLd?: Record<string, unknown>;
+  /**
+   * Tient la page hors des moteurs de recherche.
+   *
+   * Pour les pages qui n'ont de sens que pour une personne et un instant : un
+   * remerciement de commande, par exemple, dont l'adresse porte un identifiant
+   * de session. Indexée, elle vaudrait à des inconnus d'arriver sur le merci
+   * d'une commande qui n'est pas la leur.
+   */
+  noindex?: boolean;
 }
 
-const { title, description = site.summary, jsonLd } = Astro.props;
+const { title, description = site.summary, jsonLd, noindex = false } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.domain).href;
@@ -38,6 +47,7 @@ const musicGroup = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />

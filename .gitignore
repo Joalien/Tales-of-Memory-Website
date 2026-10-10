@@ -68,3 +68,9 @@ src/data/album.json
 
 # Cache Python.
 __pycache__/
+
+# Secrets de la caisse lus par `wrangler dev`. Modèle : .dev.vars.example
+.dev.vars
+
+# État local de wrangler (cache du Worker, stockage simulé).
+.wrangler/

@@ -8,6 +8,7 @@
     "dev": "npm run data && astro dev",
     "build": "npm run data && astro build",
     "preview": "astro preview",
+    "shop": "npm run build && wrangler dev",
     "demo:images": "node scripts/demo-photos.mjs",
     "astro": "astro",
     "photos": "node scripts/ingest-photos.mjs && node scripts/fetch-photos.mjs",
@@ -18,7 +19,8 @@
     "album:extract": "node scripts/extract-ddp.mjs"
   },
   "dependencies": {
-    "astro": "^7.3.7"
+    "astro": "^7.3.7",
+    "stripe": "^23.0.0"
   },
   "devDependencies": {
     "sharp": "^0.35.5",

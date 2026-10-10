@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import { shortDate } from '../lib/format';
+import { checkoutOpen } from '../lib/merch';
 
 /**
  * ATTENTION — TEXTE JURIDIQUE RELU PAR AUCUN JURISTE. C'est une base de
@@ -12,7 +13,18 @@ import { shortDate } from '../lib/format';
  * `legal` (src/data/site.ts), comme tout le reste du contenu éditorial.
  */
 
-const { editor, publisher, host, updated } = site.legal;
+const { editor, publisher, host, updated, paymentProvider } = site.legal;
+
+/**
+ * Le prestataire de paiement, nommé seulement si la caisse est ouverte ET
+ * qu'on sait qui encaisse.
+ *
+ * Nommer un destinataire de données est une obligation, pas une politesse :
+ * l'acheteur doit savoir chez qui partent son nom, son adresse et sa carte.
+ * Inversement, l'annoncer boutique fermée désignerait un traitement qui n'a
+ * pas lieu.
+ */
+const encaisseur = checkoutOpen ? paymentProvider.trim() : '';
 
 /**
  * L'identité de l'éditeur, dans l'ordre d'affichage.
@@ -90,10 +102,20 @@ const identite = [
 
         <section>
           <h3>Données personnelles</h3>
-          <p>
-            Ce site ne comporte aucun formulaire, aucun compte et aucune inscription : il ne
-            collecte donc directement aucune donnée vous concernant.
-          </p>
+          {!checkoutOpen && (
+            <p>
+              Ce site ne comporte aucun formulaire, aucun compte et aucune inscription : il ne
+              collecte donc directement aucune donnée vous concernant.
+            </p>
+          )}
+
+          {checkoutOpen && (
+            <p>
+              Ce site ne comporte aucun compte et aucune inscription. La page de la boutique
+              porte un formulaire de commande, mais il ne transmet que les articles et les
+              quantités choisies : aucune donnée vous concernant n’y est saisie.
+            </p>
+          )}
           <p>
             Si vous nous écrivez à <a href={`mailto:${site.email}`}>{site.email}</a>, votre adresse
             et le contenu de votre message sont traités dans le seul but de vous répondre, sur la
@@ -107,6 +129,33 @@ const identite = [
             qui comporte des serveurs situés hors de l’Union européenne. Ces données servent à
             servir les pages et à protéger le site contre les attaques.
           </p>
+          {checkoutOpen && (
+            <>
+              <p>
+                <strong>Commande et paiement.</strong> Le paiement n’a pas lieu sur ce site : au
+                moment de passer à la caisse, vous êtes redirigé vers la page sécurisée
+                {encaisseur ? ` de ${encaisseur}` : ' de notre prestataire de paiement'}, où vous
+                saisissez vos coordonnées de livraison et vos données de carte. Celles-ci ne
+                transitent jamais par nos serveurs et nous ne les voyons à aucun moment : nous
+                n’avons accès qu’au nom, à l’adresse de livraison, à l’adresse électronique et au
+                détail de la commande, qui nous sont nécessaires pour vous expédier le colis et
+                répondre à une réclamation. La base légale est l’exécution du contrat de vente.
+              </p>
+              <p>
+                Ces données sont conservées par
+                {encaisseur ? ` ${encaisseur}` : ' le prestataire'} et consultées par nous depuis
+                son interface ; nous n’en tenons pas de copie séparée. Les pièces nécessaires à la
+                comptabilité et à la garantie légale sont conservées le temps imposé par la loi.
+              </p>
+              <p>
+                {encaisseur ? `${encaisseur} est` : 'Notre prestataire de paiement est'} susceptible
+                de traiter ces données hors de l’Union européenne, notamment aux États-Unis, dans
+                le cadre de ses propres engagements contractuels. Son traitement relève de sa
+                politique de confidentialité, que nous vous invitons à lire avant de payer.
+              </p>
+            </>
+          )}
+
           <p>
             Conformément au règlement (UE) 2016/679 et à la loi n° 78-17 du 6 janvier 1978, vous
             disposez des droits suivants sur vos données :
@@ -144,6 +193,15 @@ const identite = [
             tant que vous ne cliquez pas. Une fois sur leur site, leurs propres règles
             s’appliquent, et nous n’avons la maîtrise ni de leur contenu ni de leurs traceurs.
           </p>
+          {checkoutOpen && (
+            <p>
+              Il en va de même de la page de paiement : elle appartient à
+              {encaisseur ? ` ${encaisseur}` : ' notre prestataire'} et dépose ses propres
+              cookies, nécessaires à la sécurité de la transaction. Vous n’y arrivez qu’en
+              cliquant sur « Passer à la caisse », et rien n’est chargé depuis ce domaine avant ce
+              clic : c’est pourquoi ce site continue de n’avoir aucune bannière de consentement.
+            </p>
+          )}
         </section>
 
         <p class="legal-updated">Dernière mise à jour : {shortDate(updated)}.</p>
